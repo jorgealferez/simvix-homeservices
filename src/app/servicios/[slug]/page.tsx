@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { services, getServiceBySlug } from '@/lib/services';
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -14,7 +14,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const service = getServiceBySlug(params.slug);
+  const { slug } = await params;
+  const service = getServiceBySlug(slug);
   if (!service) return {};
 
   return {
@@ -31,8 +32,9 @@ export async function generateMetadata({
   };
 }
 
-export default function ServiceDetailPage({ params }: PageProps) {
-  const service = getServiceBySlug(params.slug);
+export default async function ServiceDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const service = getServiceBySlug(slug);
 
   if (!service) {
     notFound();

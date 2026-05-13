@@ -2,6 +2,9 @@
   "name": "simvix-homeservices",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +13,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "14.2.29",
+    "next": "^15.3.9",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -20,8 +23,8 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.29",
-    "postcss": "^8",
+    "eslint-config-next": "^15.3.9",
+    "postcss": "^8.5.14",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }
