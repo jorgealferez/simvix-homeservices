@@ -1,6 +1,14 @@
-# Simvix Home Services
+# Simvix Home Services + Simvix Obras
 
-Sitio web de servicios del hogar diarios: recogida de niños del colegio, limpieza, niñera, hacer la compra y cuidado de personas mayores.
+Repositorio con dos productos coexistiendo:
+
+1. **Simvix Home Services** — web de servicios del hogar diarios (recogida de
+   niños, limpieza, niñera, compra, cuidado de mayores). Es la web original.
+2. **Simvix Obras** (`/obras`) — plataforma de orquestación con IA que lleva un
+   proyecto de obra desde la conversación inicial con el cliente hasta el
+   paquete documental presentado al ayuntamiento. Ver
+   [`docs/obras/ARCHITECTURE.md`](docs/obras/ARCHITECTURE.md) y el
+   [roadmap de 1.000 iteraciones](docs/obras/ROADMAP.md).
 
 ## Stack
 
@@ -66,11 +74,14 @@ npm run dev
 ## Scripts disponibles
 
 ```bash
-npm run dev         # Servidor de desarrollo
-npm run build       # Build de producción
-npm run start       # Servidor de producción
-npm run lint        # ESLint
-npm run type-check  # TypeScript sin emitir
+npm run dev              # Servidor de desarrollo
+npm run build            # Build de producción (genera Prisma client antes)
+npm run start            # Servidor de producción
+npm run lint             # ESLint
+npm run type-check       # TypeScript sin emitir
+npm run prisma:push      # Aplica el schema a la BD (dev)
+npm run prisma:studio    # Prisma Studio en localhost
+npm run prisma:seed      # Sembrar plantillas de normativa
 ```
 
 ## Variables de entorno
@@ -81,6 +92,12 @@ npm run type-check  # TypeScript sin emitir
 | `NEXT_PUBLIC_SITE_NAME` | Nombre del sitio | `Simvix Home Services` |
 | `RESEND_API_KEY` | API key para envío de emails (opcional) | `re_xxxxx` |
 | `CONTACT_EMAIL` | Email de destino del formulario | `hola@simvix.com` |
+| `DATABASE_URL` | Base de datos (SQLite por defecto / Postgres en prod) | `file:./prisma/dev.db` |
+| `ANTHROPIC_API_KEY` | API key de Anthropic Claude (módulo /obras) | `sk-ant-...` |
+| `OBRAS_AI_MODE` | `auto` (default) / `live` / `mock` | `mock` |
+| `OBRAS_DEFAULT_MODEL` | Modelo Claude por defecto | `claude-opus-4-7` |
+| `OBRAS_FIRMA_*` | Datos del estudio para firmar PDFs generados | (opcionales) |
+| `OBRAS_AYUNTAMIENTOS_HABILITADOS` | CSV de slugs activos | `madrid,barcelona,...` |
 
 ## Deploy en Railway
 
@@ -135,3 +152,56 @@ GitHub Actions en `.github/workflows/ci.yml` ejecuta en cada push/PR:
 ---
 
 **Diferencia con `renovation-company-website`**: Público objetivo completamente distinto (familias, personas mayores vs. propietarios que reforman). No hay solapamiento de servicios ni de keywords SEO.
+
+---
+
+## Módulo /obras — Orquestación IA cliente → ayuntamiento
+
+Disponible en [`/obras`](http://localhost:3000/obras) tras `npm run dev`.
+
+### Quickstart
+
+```bash
+# 1. Copiar variables
+cp .env.example .env.local
+
+# 2. Inicializar BD local (SQLite zero-config)
+npm run prisma:push
+npm run prisma:seed
+
+# 3. Arrancar
+npm run dev
+# Abrir http://localhost:3000/obras
+```
+
+Si **no** configuras `ANTHROPIC_API_KEY`, los agentes funcionan en modo *mock*
+determinista: la UI y el flujo completo se pueden probar sin coste y sin red.
+Con la key configurada, las llamadas se hacen a Claude (modelo
+`claude-opus-4-7` por defecto, configurable).
+
+### Las 11 fases del workflow
+
+1. **Intake** — captura estructurada de la necesidad del cliente.
+2. **Normativa** — análisis PGOU, CTE, accesibilidad, régimen de licencia.
+3. **Anteproyecto** — programa, esquema espacial, estimación inicial.
+4. **Memoria técnica** — descriptiva y constructiva conforme CTE.
+5. **Mediciones** — capítulos y partidas con cantidades.
+6. **Presupuesto** — precios unitarios, PEM, PEC, IVA.
+7. **Planos** — plan de planos requeridos.
+8. **ESS** — estudio básico de seguridad y salud (RD 1627/1997).
+9. **Gestión de residuos** — RD 105/2008.
+10. **Doc. administrativa** — modelos, tasas, declaración responsable.
+11. **Presentación** — escrito al ayuntamiento + paquete consolidado.
+
+Cada fase está respaldada por un agente IA especializado en
+`src/lib/ai/agents/`.
+
+### Generación del paquete final
+
+Una vez completadas todas las fases, `GET /api/obras/[id]/package` devuelve un
+PDF con portada + todos los documentos generados, en orden, listo para
+presentar al ayuntamiento.
+
+Ver [`docs/obras/ARCHITECTURE.md`](docs/obras/ARCHITECTURE.md) y
+[`docs/obras/ROADMAP.md`](docs/obras/ROADMAP.md) para la planificación de las
+1.000 iteraciones siguientes (P01–P33).

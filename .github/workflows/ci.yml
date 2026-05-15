@@ -37,3 +37,5 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_URL: https://homeservices.simvix.com
           NEXT_PUBLIC_SITE_NAME: 'Simvix Home Services'
+          DATABASE_URL: 'file:./prisma/dev.db'
+          OBRAS_AI_MODE: 'mock'

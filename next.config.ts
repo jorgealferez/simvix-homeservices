@@ -1,11 +1,14 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Enable static exports if needed
   // output: 'standalone', // Uncomment for Railway Docker deployments
   images: {
-    // Add domains if using external images
     domains: [],
+  },
+  serverExternalPackages: ['@prisma/client', 'prisma', 'pdf-lib'],
+  experimental: {
+    // Streaming respuestas largas de Claude
+    serverActions: { bodySizeLimit: '4mb' },
   },
 };
 

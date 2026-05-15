@@ -1,0 +1,299 @@
+// Simvix Obras — esquema del orquestador IA cliente → ayuntamiento
+//
+// Provider sqlite por defecto (zero-config). Para producción basta cambiar a
+// "postgresql" y la DATABASE_URL. Los enums de dominio están modelados como
+// String + constantes TS (src/lib/obras/enums.ts) para mantener portabilidad
+// entre providers (SQLite no soporta enums Prisma).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Cliente y proyecto
+// ---------------------------------------------------------------------------
+
+model Client {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fullName String
+  email    String
+  phone    String?
+  dni      String?
+  address  String?
+
+  projects Project[]
+
+  @@index([email])
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reference String  @unique
+  title     String
+  summary   String?
+
+  addressLine String?
+  city        String?
+  province    String?
+  postalCode  String?
+  cadastralId String?
+
+  obraType    String // ObraType enum, ver src/lib/obras/enums.ts
+  useType     String // UseType
+  surfaceM2   Float?
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  status       String @default("DRAFT")          // ProjectStatus
+  currentPhase String @default("INTAKE")         // PhaseType
+
+  ayuntamientoSlug String?
+
+  aiCostUsd      Float @default(0)
+  aiInputTokens  Int   @default(0)
+  aiOutputTokens Int   @default(0)
+
+  phases        Phase[]
+  documents     Document[]
+  conversations Conversation[]
+  taskRuns      TaskRun[]
+  submissions   Submission[]
+  budgetItems   BudgetItem[]
+  drawings      Drawing[]
+  events        ProjectEvent[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([currentPhase])
+}
+
+// ---------------------------------------------------------------------------
+// Fases del workflow
+// ---------------------------------------------------------------------------
+
+model Phase {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  type   String  // PhaseType
+  status String  @default("PENDING") // PhaseStatus
+  order  Int
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  resultJson String?
+  notes      String?
+
+  @@unique([projectId, type])
+  @@index([projectId])
+}
+
+// ---------------------------------------------------------------------------
+// Conversaciones (intake y chat por fase)
+// ---------------------------------------------------------------------------
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  agent   String
+  role    String
+  content String
+
+  inputTokens  Int?
+  outputTokens Int?
+  costUsd      Float?
+  model        String?
+
+  @@index([projectId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Documentos
+// ---------------------------------------------------------------------------
+
+model Document {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  type    String // DocumentType
+  title   String
+  content String
+  format  String @default("MARKDOWN") // DocumentFormat
+
+  filePath String?
+  fileSize Int?
+  mimeType String?
+
+  version Int @default(1)
+
+  generatedByAi   Boolean @default(false)
+  reviewedByHuman Boolean @default(false)
+  reviewerNote    String?
+
+  @@index([projectId, type])
+}
+
+// ---------------------------------------------------------------------------
+// Presupuesto: capítulos y partidas
+// ---------------------------------------------------------------------------
+
+model BudgetItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  chapter     String
+  code        String
+  description String
+  unit        String
+  quantity    Float
+  unitPrice   Float
+  total       Float
+
+  source String?
+
+  @@index([projectId, chapter])
+}
+
+// ---------------------------------------------------------------------------
+// Planos
+// ---------------------------------------------------------------------------
+
+model Drawing {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  code          String
+  title         String
+  scale         String?
+  category      String // DrawingCategory
+  filePath      String?
+  thumbnailPath String?
+
+  aiAnnotationsJson String?
+
+  @@index([projectId])
+}
+
+// ---------------------------------------------------------------------------
+// Ejecuciones de agentes IA
+// ---------------------------------------------------------------------------
+
+model TaskRun {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  agent  String
+  phase  String? // PhaseType
+  status String  @default("RUNNING") // TaskStatus
+
+  input  String
+  output String?
+  error  String?
+
+  model        String?
+  inputTokens  Int?
+  outputTokens Int?
+  costUsd      Float?
+  durationMs   Int?
+
+  @@index([projectId, agent])
+}
+
+// ---------------------------------------------------------------------------
+// Presentación al ayuntamiento
+// ---------------------------------------------------------------------------
+
+model Submission {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  ayuntamientoSlug String
+  channel          String @default("REGISTRO_TELEMATICO") // SubmissionChannel
+  status           String @default("PREPARED")            // SubmissionStatus
+
+  registroEntrada   String?
+  fechaPresentacion DateTime?
+  fechaResolucion   DateTime?
+
+  packagePdfPath String?
+  cheksum        String?
+
+  responseNotes String?
+
+  @@index([projectId])
+}
+
+// ---------------------------------------------------------------------------
+// Eventos / auditoría
+// ---------------------------------------------------------------------------
+
+model ProjectEvent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  type    String
+  payload String
+  actor   String?
+
+  @@index([projectId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Plantillas de normativa
+// ---------------------------------------------------------------------------
+
+model RegulationTemplate {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  scope     String
+  region    String?
+  obraTypes String
+  body      String
+  source    String?
+  version   String?
+  updatedAt DateTime @updatedAt
+}
