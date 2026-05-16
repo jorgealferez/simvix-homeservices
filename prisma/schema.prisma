@@ -25,6 +25,96 @@ datasource db {
 }
 
 // ---------------------------------------------------------------------------
+// Auth & RBAC (P02) — modelos compatibles con NextAuth v5 + extras de
+// negocio (passwordHash para credentials provider, lastLoginAt, locked).
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+
+  // Credentials provider
+  passwordHash  String?
+
+  // Anti-bruteforce
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
+  lastLoginAt   DateTime?
+
+  // Rol global (admin de plataforma). Roles por-org en OrganizationMember.
+  isPlatformAdmin Boolean @default(false)
+
+  accounts      Account[]
+  sessions      Session[]
+  memberships   OrganizationMember[]
+  apiTokens     ApiToken[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+/// API tokens para integraciones externas (scope-based).
+model ApiToken {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name      String
+  tokenHash String   @unique // bcrypt del token; el plaintext sólo se muestra una vez
+  scopes    String   // CSV de scopes (projects:read, projects:write, ...)
+  expiresAt DateTime?
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
 // Multi-tenant
 // ---------------------------------------------------------------------------
 
@@ -63,9 +153,9 @@ model OrganizationMember {
   orgId String
   org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
-  // userId apunta a un User externo (NextAuth lo introducirá en P02). De
-  // momento lo dejamos como string libre para permitir invitaciones por email.
   userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   role   String // OWNER | ADMIN | ARCHITECT | TECHNICIAN | EXTERNAL | VIEWER
 
   @@unique([orgId, userId])

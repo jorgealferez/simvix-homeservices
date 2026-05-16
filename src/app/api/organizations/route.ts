@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createOrganization, listOrganizations } from '@/lib/obras/organizations';
+import { authErrorResponse, requirePermission } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const orgs = await listOrganizations();
-  return NextResponse.json({ organizations: orgs });
+  try {
+    await requirePermission('org:read');
+    const orgs = await listOrganizations();
+    return NextResponse.json({ organizations: orgs });
+  } catch (err) {
+    const r = authErrorResponse(err);
+    if (r) return r;
+    throw err;
+  }
 }
 
 const createSchema = z.object({
@@ -22,18 +30,21 @@ const createSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => null);
-  const parsed = createSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten() }, { status: 400 });
-  }
   try {
+    await requirePermission('org:write');
+    const body = await req.json().catch(() => null);
+    const parsed = createSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Datos inválidos', details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
     const org = await createOrganization(parsed.data);
     return NextResponse.json({ organization: org }, { status: 201 });
   } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Error desconocido' },
-      { status: 400 },
-    );
+    const r = authErrorResponse(err);
+    if (r) return r;
+    throw err;
   }
 }

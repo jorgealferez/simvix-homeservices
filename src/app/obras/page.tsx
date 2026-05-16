@@ -2,11 +2,16 @@ import Link from 'next/link';
 import { listProjects } from '@/lib/obras/projects';
 import { PHASES } from '@/lib/obras/phases';
 import { resolveAiMode } from '@/lib/ai/client';
+import { getAuthContext } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ObrasIndexPage() {
-  const projects = await listProjects({ take: 100 });
+  const ctx = await getAuthContext();
+  const projects = await listProjects({
+    take: 100,
+    orgId: ctx?.isPlatformAdmin ? undefined : ctx?.activeOrgId ?? undefined,
+  });
   const mode = resolveAiMode();
 
   return (
@@ -18,6 +23,15 @@ export default async function ObrasIndexPage() {
             Orquestación completa con IA: intake del cliente · normativa · anteproyecto · memoria ·
             mediciones · presupuesto · planos · ESS · residuos · doc. administrativa · ayuntamiento.
           </p>
+          {ctx?.activeOrgId && (
+            <p className="text-xs text-slate-500 mt-1">
+              Organización activa:{' '}
+              <span className="font-mono">
+                {ctx.memberships.find((m) => m.orgId === ctx.activeOrgId)?.orgSlug ?? '—'}
+              </span>{' '}
+              · Rol: <span className="font-semibold">{ctx.activeRole}</span>
+            </p>
+          )}
         </div>
         <span
           className={`text-xs px-2 py-1 rounded ${

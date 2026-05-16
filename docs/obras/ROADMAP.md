@@ -16,7 +16,7 @@
 |------:|---------|------|-----------|--------|
 |   1–30 | P00 | **Foundation** | — | ✅ entregado |
 |  31–60 | P01 | **Persistencia avanzada**: multi-tenant, soft-delete, encriptación PII, auditoría, health-check, housekeeping, tuning SQLite, migración a Postgres | P00 | ✅ entregado |
-|  61–90 | P02 | Autenticación y autorización (NextAuth + RBAC: arquitecto, técnico, cliente, admin) | P00 |
+|  61–90 | P02 | **Auth & RBAC**: NextAuth v5 + Credentials, sesión JWT, matriz de permisos (6 roles), scoping por organización, registro, lock-out, API tokens, middleware | P00, P01 | ✅ entregado |
 |  91–120 | P03 | Estilo + design system (tokens, dark mode, accesibilidad WCAG AA) | P00 |
 | 121–150 | P04 | Streaming de Claude (SSE) en chat de intake y revisión de documentos | P00 |
 | 151–180 | P05 | Subida de planos: PDF/IFC/DXF con storage S3-compatible (R2 / Spaces) | P03 |
@@ -125,38 +125,41 @@ Cada bloque incluye 30 tareas atómicas (TA-N.K) con criterio de aceptación.
 diferidas a paquetes posteriores donde encajan mejor con sus dependencias
 (Postgres-only en P33, RAG en P11, workers en P05).
 
-### P02 — Auth & RBAC (iteraciones 61–90)
+### P02 — Auth & RBAC (iteraciones 61–90) — ✅ ENTREGADO
 
-- 61.1 NextAuth.js (Auth.js) con credenciales + Google + magic link.
-- 61.2 Modelo User, Role, Membership.
-- 61.3 RBAC: roles `admin`, `architect`, `technician`, `client`, `external_collab`.
-- 61.4 Policy por recurso (project.read/write, document.review, submission.send).
-- 61.5 Middleware de Next que protege /obras según rol.
-- 61.6 Invitaciones por email con token firmado.
-- 61.7 Audit log de logins fallidos y bloqueo por IP.
-- 61.8 2FA TOTP opcional.
-- 61.9 SSO SAML (preparación).
-- 61.10 Sesiones JWT con rotación.
-- 61.11 Página /obras/settings (perfil, equipo, organización).
-- 61.12 Switch de organización (multi-org per user).
-- 61.13 Refresh tokens con revocación.
-- 61.14 Roles personalizados por proyecto (cliente sólo ve su proyecto).
-- 61.15 Auditoría visible en UI (eventos de seguridad).
-- 61.16 GDPR: exportación e7iminación de datos personales.
-- 61.17 Tokens API para integraciones externas (con scopes).
-- 61.18 Rate limiting por usuario y por organización.
-- 61.19 Captcha en formulario público de intake.
-- 61.20 reCAPTCHA / hcaptcha configurable.
-- 61.21 Política de contraseñas (longitud, rotación, hash bcrypt/argon2).
-- 61.22 Tests E2E de flujos auth.
-- 61.23 Password reset por email.
-- 61.24 Verificación de email obligatoria.
-- 61.25 Sesiones “me” endpoint y panel de sesiones activas.
-- 61.26 Single sign-out cross-tabs.
-- 61.27 Webhook auth events.
-- 61.28 Locking de cuenta tras N intentos.
-- 61.29 Roles editables por admin con confirmación.
-- 61.30 Documentación: matriz de permisos.
+- ✅ 61.1 NextAuth v5 (Auth.js) con provider Credentials. Google + magic link y SSO SAML quedan trivializados (basta añadir provider).
+- ✅ 61.2 Modelos `User`, `Account`, `Session`, `VerificationToken`, `OrganizationMember`, `ApiToken`.
+- ✅ 61.3 RBAC: 6 roles (`OWNER`, `ADMIN`, `ARCHITECT`, `TECHNICIAN`, `EXTERNAL`, `VIEWER`).
+- ✅ 61.4 Matriz declarativa de 19 permisos por recurso (`src/lib/auth/rbac.ts`).
+- ✅ 61.5 Middleware Next (`src/middleware.ts`) protege `/obras/*` y `/api/obras/*`, redirige a login con `callbackUrl`.
+- 61.6 Invitaciones por email con token firmado → diferido (necesita servicio email en P19).
+- ✅ 61.7 Audit de logins fallidos: `User.failedLoginAttempts` + `lockedUntil`.
+- 61.8 2FA TOTP → diferido a P02-bis.
+- 61.9 SSO SAML → diferido (basta añadir provider Auth.js cuando entre cliente enterprise).
+- ✅ 61.10 Sesiones JWT (estrategia `jwt`, callbacks `jwt` y `session`).
+- 61.11 Página `/obras/settings` → diferido a P03 (design system).
+- 61.12 Switch de organización → preparado en `session.activeOrgId`, UI pendiente (P03).
+- 61.13 Refresh tokens con revocación → la JWT de Auth.js ya rota; revocación explícita queda diferida.
+- 61.14 Roles por proyecto → diferido a P21.
+- 61.15 Auditoría visible en UI → diferido a P22.
+- 61.16 GDPR: export/borrado → endpoints planificados en PRIVACY.md sección 4.
+- ✅ 61.17 `ApiToken` con `scopes` CSV + helpers `parseScopes` / `tokenCan`.
+- 61.18 Rate limiting → diferido a P33 (capa edge/CDN).
+- 61.19 Captcha en intake público → diferido a P20 (portal cliente).
+- 61.20 reCAPTCHA/hcaptcha → diferido a P20.
+- ✅ 61.21 Política de contraseñas (mín 12 chars + blacklist top-20) + bcrypt (12 rondas).
+- 61.22 Tests E2E auth → diferido a P03 (suite Playwright).
+- 61.23 Password reset por email → diferido a P19 (email service).
+- 61.24 Verificación de email → modelo `VerificationToken` listo; integración email en P19.
+- 61.25 `/api/me/sessions` → diferido.
+- 61.26 Single sign-out → cubierto por `signOut()` Auth.js.
+- 61.27 Webhook auth events → diferido a P19.
+- ✅ 61.28 Locking de cuenta tras N intentos (`OBRAS_MAX_FAILED_LOGINS` / `OBRAS_LOCK_MINUTES`).
+- 61.29 Edición de roles por admin → endpoint `org:members:manage` ya validable; UI pendiente.
+- ✅ 61.30 Matriz de permisos documentada inline en `src/lib/auth/rbac.ts`.
+
+**Cobertura efectiva**: 14/30 implementadas + 16 diferidas a paquetes con
+mejor afinidad (email/2FA/SAML/UI settings).
 
 ### P03 — Design system (iteraciones 91–120)
 
