@@ -48,6 +48,12 @@ export interface Agent {
   emitsDocument?: DocumentType;
   /** Documentos previos que conviene cachear como contexto invariante. */
   cachedPriorTypes?: DocumentType[];
+  /**
+   * Si está presente, el orquestador hace RAG sobre la KnowledgeBase con la
+   * query devuelta y los chunks recuperados se inyectan como bloque cacheable
+   * antes del primer turno user (P12).
+   */
+  ragQuery?: (ctx: AgentContext) => { query: string; kind?: 'CTE_DB' | 'PGOU' | 'ORDENANZA' | 'RD' | 'AUTONOMICO'; region?: string; limit?: number } | null;
 }
 
 const REDACT_BEFORE_AI = (process.env.OBRAS_REDACT_PII_BEFORE_AI ?? 'true') !== 'false';
@@ -97,6 +103,30 @@ export async function runAgent(agent: Agent, ctx: AgentContext): Promise<AgentRe
     // Cachear como bloque user los documentos previos grandes que el agente
     // marca como "estables" (no se modifican entre llamadas a esa fase).
     const cacheableBlocks: CacheBlock[] = [];
+
+    // RAG (P12): inyectamos los chunks recuperados como bloque cacheable.
+    if (agent.ragQuery) {
+      const req = agent.ragQuery(safeCtx);
+      if (req?.query) {
+        const { retrieveChunks, formatRetrievedAsContext } = await import('@/lib/obras/rag');
+        const chunks = await retrieveChunks(req.query, {
+          kind: req.kind,
+          region: req.region,
+          limit: req.limit ?? 5,
+        });
+        if (chunks.length) {
+          cacheableBlocks.push({
+            role: 'user',
+            text:
+              '<contexto_normativo>\n' +
+              'Fragmentos relevantes recuperados de la KnowledgeBase (cita por número):\n\n' +
+              formatRetrievedAsContext(chunks) +
+              '\n</contexto_normativo>',
+          });
+        }
+      }
+    }
+
     if (agent.cachedPriorTypes?.length) {
       for (const t of agent.cachedPriorTypes) {
         const text = safeCtx.prior[t];

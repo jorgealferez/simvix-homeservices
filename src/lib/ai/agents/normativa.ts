@@ -7,6 +7,11 @@ export const normativaAgent: Agent = {
   emitsDocument: 'NORMATIVA_ANALYSIS',
   preferredEffort: 'high',
   cachedPriorTypes: ['INTAKE_BRIEF'],
+  ragQuery: (ctx) => ({
+    query: `${ctx.project.obraType} ${ctx.project.useType} licencia obra ${ctx.project.city ?? ''} CTE accesibilidad incendios`,
+    kind: 'CTE_DB',
+    limit: 6,
+  }),
   systemPrompt: () =>
     `Eres un técnico urbanista experto en normativa española aplicable a proyectos de obra.
 Tu salida debe ser un análisis normativo accionable, sin paja, con citas claras.

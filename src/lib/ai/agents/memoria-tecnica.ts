@@ -7,6 +7,11 @@ export const memoriaTecnicaAgent: Agent = {
   emitsDocument: 'MEMORIA_DESCRIPTIVA',
   preferredEffort: 'xhigh', // documento largo y técnico, vale la pena
   cachedPriorTypes: ['INTAKE_BRIEF', 'NORMATIVA_ANALYSIS', 'ANTEPROYECTO'],
+  ragQuery: (ctx) => ({
+    query: `memoria técnica ${ctx.project.obraType} ${ctx.project.useType} CTE envolvente instalaciones acabados`,
+    kind: 'CTE_DB',
+    limit: 8,
+  }),
   systemPrompt: () =>
     `Eres un arquitecto técnico redactando la memoria técnica de un proyecto de obra para presentación a ayuntamiento.
 
