@@ -568,6 +568,52 @@ model Signature {
 }
 
 // ---------------------------------------------------------------------------
+// Marketplace de plantillas (P32)
+// ---------------------------------------------------------------------------
+
+model MarketplaceListing {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  publisherOrgId String
+  slug          String  @unique
+  title         String
+  /// PROMPT_TEMPLATE | PRICE_CATALOG | NORMATIVA | CHECKLIST
+  kind          String
+  description   String?
+
+  /// FREE | ONE_TIME | SUBSCRIPTION
+  pricing     String @default("FREE")
+  priceCents  Int    @default(0)
+  /// Porcentaje (en bps) que retiene la plataforma. 1500 = 15%.
+  revShareBps Int    @default(1500)
+
+  /// Contenido JSON serializado.
+  bodyJson String
+
+  installs  Int    @default(0)
+  ratingAvg Float?
+  active    Boolean @default(true)
+
+  @@index([publisherOrgId])
+  @@index([kind, active])
+}
+
+model MarketplaceInstall {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  listingId      String
+  installerOrgId String
+
+  paymentExternalId String?
+
+  @@unique([listingId, installerOrgId])
+  @@index([installerOrgId])
+}
+
+// ---------------------------------------------------------------------------
 // Inspección en obra (P25)
 // ---------------------------------------------------------------------------
 

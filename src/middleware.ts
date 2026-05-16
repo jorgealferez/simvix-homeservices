@@ -12,7 +12,7 @@ import { auth } from '@/lib/auth/config';
 export default auth((req: NextRequest & { auth: unknown }) => {
   const { pathname } = req.nextUrl;
   const PUBLIC_PREFIXES = ['/obras/login', '/obras/registro', '/portal'];
-  const PUBLIC_API = ['/api/health', '/api/auth', '/api/contact'];
+  const PUBLIC_API = ['/api/health', '/api/auth', '/api/contact', '/api/metrics'];
 
   const isAuthRoute = PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
   const isPublicApi = PUBLIC_API.some((p) => pathname.startsWith(p));

@@ -237,6 +237,93 @@ export function dimensionElectrical(useType: UseType, surfaceM2: number): Electr
 }
 
 // ---------------------------------------------------------------------------
+// DB-HR — Aislamiento acústico simplificado (P27)
+// ---------------------------------------------------------------------------
+
+export interface HRInputs {
+  /** Aislamiento global a ruido aéreo entre recintos protegidos, dBA. */
+  dnTaBetweenRooms: number;
+  /** Aislamiento a ruido aéreo de fachada, dBA. */
+  dnTaFacade: number;
+  /** Nivel de presión a ruido de impacto, dB. */
+  lnTwImpact: number;
+}
+
+export interface HRResult {
+  checks: { item: string; measured: number; limit: number; complies: boolean }[];
+  complies: boolean;
+  reference: string;
+}
+
+export function checkHR(input: HRInputs): HRResult {
+  const checks = [
+    { item: 'Aire entre recintos protegidos', measured: input.dnTaBetweenRooms, limit: 50, complies: input.dnTaBetweenRooms >= 50 },
+    { item: 'Aire fachada', measured: input.dnTaFacade, limit: 30, complies: input.dnTaFacade >= 30 },
+    { item: 'Impacto entre viviendas', measured: input.lnTwImpact, limit: 65, complies: input.lnTwImpact <= 65 },
+  ];
+  return { checks, complies: checks.every((c) => c.complies), reference: 'CTE DB-HR, capítulo 2' };
+}
+
+// ---------------------------------------------------------------------------
+// DB-HS — Salubridad simplificado (P28): HS3 ventilación vivienda
+// ---------------------------------------------------------------------------
+
+export interface HS3Inputs {
+  flowLps: number;
+  numBedrooms: number;
+}
+
+export interface HS3Result {
+  required_lps: number;
+  measured_lps: number;
+  complies: boolean;
+  reference: string;
+}
+
+export function checkHS3(input: HS3Inputs): HS3Result {
+  /** Vivienda: 8 l/s por dormitorio + 12 l/s sala/comedor */
+  const required = 8 * input.numBedrooms + 12;
+  return {
+    required_lps: required,
+    measured_lps: input.flowLps,
+    complies: input.flowLps >= required,
+    reference: 'CTE DB-HS3, Tabla 2.1',
+  };
+}
+
+// ---------------------------------------------------------------------------
+// DB-SE — Pre-dimensionado estructural simplificado (P29)
+// ---------------------------------------------------------------------------
+
+export interface SEPreSizingInputs {
+  spanM: number;
+  liveLoadKnM2: number;
+}
+
+export interface SEPreSizingResult {
+  estimatedSlabDepthCm: number;
+  totalLoadKnM2: number;
+  reference: string;
+  notes: string[];
+}
+
+/** Pre-dimensionado de canto h ≥ L/22 (sanity check, NO cálculo definitivo). */
+export function preSizeSE(input: SEPreSizingInputs): SEPreSizingResult {
+  const factor = input.liveLoadKnM2 > 4 ? 18 : 22;
+  const slab = Math.ceil((input.spanM * 100) / factor / 5) * 5;
+  const selfWeight = (slab / 100) * 25;
+  return {
+    estimatedSlabDepthCm: slab,
+    totalLoadKnM2: selfWeight + 1 + input.liveLoadKnM2,
+    reference: 'CTE DB-SE-AE + DB-SE pre-dimensionado',
+    notes: [
+      'Resultado orientativo; el cálculo definitivo requiere CYPECAD o equivalente.',
+      'No considera vibraciones, fisuración ni acciones accidentales.',
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Reporte agregado para un proyecto
 // ---------------------------------------------------------------------------
 
