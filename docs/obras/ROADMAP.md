@@ -20,6 +20,7 @@
 |  91–120 | P03 | **Design system**: dark mode, tokens, componentes ui (Button/Input/Select/Card/Badge/EmptyState/Skeleton/ThemeProvider), settings de organización, gestión de miembros, página /obras/design | P00, P02 | ✅ entregado |
 | 121–150 | P04 | **Streaming Claude**: SSE endpoint + useChat hook con cancel, prompt caching, redacción PII pre-modelo, effort por agente, selección dinámica modelo (Opus/Sonnet/Haiku), PromptTemplate versionado, DocumentFeedback, AGENTS.md, countTokens, stop_reason handling | P00, P02, P03 | ✅ entregado |
 | 151–180 | P05 | **Storage de planos**: abstracción `Storage` (FS local, intercambiable por S3/R2), upload multipart con validación MIME/size, soft-delete, hashing sha256, panel UI con upload + descarga + delete, protección path traversal | P00, P02 | ✅ entregado |
+| 181–210 | P06 | **Análisis IA de planos**: visión multimodal (PDF/PNG/JPG/WEBP/GIF), 5 tipos análisis (GENERAL/SUPERFICIES/DB_SUA/DB_SI/DISCREPANCIAS), modelo `DrawingAnalysis` con tokens/coste/duración, API POST/GET, UI con botón por tipo + viewer JSON | P00, P02, P04, P05 | ✅ entregado |
 | 121–150 | P04 | Streaming de Claude (SSE) en chat de intake y revisión de documentos | P00 |
 | 151–180 | P05 | Subida de planos: PDF/IFC/DXF con storage S3-compatible (R2 / Spaces) | P03 |
 | 181–210 | P06 | Vectorización + análisis IA de planos PDF (OCR + visión multimodal) | P05 |

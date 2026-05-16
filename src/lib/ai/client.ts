@@ -77,6 +77,21 @@ export interface CacheBlock {
   role: 'system' | 'user';
 }
 
+/**
+ * Adjunto multimodal para el primer turno user (imagen o PDF).
+ * - `image`: PNG/JPG/WEBP/GIF como base64.
+ * - `document`: PDF como base64 (vision multimodal lo lee directamente en 4.5+).
+ */
+export interface MultimodalAttachment {
+  type: 'image' | 'document';
+  /** MIME exacto: image/png | image/jpeg | image/webp | application/pdf. */
+  mediaType: string;
+  /** Bytes en base64 (sin prefijo data:). */
+  data: string;
+  /** Texto descriptivo opcional que precederá al bloque (para citas). */
+  caption?: string;
+}
+
 export interface AiCallParams {
   system: string;
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;
@@ -89,6 +104,8 @@ export interface AiCallParams {
   cacheSystem?: boolean;
   /** Activa adaptive thinking para razonamiento (default: true en Opus). */
   thinking?: boolean;
+  /** Adjuntos multimodales (visión/PDF) que se inyectan en el primer user turn. */
+  attachments?: MultimodalAttachment[];
 }
 
 export interface AiCallResult {
@@ -117,20 +134,25 @@ function buildSystemBlocks(
   return [block];
 }
 
+type UserContent =
+  | Anthropic.Messages.TextBlockParam
+  | Anthropic.Messages.ImageBlockParam
+  | Anthropic.Messages.DocumentBlockParam;
+
 function buildMessages(
   params: AiCallParams,
 ): Anthropic.Messages.MessageParam[] {
   const messages: Anthropic.Messages.MessageParam[] = [];
 
-  // Bloques cacheables del lado user antes de los mensajes reales (típico:
-  // documentos previos invariantes para esta fase).
   const userCacheBlocks = (params.cacheableBlocks ?? []).filter((b) => b.role === 'user');
+  const attachments = params.attachments ?? [];
 
-  if (userCacheBlocks.length && params.messages.length > 0) {
-    // Inyectamos los bloques cacheables como contenido del primer turno user.
+  if ((userCacheBlocks.length || attachments.length) && params.messages.length > 0) {
     const [first, ...rest] = params.messages;
     if (first.role === 'user') {
-      const content: Anthropic.Messages.TextBlockParam[] = [];
+      const content: UserContent[] = [];
+
+      // Cacheables primero (el caché sólo opera sobre prefijos estables).
       for (const cb of userCacheBlocks) {
         content.push({
           type: 'text',
@@ -138,6 +160,31 @@ function buildMessages(
           cache_control: { type: 'ephemeral' },
         });
       }
+
+      // Adjuntos multimodales tras los cacheables (no cacheables por defecto).
+      for (const a of attachments) {
+        if (a.caption) content.push({ type: 'text', text: a.caption });
+        if (a.type === 'image') {
+          content.push({
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: a.mediaType as 'image/png' | 'image/jpeg' | 'image/webp' | 'image/gif',
+              data: a.data,
+            },
+          });
+        } else {
+          content.push({
+            type: 'document',
+            source: {
+              type: 'base64',
+              media_type: 'application/pdf',
+              data: a.data,
+            },
+          });
+        }
+      }
+
       content.push({ type: 'text', text: first.content });
       messages.push({ role: 'user', content });
       messages.push(...rest);

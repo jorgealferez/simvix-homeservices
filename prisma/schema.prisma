@@ -374,7 +374,6 @@ model Drawing {
   category      String // DrawingCategory
   filePath      String?
   thumbnailPath String?
-  // P05: nuevos metadatos del fichero subido
   originalName  String?
   mimeType      String?
   sizeBytes     Int?
@@ -385,9 +384,41 @@ model Drawing {
 
   deletedAt DateTime?
 
+  analyses DrawingAnalysis[]
+
   @@index([projectId])
   @@index([deletedAt])
   @@index([sha256])
+}
+
+/// Análisis IA de un plano (visión multimodal) — P06.
+model DrawingAnalysis {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  drawingId String
+  drawing   Drawing @relation(fields: [drawingId], references: [id], onDelete: Cascade)
+
+  // Tipo de análisis solicitado: GENERAL | SUPERFICIES | DB_SUA | DB_SI | DISCREPANCIAS
+  kind String
+
+  // Resultado estructurado (JSON serializado)
+  resultJson String
+
+  // Métricas y trazabilidad
+  model        String?
+  inputTokens  Int?
+  outputTokens Int?
+  costUsd      Float?
+  durationMs   Int?
+  status       String @default("SUCCEEDED") // SUCCEEDED | FAILED
+  error        String?
+
+  // Si se comparó con otro plano (para discrepancias)
+  comparedWithDrawingId String?
+
+  @@index([drawingId, createdAt])
+  @@index([kind])
 }
 
 // ---------------------------------------------------------------------------
