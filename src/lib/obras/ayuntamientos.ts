@@ -27,6 +27,31 @@ export interface AyuntamientoConfig {
   notas?: string;
 }
 
+/** Países UE soportados (P31). Estado regulatorio orientativo. */
+export const COUNTRY_REGIMES = {
+  ES: {
+    name: 'España',
+    regimeNote:
+      "Licencia urbanística / declaración responsable / comunicación previa según municipio (Ley 7/1985 y RD 7/2015).",
+  },
+  PT: {
+    name: 'Portugal',
+    regimeNote:
+      'Regime Jurídico da Urbanização e Edificação (DL 555/99): licença, comunicação prévia ou isenção.',
+  },
+  FR: {
+    name: 'France',
+    regimeNote:
+      "Permis de construire (PC) ou déclaration préalable de travaux (DP) selon le projet (Code de l'urbanisme).",
+  },
+  IT: {
+    name: 'Italia',
+    regimeNote: 'Permesso di costruire / SCIA / CILA (DPR 380/2001).',
+  },
+} as const;
+
+export type CountryCode = keyof typeof COUNTRY_REGIMES;
+
 export const AYUNTAMIENTOS: AyuntamientoConfig[] = [
   {
     slug: 'generico',
@@ -114,6 +139,56 @@ export const AYUNTAMIENTOS: AyuntamientoConfig[] = [
       'Modelo ICIO',
       'Tasa licencia urbanística',
     ],
+  },
+  // -- P31: i18n EU (PT/FR/IT) --
+  {
+    slug: 'lisboa',
+    nombre: 'Câmara Municipal de Lisboa',
+    provincia: 'Lisboa',
+    comunidad: 'Portugal',
+    sedeElectronica: 'https://www.lisboa.pt',
+    icioPct: 0,
+    tasaLicenciaPct: 1.5,
+    modelosTipicos: [
+      'Requerimento de licença / comunicação prévia',
+      'Termo de responsabilidade do autor do projecto',
+      'Memória descritiva e justificativa',
+      'Plantas / cortes / alçados',
+    ],
+    notas: 'Cumplimiento del RJUE (DL 555/99) y RGEU.',
+  },
+  {
+    slug: 'paris',
+    nombre: 'Mairie de Paris',
+    provincia: 'Paris',
+    comunidad: 'France',
+    sedeElectronica: 'https://www.paris.fr',
+    icioPct: 0,
+    tasaLicenciaPct: 0,
+    modelosTipicos: [
+      "Permis de construire (Cerfa 13406-*)",
+      'Déclaration préalable de travaux (Cerfa 13404-*)',
+      'Notice descriptive',
+      'Plans de situation et masse',
+      'PC4 / PC5 / PC6 / PC7 / PC8',
+    ],
+    notas: 'Code de l\'urbanisme + PLU bioclimatique de Paris.',
+  },
+  {
+    slug: 'milano',
+    nombre: 'Comune di Milano',
+    provincia: 'Milano',
+    comunidad: 'Italia',
+    sedeElectronica: 'https://www.comune.milano.it',
+    icioPct: 0,
+    tasaLicenciaPct: 1.0,
+    modelosTipicos: [
+      'Permesso di costruire',
+      'SCIA edilizia',
+      'CILA',
+      'Relazione tecnica asseverata',
+    ],
+    notas: 'DPR 380/2001 (Testo unico edilizia) + regolamento edilizio comunale.',
   },
 ];
 

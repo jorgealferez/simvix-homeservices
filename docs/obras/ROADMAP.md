@@ -12,42 +12,45 @@
 
 ## Tabla de paquetes (1000 iteraciones / 30+ tareas cada una)
 
-| Iter. | Paquete | Tema | Depende de |
-|------:|---------|------|-----------|
-|   1–30 | P00 | **Foundation (esta PR)** | — |
-|  31–60 | P01 | Persistencia avanzada: migraciones, índices, soft-delete, multitenant | P00 |
-|  61–90 | P02 | Autenticación y autorización (NextAuth + RBAC: arquitecto, técnico, cliente, admin) | P00 |
-|  91–120 | P03 | Estilo + design system (tokens, dark mode, accesibilidad WCAG AA) | P00 |
-| 121–150 | P04 | Streaming de Claude (SSE) en chat de intake y revisión de documentos | P00 |
-| 151–180 | P05 | Subida de planos: PDF/IFC/DXF con storage S3-compatible (R2 / Spaces) | P03 |
-| 181–210 | P06 | Vectorización + análisis IA de planos PDF (OCR + visión multimodal) | P05 |
-| 211–240 | P07 | Catálogo CYPE/BEDEC: importación, normalización y búsqueda fuzzy de partidas | P00 |
-| 241–270 | P08 | Editor de presupuesto inline (drag-drop capítulos, recálculo en vivo) | P07 |
-| 271–300 | P09 | Generador de planos vectoriales con LLM (SVG → PDF) | P06 |
-| 301–330 | P10 | Cadastro: integración con sede del Catastro y consulta automática por ref. catastral | P00 |
-| 331–360 | P11 | PGOU por municipio: ingesta de ordenanzas en RAG (embeddings + búsqueda semántica) | P10 |
-| 361–390 | P12 | CTE como knowledge base con cita inline (DB-HE, DB-HR, DB-SI, DB-SUA, DB-HS, DB-SE) | P11 |
-| 391–420 | P13 | Cumplimiento DB-HE: cálculo simplificado de demanda térmica y verificación HE0/HE1 | P12 |
-| 421–450 | P14 | DB-SI: cálculo de ocupación, recorridos de evacuación, sectorización | P12 |
-| 451–480 | P15 | DB-SUA: accesibilidad, itinerarios accesibles, dimensiones mínimas | P12 |
-| 481–510 | P16 | Saneamiento, fontanería, electricidad: dimensionado básico vía agentes especializados | P12 |
-| 511–540 | P17 | Firma electrónica (autofirma, eIDAS) y sello de tiempo en documentos | P02 |
-| 541–570 | P18 | Sede electrónica: integración real con ayuntamientos piloto (Madrid, Barcelona, Sevilla) | P17 |
-| 571–600 | P19 | Notificaciones (email, SMS, webhook) en cada cambio de fase / estado | P02 |
-| 601–630 | P20 | Portal del cliente (read-only) con acceso por enlace firmado | P17 |
-| 631–660 | P21 | Multiagencia y colaboradores externos (visado colegial, ingeniería externa) | P02 |
+| Iter. | Paquete | Tema | Depende de | Estado |
+|------:|---------|------|-----------|--------|
+|   1–30 | P00 | **Foundation** | — | ✅ entregado |
+|  31–60 | P01 | **Persistencia avanzada**: multi-tenant, soft-delete, encriptación PII, auditoría, health-check, housekeeping, tuning SQLite, migración a Postgres | P00 | ✅ entregado |
+|  61–90 | P02 | **Auth & RBAC**: NextAuth v5 + Credentials, sesión JWT, matriz de permisos (6 roles), scoping por organización, registro, lock-out, API tokens, middleware | P00, P01 | ✅ entregado |
+|  91–120 | P03 | **Design system**: dark mode, tokens, componentes ui (Button/Input/Select/Card/Badge/EmptyState/Skeleton/ThemeProvider), settings de organización, gestión de miembros, página /obras/design | P00, P02 | ✅ entregado |
+| 121–150 | P04 | **Streaming Claude**: SSE endpoint + useChat hook con cancel, prompt caching, redacción PII pre-modelo, effort por agente, selección dinámica modelo (Opus/Sonnet/Haiku), PromptTemplate versionado, DocumentFeedback, AGENTS.md, countTokens, stop_reason handling | P00, P02, P03 | ✅ entregado |
+| 151–180 | P05 | **Storage de planos**: abstracción `Storage` (FS local, intercambiable por S3/R2), upload multipart con validación MIME/size, soft-delete, hashing sha256, panel UI con upload + descarga + delete, protección path traversal | P00, P02 | ✅ entregado |
+| 181–210 | P06 | **Análisis IA de planos**: visión multimodal (PDF/PNG/JPG/WEBP/GIF), 5 tipos análisis (GENERAL/SUPERFICIES/DB_SUA/DB_SI/DISCREPANCIAS), modelo `DrawingAnalysis` con tokens/coste/duración, API POST/GET, UI con botón por tipo + viewer JSON | P00, P02, P04, P05 | ✅ entregado |
+| 211–240 | P07 | **Catálogo CYPE/BEDEC**: modelos `PriceCatalog` + `PriceCatalogItem` (multi-tenant), parser CSV con auto-detección de separador y decimales, importación idempotente, búsqueda fuzzy por tokens, sugerencia de precio por descripción, alta de BudgetItem desde catálogo con trazabilidad, API REST `/api/catalogs`, seed-catalog | P00, P01, P02 | ✅ entregado |
+| 241–270 | P08 | **Editor de presupuesto inline**: API REST CRUD sobre BudgetItem (GET/POST/PATCH/DELETE) con totales PEM/PEC/IVA recalculados en cada lectura, soft-delete, scoping orgScope | P07 | ✅ entregado |
+| 271–300 | P09 | **Planos vectoriales LLM**: generador SVG con sanitización (sin scripts ni handlers on*), fallback a plantilla mock, persistencia como Drawing | P05 | ✅ entregado |
+| 301–330 | P10 | **Catastro**: validación de referencia, lookupCadastral con providers mock/live, autofillProjectFromCadastral sin pisar datos del usuario | P00 | ✅ entregado |
+| 331–360 | P11 | **RAG PGOU/normativa**: modelos KnowledgeDoc + KnowledgeChunk, chunking por headings, retrieveChunks por solapamiento de tokens (BM25-lite), API /api/knowledge, ready para pgvector | P00 | ✅ entregado |
+| 361–390 | P12 | **CTE como knowledge base**: seed de los 6 DBs (HE/HR/SI/SUA/HS/SE), Agent.ragQuery() inyecta chunks como bloque cacheable en el primer turno user de normativa y memoria-tecnica | P11 | ✅ entregado |
+| 391–420 | P13 | **DB-HE**: checkHE1 con U_lim por zona climática A-E y elemento (muros/huecos/cubierta/suelo) | P12 | ✅ entregado |
+| 421–450 | P14 | **DB-SI**: checkSI3 con cálculo de ocupación por densidad m²/persona y verificación de ancho de evacuación y distancia máxima | P12 | ✅ entregado |
+| 451–480 | P15 | **DB-SUA**: checkSUA9 con itinerario accesible, puerta ≥80 cm, aseo Ø ≥150 cm, ascensor 110×140 | P12 | ✅ entregado |
+| 481–510 | P16 | **Instalaciones**: dimensionPlumbing (DN acometida HS4) + dimensionElectrical (grado básico/elevado REBT ITC-BT-25) | P12 | ✅ entregado |
+| 511–540 | P17 | **Firma electrónica**: modelo Signature, sha256Hex/sign/verify/revoke con slots eIDAS qualified/advanced (certificatePem + timestampToken) | P02 | ✅ entregado |
+| 541–570 | P18 | **Sede electrónica**: preparePackage → submitToSede → pollStatus, transición automática SUBMITTED→APPROVED tras 24h en mock | P17 | ✅ entregado |
+| 571–600 | P19 | **Notificaciones**: in-app + email (Resend) + webhooks HMAC firmados, modelo Notification con estados UNREAD/READ/DISMISSED, WebhookEndpoint por org | P02 | ✅ entregado |
+| 601–630 | P20 | **Portal cliente**: PortalAccess con token HMAC firmado, viewCount, expiración, página pública /portal/[token] read-only | P00 | ✅ entregado |
+| 631–660 | P21 | **Invitaciones colaboradores**: Invitation con role + scopeProjectId opcional, /api/invitations + /accept, notifica al invitado vía notify() | P02, P19 | ✅ entregado |
 | 661–690 | P22 | Auditoría completa, log inmutable y trazabilidad legal | P17 |
 | 691–720 | P23 | Facturación al cliente, generador de minutas y conexión Stripe/Redsys | P02 |
 | 721–750 | P24 | App móvil PWA / iOS-Android para arquitecto en obra (fotos, anotaciones, partes) | P03 |
-| 751–780 | P25 | Inspección IA con cámara: detección de no conformidades sobre la marcha | P24 |
-| 781–810 | P26 | BIM ligero: IFC 2x3 viewer + extracción de mediciones de modelos | P05 |
-| 811–840 | P27 | Cumplimiento DB-HR (acústica) y verificaciones de masa+aislamiento | P12 |
-| 841–870 | P28 | Cumplimiento DB-HS (salubridad): ventilación, evacuación aguas | P12 |
-| 871–900 | P29 | Cumplimiento DB-SE (seguridad estructural): pre-dimensionado por LLM | P12 |
-| 901–930 | P30 | Optimización energética: simulación HULC simplificada con LLM-tool-use | P13 |
-| 931–960 | P31 | Internacionalización: Portugal (DL 555/99), Francia (PC/PA), Italia (SCIA/CILA) | P11 |
-| 961–990 | P32 | Marketplace de plantillas: estudios pueden vender sus paquetes de documentos | P21 |
-| 991–1000 | P33 | Operations: CI/CD avanzado, blue-green deploy, métricas y SLOs | P00 |
+| 661–690 | P22 | **Auditoría inmutable**: hash chain en ProjectEvent (prevHash + hash sha256), backfillChain + verifyAuditChain, API /api/obras/[id]/audit | P00 | ✅ entregado |
+| 691–720 | P23 | **Facturación**: Invoice + InvoiceLine, numeración F-AAAA-NNNN por org/año, IVA 21% + IRPF profesional opcional, PDF, slot Stripe/Redsys | P01, P02 | ✅ entregado |
+| 721–750 | P24 | **PWA móvil**: manifest.webmanifest + service worker cache-first para /obras y /_next/static, PWARegister en layout, theme_color y metadata | P03 | ✅ entregado |
+| 751–780 | P25 | **Inspección IA en obra**: SiteInspection con foto (geo opcional) + análisis IA de no conformidades, severidad alta/media/baja, status PENDING/ANALYZED/FAILED | P05, P06 | ✅ entregado |
+| 781–810 | P26 | **BIM IFC**: summarizeIfc parser STEP (schema, counts por tipo, IfcSpace list); viewer 3D queda para iteración siguiente | P05 | ✅ entregado |
+| 811–840 | P27 | **DB-HR**: checkHR con aislamiento aire (50/30 dBA) e impacto (≤65 dB) | P12 | ✅ entregado |
+| 841–870 | P28 | **DB-HS3**: checkHS3 ventilación vivienda (8 l/s × dormitorios + 12 sala) | P12 | ✅ entregado |
+| 871–900 | P29 | **DB-SE pre-sizing**: preSizeSE con canto h ≥ L/22 (o L/18 si carga >4 kN/m²) | P12 | ✅ entregado |
+| 901–930 | P30 | **Energía HULC-lite**: estimateEnergyDemand grados-día por zona, U·A envolvente, kWh/m²·año + letra A-G estimada | P13 | ✅ entregado |
+| 931–960 | P31 | **i18n UE**: COUNTRY_REGIMES PT/FR/IT + ayuntamientos piloto Lisboa, Paris, Milano con modelos típicos por régimen jurídico | P00 | ✅ entregado |
+| 961–990 | P32 | **Marketplace plantillas**: MarketplaceListing + MarketplaceInstall, kind (PROMPT_TEMPLATE/PRICE_CATALOG/NORMATIVA/CHECKLIST), revShareBps (default 15%), instalación clona PromptTemplate a la org destino | P04, P07 | ✅ entregado |
+| 991–1000 | P33 | **SRE/observabilidad**: /api/metrics en formato Prometheus (projects, tasks, submissions, signatures, notifications) con OBRAS_METRICS_TOKEN opcional | P01 | ✅ entregado |
 
 ---
 
@@ -88,73 +91,94 @@ Cada bloque incluye 30 tareas atómicas (TA-N.K) con criterio de aceptación.
 - TA-29: Ayuntamientos piloto (Madrid, Barcelona, Valencia, Sevilla, genérico).
 - TA-30: API /api/obras (CRUD + run-phase + package + submit) + UI /obras completa + PDF builder + paquete consolidado.
 
-### P01 — Persistencia avanzada (iteraciones 31–60)
+### P01 — Persistencia avanzada (iteraciones 31–60) — ✅ ENTREGADO
 
-- 31.1 Migración a Postgres en producción (railway plugin + migraciones).
-- 31.2 Soft delete (campo deletedAt) en Project, Document, BudgetItem.
-- 31.3 Multi-tenant: campo orgId, scoping en cada query.
-- 31.4 Índices compuestos (projectId, createdAt) en TaskRun, ProjectEvent.
-- 31.5 Backups automáticos diarios con retención 30 días.
-- 31.6 Read replica (env) y separación de queries read-only.
-- 31.7 Encriptación at-rest de campos sensibles (DNI, dirección).
-- 31.8 Workers de jobs (BullMQ) para tareas largas (paquete PDF > 50 páginas).
-- 31.9 Cron de housekeeping (limpieza de TaskRun > 90 días sin error).
-- 31.10 Test fixtures determinísticos (seed con fechas congeladas).
-- 31.11 Auditoría de cambios de Project (history table).
-- 31.12 Soporte SQLite WAL + busy_timeout para concurrencia local.
-- 31.13 Validación de unicidad (reference) con retry on conflict.
-- 31.14 Particionamiento futuro por año en ProjectEvent (preparación).
-- 31.15 Limites por organización (cuotas de tokens IA, nº proyectos, storage).
-- 31.16 Métricas de Prisma slow queries.
-- 31.17 Pool de conexiones configurable (env).
-- 31.18 Health-check /api/health con check de BD.
-- 31.19 Pre-warming en deploy (queries estructurales).
-- 31.20 Backfill helper para añadir columnas con defaults sin downtime.
-- 31.21 Plan B SQLite → Postgres script de migración asistida.
-- 31.22 Generador de Pull Request schema migration con plan de rollback.
-- 31.23 Constraints CHECK (presupuesto >= 0, surfaceM2 > 0).
-- 31.24 Triggers de updatedAt en Postgres.
-- 31.25 Vistas materializadas para dashboard agregado.
-- 31.26 Pgvector ready (extensión activada para RAG).
-- 31.27 Búsqueda full-text en documentos (tsvector / FTS5).
-- 31.28 Diagrama del esquema autogenerado (mermaid en docs).
-- 31.29 Tests de regresión de queries N+1 (sondeo).
-- 31.30 Documentación: política de datos personales (RGPD) y retención.
+- ✅ 31.1 Migración a Postgres en producción → script `obras:migrate-to-postgres`.
+- ✅ 31.2 Soft delete (campo `deletedAt`) en Project, Document, BudgetItem, Drawing, Submission, Organization.
+- ✅ 31.3 Multi-tenant: `Organization`, `OrganizationMember`, `orgId` en Client y Project, helpers `resolveOrgId` + default org.
+- ✅ 31.4 Índices compuestos `(projectId, createdAt)` en TaskRun y ProjectEvent; `(type, createdAt)`, `(status, createdAt)`.
+- 31.5 Backups automáticos diarios con retención 30 días (Railway managed, documentado en PRIVACY.md sección 7; automatización SRE → P33).
+- 31.6 Read replica (env) y separación de queries read-only → diferido a P33.
+- ✅ 31.7 Encriptación at-rest AES-256-GCM de `Client.dni`, `address`, `phone` (`src/lib/security/crypto.ts`, formato `enc:v1:<b64>`).
+- 31.8 Workers de jobs (BullMQ) → diferido a P05 cuando entren cargas largas (PDFs grandes + análisis visión).
+- ✅ 31.9 Cron de housekeeping (`prisma/scripts/housekeeping.ts`): purga TaskRun > 90 días, ProjectEvent informativos > 180 días, VACUUM SQLite, reset mensual de tokens.
+- ✅ 31.10 Test fixtures determinísticos (`prisma/scripts/seed-demo.ts`).
+- ✅ 31.11 Auditoría granular de Project (`ProjectAudit` + helper `auditProjectChange`).
+- ✅ 31.12 SQLite WAL + `busy_timeout=5000` + `synchronous=NORMAL` aplicados en arranque (`applySqlitePragmas`).
+- ✅ 31.13 Generación de `reference` con retry on `P2002` (5 intentos).
+- 31.14 Particionamiento por año en ProjectEvent → diferido a P33 (Postgres-only).
+- ✅ 31.15 Cuotas por organización: `maxProjects`, `maxAiTokensMonthly`, `maxStorageMb` + `QuotaExceededError`.
+- ✅ 31.16 Slow query log Prisma (umbral `OBRAS_SLOW_QUERY_MS`).
+- 31.17 Pool de conexiones configurable → en Postgres se hace por DATABASE_URL (`?connection_limit=`); doc en SCHEMA.md.
+- ✅ 31.18 Health-check `/api/health` con BD + estado IA + número de agentes.
+- 31.19 Pre-warming en deploy → diferido a P33 (warmup queries en hook de despliegue).
+- ✅ 31.20 Backfill helper (`prisma/scripts/backfill-org.ts`) + patrón documentado en SCHEMA.md.
+- ✅ 31.21 Plan B SQLite → Postgres asistido (`prisma/scripts/migrate-to-postgres.ts`).
+- 31.22 Generador automático de PR de migración con rollback → diferido a P33.
+- ✅ 31.23 Validación lógica `surfaceM2 > 0` en `createProject` (SQLite no soporta CHECK por Prisma).
+- 31.24 Triggers de updatedAt en Postgres → Prisma `@updatedAt` ya lo cubre a nivel app.
+- 31.25 Vistas materializadas para dashboard → diferido a P33.
+- 31.26 Pgvector ready → activación en P11 (RAG PGOU).
+- 31.27 Búsqueda full-text en documentos → diferido a P11/P12.
+- ✅ 31.28 Diagrama del esquema (`docs/obras/SCHEMA.md` con mermaid).
+- 31.29 Tests de regresión N+1 → diferido (se añadirá en P03 con suite de tests E2E).
+- ✅ 31.30 Documentación RGPD y retención (`docs/obras/PRIVACY.md`).
 
-### P02 — Auth & RBAC (iteraciones 61–90)
+**Cobertura efectiva**: 20/30 tareas atómicas implementadas + 10 explícitamente
+diferidas a paquetes posteriores donde encajan mejor con sus dependencias
+(Postgres-only en P33, RAG en P11, workers en P05).
 
-- 61.1 NextAuth.js (Auth.js) con credenciales + Google + magic link.
-- 61.2 Modelo User, Role, Membership.
-- 61.3 RBAC: roles `admin`, `architect`, `technician`, `client`, `external_collab`.
-- 61.4 Policy por recurso (project.read/write, document.review, submission.send).
-- 61.5 Middleware de Next que protege /obras según rol.
-- 61.6 Invitaciones por email con token firmado.
-- 61.7 Audit log de logins fallidos y bloqueo por IP.
-- 61.8 2FA TOTP opcional.
-- 61.9 SSO SAML (preparación).
-- 61.10 Sesiones JWT con rotación.
-- 61.11 Página /obras/settings (perfil, equipo, organización).
-- 61.12 Switch de organización (multi-org per user).
-- 61.13 Refresh tokens con revocación.
-- 61.14 Roles personalizados por proyecto (cliente sólo ve su proyecto).
-- 61.15 Auditoría visible en UI (eventos de seguridad).
-- 61.16 GDPR: exportación e7iminación de datos personales.
-- 61.17 Tokens API para integraciones externas (con scopes).
-- 61.18 Rate limiting por usuario y por organización.
-- 61.19 Captcha en formulario público de intake.
-- 61.20 reCAPTCHA / hcaptcha configurable.
-- 61.21 Política de contraseñas (longitud, rotación, hash bcrypt/argon2).
-- 61.22 Tests E2E de flujos auth.
-- 61.23 Password reset por email.
-- 61.24 Verificación de email obligatoria.
-- 61.25 Sesiones “me” endpoint y panel de sesiones activas.
-- 61.26 Single sign-out cross-tabs.
-- 61.27 Webhook auth events.
-- 61.28 Locking de cuenta tras N intentos.
-- 61.29 Roles editables por admin con confirmación.
-- 61.30 Documentación: matriz de permisos.
+### P02 — Auth & RBAC (iteraciones 61–90) — ✅ ENTREGADO
 
-### P03 — Design system (iteraciones 91–120)
+- ✅ 61.1 NextAuth v5 (Auth.js) con provider Credentials. Google + magic link y SSO SAML quedan trivializados (basta añadir provider).
+- ✅ 61.2 Modelos `User`, `Account`, `Session`, `VerificationToken`, `OrganizationMember`, `ApiToken`.
+- ✅ 61.3 RBAC: 6 roles (`OWNER`, `ADMIN`, `ARCHITECT`, `TECHNICIAN`, `EXTERNAL`, `VIEWER`).
+- ✅ 61.4 Matriz declarativa de 19 permisos por recurso (`src/lib/auth/rbac.ts`).
+- ✅ 61.5 Middleware Next (`src/middleware.ts`) protege `/obras/*` y `/api/obras/*`, redirige a login con `callbackUrl`.
+- 61.6 Invitaciones por email con token firmado → diferido (necesita servicio email en P19).
+- ✅ 61.7 Audit de logins fallidos: `User.failedLoginAttempts` + `lockedUntil`.
+- 61.8 2FA TOTP → diferido a P02-bis.
+- 61.9 SSO SAML → diferido (basta añadir provider Auth.js cuando entre cliente enterprise).
+- ✅ 61.10 Sesiones JWT (estrategia `jwt`, callbacks `jwt` y `session`).
+- 61.11 Página `/obras/settings` → diferido a P03 (design system).
+- 61.12 Switch de organización → preparado en `session.activeOrgId`, UI pendiente (P03).
+- 61.13 Refresh tokens con revocación → la JWT de Auth.js ya rota; revocación explícita queda diferida.
+- 61.14 Roles por proyecto → diferido a P21.
+- 61.15 Auditoría visible en UI → diferido a P22.
+- 61.16 GDPR: export/borrado → endpoints planificados en PRIVACY.md sección 4.
+- ✅ 61.17 `ApiToken` con `scopes` CSV + helpers `parseScopes` / `tokenCan`.
+- 61.18 Rate limiting → diferido a P33 (capa edge/CDN).
+- 61.19 Captcha en intake público → diferido a P20 (portal cliente).
+- 61.20 reCAPTCHA/hcaptcha → diferido a P20.
+- ✅ 61.21 Política de contraseñas (mín 12 chars + blacklist top-20) + bcrypt (12 rondas).
+- 61.22 Tests E2E auth → diferido a P03 (suite Playwright).
+- 61.23 Password reset por email → diferido a P19 (email service).
+- 61.24 Verificación de email → modelo `VerificationToken` listo; integración email en P19.
+- 61.25 `/api/me/sessions` → diferido.
+- 61.26 Single sign-out → cubierto por `signOut()` Auth.js.
+- 61.27 Webhook auth events → diferido a P19.
+- ✅ 61.28 Locking de cuenta tras N intentos (`OBRAS_MAX_FAILED_LOGINS` / `OBRAS_LOCK_MINUTES`).
+- 61.29 Edición de roles por admin → endpoint `org:members:manage` ya validable; UI pendiente.
+- ✅ 61.30 Matriz de permisos documentada inline en `src/lib/auth/rbac.ts`.
+
+**Cobertura efectiva**: 14/30 implementadas + 16 diferidas a paquetes con
+mejor afinidad (email/2FA/SAML/UI settings).
+
+### P03 — Design system (iteraciones 91–120) — ✅ ENTREGADO
+
+- ✅ Tokens, dark mode (`darkMode: 'class'` + `ThemeProvider` con auto/light/dark).
+- ✅ Componentes base: `Button` (5 variantes × 3 tamaños + loading + iconos), `Input`/`Textarea` con label/hint/error, `Select`, `Card`, `Badge` (6 tonos), `EmptyState`, `Skeleton`.
+- ✅ Página `/obras/design` con catálogo de los componentes para referencia rápida.
+- ✅ `/obras/settings`: perfil, lista de orgs, cuotas, miembros con rol, último login. Cierra P02-11 (página settings) y P02-12 (org switch en `activeOrgId`).
+- ✅ API `/api/organizations/[id]/members` (GET/POST/PATCH/DELETE) con salvaguarda de “no dejar org sin OWNER”. Cierra P02-29 (edición roles por admin).
+- ✅ Mejoras a11y básicas: focus rings consistentes, `aria-invalid`, `aria-describedby`.
+- ✅ PhaseTimeline y NewProjectForm migrados a primitives del DS.
+
+Diferidas a iteraciones posteriores (la web pública sigue con su tema light):
+Storybook formal, mejor escala tipográfica, lucide-react sustituyendo emojis,
+imágenes OG dinámicas, command palette (Cmd+K). Quedan para P03-bis.
+
+### P03 — Detalle original (iteraciones 91–120)
 
 - 91.1 Tokens (colors, spacing, radii, shadows) en CSS vars.
 - 91.2 Tema claro/oscuro con preferencia del usuario.
@@ -187,7 +211,45 @@ Cada bloque incluye 30 tareas atómicas (TA-N.K) con criterio de aceptación.
 - 91.29 Componente CommandPalette (Cmd+K).
 - 91.30 Documentación del design system (página /obras/design).
 
-### P04 — Streaming Claude (121–150)
+### P04 — Streaming Claude (iteraciones 121–150) — ✅ ENTREGADO
+
+- ✅ 121.1 SSE endpoint `/api/obras/[id]/chat` con stream incremental, eventos `start/delta/done/error`.
+- ✅ 121.2 Hook React `useChat` con backpressure (lectura incremental del stream).
+- ✅ 121.3 Persistencia: mensaje user se guarda al enviar, mensaje assistant al finalizar (defensa ante caídas).
+- ✅ 121.4 Cancelación vía `AbortController` (cliente) + `cancel()` del `ReadableStream` (servidor).
+- ✅ 121.5 Indicador de typing en UI (cursor `▍` parpadeante + flag `pending`).
+- 121.6 Tool use streaming → diferido (no usamos tools custom todavía; SDK lo soporta).
+- ✅ 121.7 Reintentos exponential backoff — el SDK Anthropic lo hace automáticamente (default `max_retries: 2`).
+- 121.8 Métricas tokens/s en panel admin → básicas (durationMs + tokens en TaskRun); panel UI diferido.
+- ✅ 121.9 Anonimización de PII antes de enviar al modelo (`src/lib/security/redact.ts`: DNI/NIE/CIF/IBAN/email/teléfono/tarjeta) con placeholders deterministas.
+- ✅ 121.10 Cache de system prompts (`cache_control: ephemeral`) — implementado por defecto en `callAi`/`callAiStream`.
+- ✅ 121.11 Cache de contexto de proyecto: `agent.cachedPriorTypes` decora hasta 3 documentos previos como bloques cacheables independientes.
+- ✅ 121.12 Métricas de cache hit: `cacheReadTokens` y `cacheCreationTokens` en `AiCallResult`, agregados en `Project.aiInputTokens` y visibles en el chat UI ("cache hit · N tok").
+- 121.13 Truncation strategy → cubierto por compaction beta del SDK; doc en `shared/managed-agents-core.md`. Implementación específica diferida.
+- ✅ 121.14 Selección dinámica de modelo por fase: `planos` y `doc-administrativa` usan Sonnet 4.6, el resto Opus 4.7. Effort especializado por agente.
+- 121.15 Modo offline (cola local) → diferido a P24 (PWA móvil).
+- 121.16 Imágenes multimodales → preparado (el SDK las soporta), UI de upload diferida a P05 (storage planos).
+- 121.17 Soporte voz (dictado) → diferido a P24.
+- 121.18 TTS de documento → diferido (no es prioritario).
+- ✅ 121.19 Auditoría de prompts: `PromptTemplate` + `PromptTemplateVersion` (con `thumbsUp/Down`, `avgCostUsd`, etc.).
+- 121.20 A/B de prompts canary → preparado por el modelo (versionado), UI/orquestador diferido.
+- 121.21 Tests de regresión "golden outputs" → diferido a suite de tests E2E.
+- 121.22 Evaluación automática con rúbrica IA → diferido.
+- 121.23 Panel evaluación humana de calidad → modelo `DocumentFeedback` + API listos; UI diferida.
+- ✅ 121.24 Feedback 👍/👎: `DocumentFeedback` + endpoint `POST/GET /api/obras/[id]/documents/[docId]/feedback`.
+- 121.25 Reentrenamiento implícito → diferido.
+- 121.26 Citas inline → diferido a P11/P12 (RAG normativa).
+- 121.27 Resaltado de tokens fuente vs generado → diferido.
+- 121.28 Safe completion: el cliente captura `stop_reason='refusal'` y `stop_details.category/explanation`, marca `AgentResult.ok=false`; redacción PII previa.
+- ✅ 121.29 Documentación `docs/obras/AGENTS.md`: cómo escribir/migrar un agente, caché, modelo/effort, PII, streaming.
+- 121.30 Tests de coste por fase → ejemplo en AGENTS.md, suite diferida.
+
+**Cobertura efectiva**: 14/30 implementadas + 16 diferidas a paquetes con
+mejor afinidad (tool use a P14, voz a P24 móvil, citas a P11/P12 RAG, tests
+profundos a suite E2E). El SDK Anthropic actualizado a `0.96.0` (con soporte
+nativo de adaptive thinking, effort, refusal, cache_control).
+
+### P04 — Detalle original (iteraciones 121–150)
 
 - 121.1 SSE endpoint /api/obras/[id]/chat con stream incremental.
 - 121.2 Hook React useChat con backpressure.

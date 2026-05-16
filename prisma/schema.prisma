@@ -4,6 +4,16 @@
 // "postgresql" y la DATABASE_URL. Los enums de dominio están modelados como
 // String + constantes TS (src/lib/obras/enums.ts) para mantener portabilidad
 // entre providers (SQLite no soporta enums Prisma).
+//
+// P01 — Persistencia avanzada:
+//   - Multi-tenant: Organization + OrganizationMember, orgId opcional en
+//     Client/Project (resuelto a la org "default" cuando se omite, para no
+//     romper compat con el modo unipersonal del P00).
+//   - Soft-delete: campo `deletedAt` en entidades de proyecto.
+//   - Auditoría granular: ProjectAudit.
+//   - Índices compuestos en TaskRun y ProjectEvent (consultas frecuentes).
+//   - Constraints lógicas: aplicadas en código (SQLite no soporta CHECK
+//     completos vía Prisma).
 
 generator client {
   provider = "prisma-client-js"
@@ -15,6 +25,144 @@ datasource db {
 }
 
 // ---------------------------------------------------------------------------
+// Auth & RBAC (P02) — modelos compatibles con NextAuth v5 + extras de
+// negocio (passwordHash para credentials provider, lastLoginAt, locked).
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+
+  // Credentials provider
+  passwordHash  String?
+
+  // Anti-bruteforce
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
+  lastLoginAt   DateTime?
+
+  // Rol global (admin de plataforma). Roles por-org en OrganizationMember.
+  isPlatformAdmin Boolean @default(false)
+
+  accounts      Account[]
+  sessions      Session[]
+  memberships   OrganizationMember[]
+  apiTokens     ApiToken[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+/// API tokens para integraciones externas (scope-based).
+model ApiToken {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name      String
+  tokenHash String   @unique // bcrypt del token; el plaintext sólo se muestra una vez
+  scopes    String   // CSV de scopes (projects:read, projects:write, ...)
+  expiresAt DateTime?
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Multi-tenant
+// ---------------------------------------------------------------------------
+
+model Organization {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slug      String   @unique // "default", "estudio-perez", ...
+  name      String
+  // JSON con preferencias visuales, firma, etc.
+  settingsJson String?
+
+  // Cuotas (null = sin límite)
+  maxProjects        Int?
+  maxAiTokensMonthly Int?
+  maxStorageMb       Int?
+
+  // Métricas acumuladas (rolling window mensual gestionado por housekeeping)
+  aiTokensMonthly Int   @default(0)
+  aiCostUsdTotal  Float @default(0)
+
+  members  OrganizationMember[]
+  clients  Client[]
+  projects Project[]
+
+  deletedAt DateTime?
+
+  @@index([slug])
+}
+
+model OrganizationMember {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role   String // OWNER | ADMIN | ARCHITECT | TECHNICIAN | EXTERNAL | VIEWER
+
+  @@unique([orgId, userId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
 // Cliente y proyecto
 // ---------------------------------------------------------------------------
 
@@ -23,14 +171,22 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Multi-tenant
+  orgId String?
+  org   Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+
   fullName String
+  // Campos que pueden ir cifrados (AES-256-GCM, formato "enc:v1:<b64>")
   email    String
   phone    String?
   dni      String?
   address  String?
 
+  deletedAt DateTime?
+
   projects Project[]
 
+  @@index([orgId])
   @@index([email])
 }
 
@@ -38,6 +194,10 @@ model Project {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Multi-tenant
+  orgId String?
+  org   Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
 
   reference String  @unique
   title     String
@@ -49,7 +209,7 @@ model Project {
   postalCode  String?
   cadastralId String?
 
-  obraType    String // ObraType enum, ver src/lib/obras/enums.ts
+  obraType    String // ObraType enum
   useType     String // UseType
   surfaceM2   Float?
 
@@ -65,6 +225,8 @@ model Project {
   aiInputTokens  Int   @default(0)
   aiOutputTokens Int   @default(0)
 
+  deletedAt DateTime?
+
   phases        Phase[]
   documents     Document[]
   conversations Conversation[]
@@ -73,10 +235,13 @@ model Project {
   budgetItems   BudgetItem[]
   drawings      Drawing[]
   events        ProjectEvent[]
+  audits        ProjectAudit[]
 
+  @@index([orgId])
   @@index([clientId])
   @@index([status])
   @@index([currentPhase])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -155,7 +320,12 @@ model Document {
   reviewedByHuman Boolean @default(false)
   reviewerNote    String?
 
+  deletedAt DateTime?
+
+  feedbacks DocumentFeedback[]
+
   @@index([projectId, type])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -180,11 +350,19 @@ model BudgetItem {
 
   source String?
 
+  /// Trazabilidad al catálogo de precios (P07). slug del catálogo + código.
+  catalogSlug     String?
+  catalogItemCode String?
+
+  deletedAt DateTime?
+
   @@index([projectId, chapter])
+  @@index([deletedAt])
+  @@index([catalogSlug, catalogItemCode])
 }
 
 // ---------------------------------------------------------------------------
-// Planos
+// Planos (con storage P05)
 // ---------------------------------------------------------------------------
 
 model Drawing {
@@ -201,10 +379,51 @@ model Drawing {
   category      String // DrawingCategory
   filePath      String?
   thumbnailPath String?
+  originalName  String?
+  mimeType      String?
+  sizeBytes     Int?
+  sha256        String?
+  uploadedBy    String?
 
   aiAnnotationsJson String?
 
+  deletedAt DateTime?
+
+  analyses DrawingAnalysis[]
+
   @@index([projectId])
+  @@index([deletedAt])
+  @@index([sha256])
+}
+
+/// Análisis IA de un plano (visión multimodal) — P06.
+model DrawingAnalysis {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  drawingId String
+  drawing   Drawing @relation(fields: [drawingId], references: [id], onDelete: Cascade)
+
+  // Tipo de análisis solicitado: GENERAL | SUPERFICIES | DB_SUA | DB_SI | DISCREPANCIAS
+  kind String
+
+  // Resultado estructurado (JSON serializado)
+  resultJson String
+
+  // Métricas y trazabilidad
+  model        String?
+  inputTokens  Int?
+  outputTokens Int?
+  costUsd      Float?
+  durationMs   Int?
+  status       String @default("SUCCEEDED") // SUCCEEDED | FAILED
+  error        String?
+
+  // Si se comparó con otro plano (para discrepancias)
+  comparedWithDrawingId String?
+
+  @@index([drawingId, createdAt])
+  @@index([kind])
 }
 
 // ---------------------------------------------------------------------------
@@ -233,6 +452,8 @@ model TaskRun {
   durationMs   Int?
 
   @@index([projectId, agent])
+  @@index([projectId, createdAt])
+  @@index([status, createdAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -260,7 +481,10 @@ model Submission {
 
   responseNotes String?
 
+  deletedAt DateTime?
+
   @@index([projectId])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -278,7 +502,430 @@ model ProjectEvent {
   payload String
   actor   String?
 
+  /// Hash chain inmutable (P22). hash = sha256(prevHash + canonical(event)).
+  /// Si alguien manipula un evento intermedio, los hashes posteriores
+  /// dejan de cuadrar y verifyAuditChain() lo detecta.
+  prevHash String?
+  hash     String?
+
   @@index([projectId, createdAt])
+  @@index([type, createdAt])
+}
+
+// Auditoría granular a nivel de campo. Cada cambio relevante en Project crea
+// una fila. P02 podrá colgar también cambios de Client/Document.
+model ProjectAudit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  actor  String
+  action String // CREATE | UPDATE | SOFT_DELETE | RESTORE | ...
+  field  String? // null cuando es un evento global del registro
+  before String?
+  after  String?
+
+  @@index([projectId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Firmas electrónicas (P17): firma del paquete documental y constancia
+// ---------------------------------------------------------------------------
+
+model Signature {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  /// Tipo de recurso firmado.
+  resourceKind String // "document" | "submission_package" | "drawing"
+  resourceId   String
+
+  /// Firmante.
+  userId      String?
+  signerName  String
+  signerEmail String?
+  signerDni   String? // ciphertext PII si se persiste
+
+  /// Hash SHA-256 del contenido firmado (hex). Inmutable.
+  sha256 String
+
+  /// Algoritmo: SIMPLE_SHA256 | EIDAS_QUALIFIED | EIDAS_ADVANCED
+  algorithm String @default("SIMPLE_SHA256")
+
+  signedAt       DateTime
+  /// Token TSA si se solicitó sello de tiempo cualificado.
+  timestampToken String?
+  /// Cadena de certificados del firmante en PEM (cualificado).
+  certificatePem String?
+
+  /// VALID | REVOKED | EXPIRED
+  status String @default("VALID")
+
+  @@index([resourceKind, resourceId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Marketplace de plantillas (P32)
+// ---------------------------------------------------------------------------
+
+model MarketplaceListing {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  publisherOrgId String
+  slug          String  @unique
+  title         String
+  /// PROMPT_TEMPLATE | PRICE_CATALOG | NORMATIVA | CHECKLIST
+  kind          String
+  description   String?
+
+  /// FREE | ONE_TIME | SUBSCRIPTION
+  pricing     String @default("FREE")
+  priceCents  Int    @default(0)
+  /// Porcentaje (en bps) que retiene la plataforma. 1500 = 15%.
+  revShareBps Int    @default(1500)
+
+  /// Contenido JSON serializado.
+  bodyJson String
+
+  installs  Int    @default(0)
+  ratingAvg Float?
+  active    Boolean @default(true)
+
+  @@index([publisherOrgId])
+  @@index([kind, active])
+}
+
+model MarketplaceInstall {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  listingId      String
+  installerOrgId String
+
+  paymentExternalId String?
+
+  @@unique([listingId, installerOrgId])
+  @@index([installerOrgId])
+}
+
+// ---------------------------------------------------------------------------
+// Inspección en obra (P25)
+// ---------------------------------------------------------------------------
+
+model SiteInspection {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+
+  inspectorId   String?
+  inspectorName String
+
+  photoPath  String?
+  photoMime  String?
+  photoBytes Int?
+
+  latitude  Float?
+  longitude Float?
+  notes     String?
+
+  /// Resultado IA: lista de no conformidades + recomendaciones.
+  analysisJson String?
+  /// PENDING | ANALYZED | FAILED
+  status   String @default("PENDING")
+  costUsd  Float?
+
+  @@index([projectId, createdAt])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Facturación (P23)
+// ---------------------------------------------------------------------------
+
+model Invoice {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId    String
+  clientId String
+
+  /// Proyecto imputado (opcional).
+  projectId String?
+
+  /// Visible: F-AAAA-NNNN. Único por org.
+  number String
+
+  /// DRAFT | ISSUED | PAID | CANCELLED | OVERDUE
+  status String @default("DRAFT")
+
+  issueDate DateTime?
+  dueDate   DateTime?
+  paidAt    DateTime?
+
+  subtotal  Float @default(0)
+  vatRate   Float @default(21)
+  vatTotal  Float @default(0)
+  /// IRPF típico para honorarios profesionales en España = 15.
+  irpfRate  Float @default(0)
+  irpfTotal Float @default(0)
+  total     Float @default(0)
+
+  notes String?
+
+  /// Stripe / Redsys / null.
+  paymentProvider   String?
+  paymentExternalId String?
+
+  lines InvoiceLine[]
+
+  @@unique([orgId, number])
+  @@index([orgId, status])
+  @@index([clientId])
+  @@index([projectId])
+}
+
+model InvoiceLine {
+  id        String  @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  description String
+  quantity    Float  @default(1)
+  unitPrice   Float
+  total       Float
+
+  ordinal Int @default(0)
+}
+
+// ---------------------------------------------------------------------------
+// Invitaciones a colaboradores (P21)
+// ---------------------------------------------------------------------------
+
+model Invitation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  orgId String
+
+  email String
+  role  String
+
+  /// Token URL-safe.
+  token String @unique
+
+  invitedBy String
+
+  expiresAt  DateTime?
+  acceptedAt DateTime?
+  revokedAt  DateTime?
+
+  /// Si la invitación restringe al colaborador a un único proyecto.
+  scopeProjectId String?
+
+  @@index([email])
+  @@index([orgId, expiresAt])
+}
+
+// ---------------------------------------------------------------------------
+// Portal cliente (P20): acceso firmado read-only
+// ---------------------------------------------------------------------------
+
+model PortalAccess {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+
+  /// Token firmado URL-safe que se manda al cliente final.
+  token String @unique
+
+  recipientEmail String
+  recipientName  String?
+
+  /// Si null, no expira.
+  expiresAt DateTime?
+
+  /// Telemetría de uso.
+  lastViewedAt DateTime?
+  viewCount    Int      @default(0)
+
+  /// Revocación manual desde el equipo del estudio.
+  revokedAt DateTime?
+
+  @@index([projectId])
+  @@index([token])
+}
+
+// ---------------------------------------------------------------------------
+// Notificaciones (P19): inbox in-app + webhooks salientes
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  /// Usuario destinatario (in-app). Si es null y email/webhook tienen valor,
+  /// se trata como notificación externa.
+  userId String?
+
+  orgId     String?
+  projectId String?
+
+  type    String // PROJECT_CREATED | PHASE_COMPLETED | SUBMITTED | ...
+  title   String
+  body    String
+
+  /// UNREAD | READ | DISMISSED
+  status String @default("UNREAD")
+
+  /// CSV de canales intentados: in-app,email,webhook.
+  channels     String @default("in-app")
+  /// JSON con resultado por canal.
+  deliveryJson String?
+
+  @@index([userId, status, createdAt])
+  @@index([projectId, createdAt])
+  @@index([orgId, createdAt])
+}
+
+model WebhookEndpoint {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId  String
+  name   String
+  url    String
+  /// Secret HMAC-SHA256 para firmar el payload saliente.
+  secret String
+  /// CSV de tipos de evento suscritos.
+  events String
+  active Boolean @default(true)
+
+  @@index([orgId, active])
+}
+
+// ---------------------------------------------------------------------------
+// Plantillas de prompts (versionadas, auditables) — P04
+// ---------------------------------------------------------------------------
+
+model PromptTemplate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Identificador estable del agente o uso (intake, normativa, chat, ...)
+  agentName String   @unique
+
+  // Versión activa actualmente (referenciada por el orquestador)
+  activeVersion Int @default(1)
+
+  // Notas humanas
+  description String?
+
+  versions PromptTemplateVersion[]
+}
+
+model PromptTemplateVersion {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  templateId String
+  template   PromptTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  version Int
+  body    String // El system prompt en sí
+  author  String? // userId que lo creó
+
+  // Métricas tras canary (rellenadas por evaluación humana o automática)
+  totalUses        Int   @default(0)
+  thumbsUp         Int   @default(0)
+  thumbsDown       Int   @default(0)
+  avgCostUsd       Float @default(0)
+  avgOutputTokens  Int   @default(0)
+
+  notes String?
+
+  @@unique([templateId, version])
+}
+
+// ---------------------------------------------------------------------------
+// Feedback humano sobre documentos generados — P04
+// ---------------------------------------------------------------------------
+
+model DocumentFeedback {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  userId String
+  rating String // UP | DOWN
+  reason String? // razón corta opcional
+
+  @@index([documentId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Catálogo de precios (CYPE / BEDEC / propio) — P07
+// ---------------------------------------------------------------------------
+
+model PriceCatalog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Slug único: cype-2026, bedec-2026, propio-acme, ...
+  slug   String  @unique
+  name   String
+  source String  // "CYPE" | "BEDEC" | "PROPIO" | "OTRO"
+  region String? // opcional para precios localizados
+  year   Int?
+  active Boolean @default(true)
+
+  /// Multi-tenant: null = catálogo público (compartido entre organizaciones).
+  /// Si tiene orgId, sólo lo ve esa organización (catálogos propios).
+  orgId String?
+
+  /// Notas del importador: path origen, sha256, total items.
+  importNotes String?
+
+  items PriceCatalogItem[]
+
+  @@index([orgId])
+}
+
+model PriceCatalogItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  catalogId String
+  catalog   PriceCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+
+  chapter         String  // ej. "01 Demoliciones"
+  code            String  // ej. "01.01.005"
+  description     String
+  longDescription String?
+  unit            String  // m2, m3, ud, h, pa, kg
+  unitPrice       Float
+  /// Versión del precio: AAAA-MM o similar para auditoría.
+  priceVersion    String?
+
+  /// Tokenización barata para búsqueda LIKE/contains (lowercase + sin acentos).
+  searchKey String
+
+  @@unique([catalogId, code])
+  @@index([catalogId, chapter])
+  @@index([searchKey])
 }
 
 // ---------------------------------------------------------------------------
@@ -296,4 +943,51 @@ model RegulationTemplate {
   source    String?
   version   String?
   updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// RAG normativa (PGOU, ordenanzas, CTE) — P11/P12
+// ---------------------------------------------------------------------------
+
+/// Documento normativo ingerido: PGOU municipal, ordenanza, DB del CTE.
+model KnowledgeDoc {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slug    String  @unique
+  title   String
+  kind    String  // "PGOU" | "CTE_DB" | "ORDENANZA" | "RD" | "AUTONOMICO"
+  region  String? // municipio o CCAA
+  source  String? // URL fuente
+  version String?
+
+  chunks KnowledgeChunk[]
+}
+
+/// Fragmento (chunk) indexado. searchKey tokeniza igual que catalogs.searchKey.
+/// embedding queda vacío en SQLite; en Postgres+pgvector se completa en P11b.
+model KnowledgeChunk {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  docId String
+  doc   KnowledgeDoc @relation(fields: [docId], references: [id], onDelete: Cascade)
+
+  /// Posición secuencial dentro del documento (0-indexed).
+  ordinal Int
+  /// Heading / sección a la que pertenece (para citar).
+  section String?
+  content String
+
+  /// Texto normalizado para búsqueda fuzzy actual (LIKE).
+  searchKey String
+
+  /// Vector serializado (JSON [number]). Vacío en SQLite; pgvector lo
+  /// sustituirá por una columna `vector` real en producción.
+  embeddingJson String?
+
+  @@unique([docId, ordinal])
+  @@index([docId])
+  @@index([searchKey])
 }

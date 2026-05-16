@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { PHASES } from '@/lib/obras/phases';
 import type { Phase } from '@prisma/client';
 import type { PhaseStatus, PhaseType } from '@/lib/obras/enums';
+import { Card, CardTitle } from '@/components/ui/Card';
 
 interface Props {
   projectId: string;
@@ -12,12 +13,18 @@ interface Props {
 }
 
 const STATUS_COLORS: Record<PhaseStatus, string> = {
-  PENDING: 'bg-slate-100 text-slate-600 border-slate-200',
-  RUNNING: 'bg-blue-100 text-blue-700 border-blue-200 animate-pulse',
-  NEEDS_REVIEW: 'bg-amber-100 text-amber-700 border-amber-200',
-  COMPLETED: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  FAILED: 'bg-red-100 text-red-700 border-red-200',
-  SKIPPED: 'bg-slate-100 text-slate-400 border-slate-200',
+  PENDING:
+    'bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+  RUNNING:
+    'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 animate-pulse',
+  NEEDS_REVIEW:
+    'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+  COMPLETED:
+    'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+  FAILED:
+    'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800',
+  SKIPPED:
+    'bg-slate-50 dark:bg-slate-800/50 text-slate-400 border-slate-200 dark:border-slate-800',
 };
 
 export function PhaseTimeline({ projectId, phases }: Props) {
@@ -49,10 +56,10 @@ export function PhaseTimeline({ projectId, phases }: Props) {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-5">
-      <h2 className="font-semibold text-slate-900 mb-4">Workflow de orquestación</h2>
+    <Card>
+      <CardTitle>Workflow de orquestación</CardTitle>
       {error && <div className="text-sm text-red-600 mb-3">{error}</div>}
-      <ol className="space-y-2">
+      <ol className="space-y-2 mt-3">
         {PHASES.map((def) => {
           const ph = map.get(def.type);
           const status = (ph?.status ?? 'PENDING') as PhaseStatus;
@@ -63,22 +70,20 @@ export function PhaseTimeline({ projectId, phases }: Props) {
             >
               <div>
                 <div className="font-medium flex items-center gap-2">
-                  <span>{def.icon}</span>
+                  <span aria-hidden>{def.icon}</span>
                   <span>
                     {def.order}. {def.label}
                   </span>
                 </div>
-                <div className="text-xs text-slate-600">{def.description}</div>
-                {ph?.notes && (
-                  <div className="text-xs text-red-700 mt-1">⚠ {ph.notes}</div>
-                )}
+                <div className="text-xs opacity-80">{def.description}</div>
+                {ph?.notes && <div className="text-xs text-red-700 mt-1">⚠ {ph.notes}</div>}
               </div>
               <div className="text-right text-xs">
                 <span className="block uppercase font-medium">{status.replace(/_/g, ' ')}</span>
                 <button
                   onClick={() => runPhase(def.type)}
                   disabled={running === def.type}
-                  className="mt-1 text-xs underline disabled:opacity-50"
+                  className="mt-1 text-xs underline disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 rounded"
                 >
                   {running === def.type
                     ? 'ejecutando…'
@@ -91,6 +96,6 @@ export function PhaseTimeline({ projectId, phases }: Props) {
           );
         })}
       </ol>
-    </div>
+    </Card>
   );
 }

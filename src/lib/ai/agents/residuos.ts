@@ -5,6 +5,8 @@ export const residuosAgent: Agent = {
   phase: 'GESTION_RESIDUOS',
   label: 'Estudio de gestión de residuos (RD 105/2008)',
   emitsDocument: 'GESTION_RESIDUOS',
+  preferredEffort: 'high',
+  cachedPriorTypes: ['MEMORIA_DESCRIPTIVA'],
   systemPrompt: () =>
     `Eres un técnico ambiental. Rediga el Estudio de Gestión de Residuos de Construcción y Demolición (RCD) según RD 105/2008 y normativa autonómica aplicable.
 

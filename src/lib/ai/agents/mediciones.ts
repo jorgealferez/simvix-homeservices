@@ -15,6 +15,8 @@ export const medicionesAgent: Agent = {
   phase: 'MEDICIONES',
   label: 'Mediciones de la obra',
   emitsDocument: 'MEDICIONES',
+  preferredEffort: 'high',
+  cachedPriorTypes: ['MEMORIA_DESCRIPTIVA', 'ANTEPROYECTO'],
   systemPrompt: () =>
     `Eres un técnico mediciones senior. A partir de la memoria y el anteproyecto, generas un listado realista de partidas de medición.
 
@@ -62,8 +64,11 @@ No incluyas precios; sólo mediciones.`,
         model: raw.model,
         inputTokens: raw.inputTokens,
         outputTokens: raw.outputTokens,
+        cacheReadTokens: raw.cacheReadTokens,
+        cacheCreationTokens: raw.cacheCreationTokens,
         costUsd: raw.costUsd,
         mocked: raw.mocked,
+        stopReason: raw.stopReason,
       },
     };
   },

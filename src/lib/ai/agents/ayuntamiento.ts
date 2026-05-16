@@ -5,6 +5,8 @@ export const ayuntamientoAgent: Agent = {
   phase: 'PRESENTACION',
   label: 'Escrito de presentación y paquete al ayuntamiento',
   emitsDocument: 'ESCRITO_AYUNTAMIENTO',
+  preferredEffort: 'high',
+  cachedPriorTypes: ['NORMATIVA_ANALYSIS', 'DECLARACION_RESPONSABLE'],
   systemPrompt: () =>
     `Eres un técnico que redacta el escrito de presentación al Ayuntamiento que acompaña al paquete documental completo.
 

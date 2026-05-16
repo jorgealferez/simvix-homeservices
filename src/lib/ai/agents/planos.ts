@@ -12,6 +12,11 @@ export const planosAgent: Agent = {
   phase: 'PLANOS',
   label: 'Plan de planos del proyecto',
   emitsDocument: 'PLANO',
+  // Tarea más mecánica (listar planos requeridos). Sonnet 4.6 es suficiente y
+  // ~5x más barato que Opus, suficiente para esta clasificación + tabla.
+  preferredModel: 'claude-sonnet-4-6',
+  preferredEffort: 'medium',
+  cachedPriorTypes: ['MEMORIA_DESCRIPTIVA', 'ANTEPROYECTO'],
   systemPrompt: () =>
     `Eres un jefe de delineación. Para el proyecto dado, define el plan de planos completo y mínimo exigible.
 

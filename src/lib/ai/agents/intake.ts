@@ -5,6 +5,7 @@ export const intakeAgent: Agent = {
   phase: 'INTAKE',
   label: 'Captura de necesidad del cliente',
   emitsDocument: 'INTAKE_BRIEF',
+  preferredEffort: 'high',
   systemPrompt: () =>
     `Eres un arquitecto senior español que hace la entrevista inicial al cliente para un proyecto de obra.
 Tu objetivo es producir un "Brief de proyecto" estructurado, claro y verificable en una sola pasada.

@@ -1,13 +1,13 @@
 import { prisma } from '@/lib/db';
-import { callAi, type AiCallResult } from '@/lib/ai/client';
+import { callAi, type AiCallResult, type CacheBlock, type Effort } from '@/lib/ai/client';
 import type { Project } from '@prisma/client';
 import type { PhaseType, DocumentType } from '@/lib/obras/enums';
+import { assertAiTokenBudget, recordAiTokens } from '@/lib/obras/quotas';
+import { redactPII } from '@/lib/security/redact';
 
 export interface AgentContext {
   project: Project;
-  // Documentos previos relevantes (agrupados por type)
   prior: Record<string, string>;
-  // Mensaje libre del usuario para esta ejecución
   userInput?: string;
 }
 
@@ -15,39 +15,52 @@ export interface AgentResult {
   ok: boolean;
   outputText: string;
   outputJson?: unknown;
-  documentType?: DocumentType; // se persistirá en Document si está presente
+  documentType?: DocumentType;
   documentTitle?: string;
   usage: {
     model: string;
     inputTokens: number;
     outputTokens: number;
+    cacheReadTokens: number;
+    cacheCreationTokens: number;
     costUsd: number;
     mocked: boolean;
+    stopReason: string | null;
   };
-  // Si el agente recomienda saltar a una fase concreta (por excepción)
   nextPhase?: PhaseType;
-  // Si requiere intervención humana antes de marcar la fase completa
   needsHumanReview?: boolean;
   notes?: string;
+  refusal?: { category?: string | null; explanation?: string | null };
 }
 
 export interface Agent {
-  /** identificador estable, usado en BD y logs */
   name: string;
-  /** fase a la que sirve */
   phase: PhaseType;
-  /** título legible */
   label: string;
-  /** prompt del sistema */
   systemPrompt: (ctx: AgentContext) => string;
-  /** construye los mensajes del turno actual */
   buildMessages: (ctx: AgentContext) => Array<{ role: 'user' | 'assistant'; content: string }>;
-  /** parsea / post-procesa la salida cruda */
   postProcess?: (ctx: AgentContext, raw: AiCallResult) => Promise<AgentResult> | AgentResult;
-  /** modelo preferido (override de OBRAS_DEFAULT_MODEL) */
+  /** Modelo preferido (override de OBRAS_DEFAULT_MODEL). */
   preferredModel?: string;
-  /** documentType que se materializará si el agente entrega un documento */
+  /** Effort de razonamiento. Por defecto 'high'. Usar 'xhigh' para tareas largas. */
+  preferredEffort?: Effort;
+  /** Tipo de documento que materializa. */
   emitsDocument?: DocumentType;
+  /** Documentos previos que conviene cachear como contexto invariante. */
+  cachedPriorTypes?: DocumentType[];
+  /**
+   * Si está presente, el orquestador hace RAG sobre la KnowledgeBase con la
+   * query devuelta y los chunks recuperados se inyectan como bloque cacheable
+   * antes del primer turno user (P12).
+   */
+  ragQuery?: (ctx: AgentContext) => { query: string; kind?: 'CTE_DB' | 'PGOU' | 'ORDENANZA' | 'RD' | 'AUTONOMICO'; region?: string; limit?: number } | null;
+}
+
+const REDACT_BEFORE_AI = (process.env.OBRAS_REDACT_PII_BEFORE_AI ?? 'true') !== 'false';
+
+function applyRedaction(s: string | undefined): string | undefined {
+  if (!s || !REDACT_BEFORE_AI) return s;
+  return redactPII(s).text;
 }
 
 /**
@@ -62,36 +75,88 @@ export async function runAgent(agent: Agent, ctx: AgentContext): Promise<AgentRe
       phase: agent.phase,
       status: 'RUNNING',
       input: JSON.stringify({
-        userInput: ctx.userInput,
+        userInput: ctx.userInput?.slice(0, 1000),
         priorKeys: Object.keys(ctx.prior),
       }),
     },
   });
 
   try {
-    const messages = agent.buildMessages(ctx);
-    const system = agent.systemPrompt(ctx);
+    if (ctx.project.orgId) {
+      await assertAiTokenBudget(ctx.project.orgId, 2000);
+    }
+
+    // Pre-redactar PII en userInput y prior docs antes de mandar al modelo.
+    const safeCtx: AgentContext = {
+      ...ctx,
+      userInput: applyRedaction(ctx.userInput),
+      prior: REDACT_BEFORE_AI
+        ? Object.fromEntries(
+            Object.entries(ctx.prior).map(([k, v]) => [k, redactPII(v).text]),
+          )
+        : ctx.prior,
+    };
+
+    const messages = agent.buildMessages(safeCtx);
+    const system = agent.systemPrompt(safeCtx);
+
+    // Cachear como bloque user los documentos previos grandes que el agente
+    // marca como "estables" (no se modifican entre llamadas a esa fase).
+    const cacheableBlocks: CacheBlock[] = [];
+
+    // RAG (P12): inyectamos los chunks recuperados como bloque cacheable.
+    if (agent.ragQuery) {
+      const req = agent.ragQuery(safeCtx);
+      if (req?.query) {
+        const { retrieveChunks, formatRetrievedAsContext } = await import('@/lib/obras/rag');
+        const chunks = await retrieveChunks(req.query, {
+          kind: req.kind,
+          region: req.region,
+          limit: req.limit ?? 5,
+        });
+        if (chunks.length) {
+          cacheableBlocks.push({
+            role: 'user',
+            text:
+              '<contexto_normativo>\n' +
+              'Fragmentos relevantes recuperados de la KnowledgeBase (cita por número):\n\n' +
+              formatRetrievedAsContext(chunks) +
+              '\n</contexto_normativo>',
+          });
+        }
+      }
+    }
+
+    if (agent.cachedPriorTypes?.length) {
+      for (const t of agent.cachedPriorTypes) {
+        const text = safeCtx.prior[t];
+        if (text && text.length > 800) {
+          cacheableBlocks.push({
+            role: 'user',
+            text: `<documento type="${t}">\n${text}\n</documento>`,
+          });
+        }
+      }
+    }
+
     const raw = await callAi({
       system,
       messages,
       model: agent.preferredModel,
       maxTokens: 4096,
+      effort: agent.preferredEffort ?? 'high',
+      cacheableBlocks: cacheableBlocks.slice(0, 3), // límite seguro: 3 + system = 4 breakpoints
     });
 
     const result: AgentResult = agent.postProcess
-      ? await agent.postProcess(ctx, raw)
+      ? await agent.postProcess(safeCtx, raw)
       : {
-          ok: true,
+          ok: raw.stopReason !== 'refusal',
           outputText: raw.text,
           documentType: agent.emitsDocument,
           documentTitle: agent.label,
-          usage: {
-            model: raw.model,
-            inputTokens: raw.inputTokens,
-            outputTokens: raw.outputTokens,
-            costUsd: raw.costUsd,
-            mocked: raw.mocked,
-          },
+          usage: extractUsage(raw),
+          refusal: raw.refusal,
         };
 
     await prisma.taskRun.update({
@@ -107,17 +172,24 @@ export async function runAgent(agent: Agent, ctx: AgentContext): Promise<AgentRe
       },
     });
 
-    // Acumular auditoría agregada en Project
     await prisma.project.update({
       where: { id: ctx.project.id },
       data: {
         aiCostUsd: { increment: result.usage.costUsd },
-        aiInputTokens: { increment: result.usage.inputTokens },
+        aiInputTokens: { increment: result.usage.inputTokens + result.usage.cacheCreationTokens + result.usage.cacheReadTokens },
         aiOutputTokens: { increment: result.usage.outputTokens },
       },
     });
 
-    if (result.documentType && result.documentTitle) {
+    if (ctx.project.orgId) {
+      await recordAiTokens(
+        ctx.project.orgId,
+        result.usage.inputTokens + result.usage.outputTokens,
+        result.usage.costUsd,
+      );
+    }
+
+    if (result.documentType && result.documentTitle && result.ok) {
       await upsertDocument(ctx.project.id, result.documentType, result.documentTitle, result.outputText);
     }
 
@@ -133,6 +205,19 @@ export async function runAgent(agent: Agent, ctx: AgentContext): Promise<AgentRe
     });
     throw err;
   }
+}
+
+function extractUsage(raw: AiCallResult): AgentResult['usage'] {
+  return {
+    model: raw.model,
+    inputTokens: raw.inputTokens,
+    outputTokens: raw.outputTokens,
+    cacheReadTokens: raw.cacheReadTokens,
+    cacheCreationTokens: raw.cacheCreationTokens,
+    costUsd: raw.costUsd,
+    mocked: raw.mocked,
+    stopReason: raw.stopReason,
+  };
 }
 
 async function upsertDocument(
