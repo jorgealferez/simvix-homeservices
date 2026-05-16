@@ -525,6 +525,43 @@ model ProjectAudit {
 }
 
 // ---------------------------------------------------------------------------
+// Firmas electrónicas (P17): firma del paquete documental y constancia
+// ---------------------------------------------------------------------------
+
+model Signature {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  /// Tipo de recurso firmado.
+  resourceKind String // "document" | "submission_package" | "drawing"
+  resourceId   String
+
+  /// Firmante.
+  userId      String?
+  signerName  String
+  signerEmail String?
+  signerDni   String? // ciphertext PII si se persiste
+
+  /// Hash SHA-256 del contenido firmado (hex). Inmutable.
+  sha256 String
+
+  /// Algoritmo: SIMPLE_SHA256 | EIDAS_QUALIFIED | EIDAS_ADVANCED
+  algorithm String @default("SIMPLE_SHA256")
+
+  signedAt       DateTime
+  /// Token TSA si se solicitó sello de tiempo cualificado.
+  timestampToken String?
+  /// Cadena de certificados del firmante en PEM (cualificado).
+  certificatePem String?
+
+  /// VALID | REVOKED | EXPIRED
+  status String @default("VALID")
+
+  @@index([resourceKind, resourceId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
 // Plantillas de prompts (versionadas, auditables) — P04
 // ---------------------------------------------------------------------------
 
