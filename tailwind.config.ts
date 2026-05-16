@@ -6,6 +6,7 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -33,9 +34,15 @@ const config: Config = {
           800: '#065f46',
           900: '#064e3b',
         },
+        // Tokens semánticos del design system /obras.
+        // Cada par {DEFAULT, dark} se referencia con bg-surface / dark:bg-surface-dark, etc.
+        // Usar las clases utilitarias normales de Tailwind cubre la mayoría de casos.
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

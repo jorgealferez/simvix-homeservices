@@ -17,7 +17,7 @@
 |   1–30 | P00 | **Foundation** | — | ✅ entregado |
 |  31–60 | P01 | **Persistencia avanzada**: multi-tenant, soft-delete, encriptación PII, auditoría, health-check, housekeeping, tuning SQLite, migración a Postgres | P00 | ✅ entregado |
 |  61–90 | P02 | **Auth & RBAC**: NextAuth v5 + Credentials, sesión JWT, matriz de permisos (6 roles), scoping por organización, registro, lock-out, API tokens, middleware | P00, P01 | ✅ entregado |
-|  91–120 | P03 | Estilo + design system (tokens, dark mode, accesibilidad WCAG AA) | P00 |
+|  91–120 | P03 | **Design system**: dark mode, tokens, componentes ui (Button/Input/Select/Card/Badge/EmptyState/Skeleton/ThemeProvider), settings de organización, gestión de miembros, página /obras/design | P00, P02 | ✅ entregado |
 | 121–150 | P04 | Streaming de Claude (SSE) en chat de intake y revisión de documentos | P00 |
 | 151–180 | P05 | Subida de planos: PDF/IFC/DXF con storage S3-compatible (R2 / Spaces) | P03 |
 | 181–210 | P06 | Vectorización + análisis IA de planos PDF (OCR + visión multimodal) | P05 |
@@ -161,7 +161,21 @@ diferidas a paquetes posteriores donde encajan mejor con sus dependencias
 **Cobertura efectiva**: 14/30 implementadas + 16 diferidas a paquetes con
 mejor afinidad (email/2FA/SAML/UI settings).
 
-### P03 — Design system (iteraciones 91–120)
+### P03 — Design system (iteraciones 91–120) — ✅ ENTREGADO
+
+- ✅ Tokens, dark mode (`darkMode: 'class'` + `ThemeProvider` con auto/light/dark).
+- ✅ Componentes base: `Button` (5 variantes × 3 tamaños + loading + iconos), `Input`/`Textarea` con label/hint/error, `Select`, `Card`, `Badge` (6 tonos), `EmptyState`, `Skeleton`.
+- ✅ Página `/obras/design` con catálogo de los componentes para referencia rápida.
+- ✅ `/obras/settings`: perfil, lista de orgs, cuotas, miembros con rol, último login. Cierra P02-11 (página settings) y P02-12 (org switch en `activeOrgId`).
+- ✅ API `/api/organizations/[id]/members` (GET/POST/PATCH/DELETE) con salvaguarda de “no dejar org sin OWNER”. Cierra P02-29 (edición roles por admin).
+- ✅ Mejoras a11y básicas: focus rings consistentes, `aria-invalid`, `aria-describedby`.
+- ✅ PhaseTimeline y NewProjectForm migrados a primitives del DS.
+
+Diferidas a iteraciones posteriores (la web pública sigue con su tema light):
+Storybook formal, mejor escala tipográfica, lucide-react sustituyendo emojis,
+imágenes OG dinámicas, command palette (Cmd+K). Quedan para P03-bis.
+
+### P03 — Detalle original (iteraciones 91–120)
 
 - 91.1 Tokens (colors, spacing, radii, shadows) en CSS vars.
 - 91.2 Tema claro/oscuro con preferencia del usuario.
