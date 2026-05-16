@@ -21,37 +21,36 @@
 | 121–150 | P04 | **Streaming Claude**: SSE endpoint + useChat hook con cancel, prompt caching, redacción PII pre-modelo, effort por agente, selección dinámica modelo (Opus/Sonnet/Haiku), PromptTemplate versionado, DocumentFeedback, AGENTS.md, countTokens, stop_reason handling | P00, P02, P03 | ✅ entregado |
 | 151–180 | P05 | **Storage de planos**: abstracción `Storage` (FS local, intercambiable por S3/R2), upload multipart con validación MIME/size, soft-delete, hashing sha256, panel UI con upload + descarga + delete, protección path traversal | P00, P02 | ✅ entregado |
 | 181–210 | P06 | **Análisis IA de planos**: visión multimodal (PDF/PNG/JPG/WEBP/GIF), 5 tipos análisis (GENERAL/SUPERFICIES/DB_SUA/DB_SI/DISCREPANCIAS), modelo `DrawingAnalysis` con tokens/coste/duración, API POST/GET, UI con botón por tipo + viewer JSON | P00, P02, P04, P05 | ✅ entregado |
-| 211–240 | P07 | **Catálogo CYPE/BEDEC**: modelos `PriceCatalog` + `PriceCatalogItem` (multi-tenant), parser CSV con auto-detección de separador y decimales, importación idempotente (`importCatalogFromCsv`), búsqueda fuzzy por tokens, sugerencia de precio por descripción, alta de BudgetItem desde catálogo con trazabilidad (`catalogSlug` + `catalogItemCode`), API REST `/api/catalogs`, seed-catalog | P00, P01, P02 | ✅ entregado |
-| 121–150 | P04 | Streaming de Claude (SSE) en chat de intake y revisión de documentos | P00 |
-| 151–180 | P05 | Subida de planos: PDF/IFC/DXF con storage S3-compatible (R2 / Spaces) | P03 |
-| 181–210 | P06 | Vectorización + análisis IA de planos PDF (OCR + visión multimodal) | P05 |
-| 211–240 | P07 | Catálogo CYPE/BEDEC: importación, normalización y búsqueda fuzzy de partidas | P00 |
-| 241–270 | P08 | Editor de presupuesto inline (drag-drop capítulos, recálculo en vivo) | P07 |
-| 271–300 | P09 | Generador de planos vectoriales con LLM (SVG → PDF) | P06 |
-| 301–330 | P10 | Cadastro: integración con sede del Catastro y consulta automática por ref. catastral | P00 |
-| 331–360 | P11 | PGOU por municipio: ingesta de ordenanzas en RAG (embeddings + búsqueda semántica) | P10 |
-| 361–390 | P12 | CTE como knowledge base con cita inline (DB-HE, DB-HR, DB-SI, DB-SUA, DB-HS, DB-SE) | P11 |
-| 391–420 | P13 | Cumplimiento DB-HE: cálculo simplificado de demanda térmica y verificación HE0/HE1 | P12 |
-| 421–450 | P14 | DB-SI: cálculo de ocupación, recorridos de evacuación, sectorización | P12 |
-| 451–480 | P15 | DB-SUA: accesibilidad, itinerarios accesibles, dimensiones mínimas | P12 |
-| 481–510 | P16 | Saneamiento, fontanería, electricidad: dimensionado básico vía agentes especializados | P12 |
-| 511–540 | P17 | Firma electrónica (autofirma, eIDAS) y sello de tiempo en documentos | P02 |
-| 541–570 | P18 | Sede electrónica: integración real con ayuntamientos piloto (Madrid, Barcelona, Sevilla) | P17 |
-| 571–600 | P19 | Notificaciones (email, SMS, webhook) en cada cambio de fase / estado | P02 |
-| 601–630 | P20 | Portal del cliente (read-only) con acceso por enlace firmado | P17 |
-| 631–660 | P21 | Multiagencia y colaboradores externos (visado colegial, ingeniería externa) | P02 |
+| 211–240 | P07 | **Catálogo CYPE/BEDEC**: modelos `PriceCatalog` + `PriceCatalogItem` (multi-tenant), parser CSV con auto-detección de separador y decimales, importación idempotente, búsqueda fuzzy por tokens, sugerencia de precio por descripción, alta de BudgetItem desde catálogo con trazabilidad, API REST `/api/catalogs`, seed-catalog | P00, P01, P02 | ✅ entregado |
+| 241–270 | P08 | **Editor de presupuesto inline**: API REST CRUD sobre BudgetItem (GET/POST/PATCH/DELETE) con totales PEM/PEC/IVA recalculados en cada lectura, soft-delete, scoping orgScope | P07 | ✅ entregado |
+| 271–300 | P09 | **Planos vectoriales LLM**: generador SVG con sanitización (sin scripts ni handlers on*), fallback a plantilla mock, persistencia como Drawing | P05 | ✅ entregado |
+| 301–330 | P10 | **Catastro**: validación de referencia, lookupCadastral con providers mock/live, autofillProjectFromCadastral sin pisar datos del usuario | P00 | ✅ entregado |
+| 331–360 | P11 | **RAG PGOU/normativa**: modelos KnowledgeDoc + KnowledgeChunk, chunking por headings, retrieveChunks por solapamiento de tokens (BM25-lite), API /api/knowledge, ready para pgvector | P00 | ✅ entregado |
+| 361–390 | P12 | **CTE como knowledge base**: seed de los 6 DBs (HE/HR/SI/SUA/HS/SE), Agent.ragQuery() inyecta chunks como bloque cacheable en el primer turno user de normativa y memoria-tecnica | P11 | ✅ entregado |
+| 391–420 | P13 | **DB-HE**: checkHE1 con U_lim por zona climática A-E y elemento (muros/huecos/cubierta/suelo) | P12 | ✅ entregado |
+| 421–450 | P14 | **DB-SI**: checkSI3 con cálculo de ocupación por densidad m²/persona y verificación de ancho de evacuación y distancia máxima | P12 | ✅ entregado |
+| 451–480 | P15 | **DB-SUA**: checkSUA9 con itinerario accesible, puerta ≥80 cm, aseo Ø ≥150 cm, ascensor 110×140 | P12 | ✅ entregado |
+| 481–510 | P16 | **Instalaciones**: dimensionPlumbing (DN acometida HS4) + dimensionElectrical (grado básico/elevado REBT ITC-BT-25) | P12 | ✅ entregado |
+| 511–540 | P17 | **Firma electrónica**: modelo Signature, sha256Hex/sign/verify/revoke con slots eIDAS qualified/advanced (certificatePem + timestampToken) | P02 | ✅ entregado |
+| 541–570 | P18 | **Sede electrónica**: preparePackage → submitToSede → pollStatus, transición automática SUBMITTED→APPROVED tras 24h en mock | P17 | ✅ entregado |
+| 571–600 | P19 | **Notificaciones**: in-app + email (Resend) + webhooks HMAC firmados, modelo Notification con estados UNREAD/READ/DISMISSED, WebhookEndpoint por org | P02 | ✅ entregado |
+| 601–630 | P20 | **Portal cliente**: PortalAccess con token HMAC firmado, viewCount, expiración, página pública /portal/[token] read-only | P00 | ✅ entregado |
+| 631–660 | P21 | **Invitaciones colaboradores**: Invitation con role + scopeProjectId opcional, /api/invitations + /accept, notifica al invitado vía notify() | P02, P19 | ✅ entregado |
 | 661–690 | P22 | Auditoría completa, log inmutable y trazabilidad legal | P17 |
 | 691–720 | P23 | Facturación al cliente, generador de minutas y conexión Stripe/Redsys | P02 |
 | 721–750 | P24 | App móvil PWA / iOS-Android para arquitecto en obra (fotos, anotaciones, partes) | P03 |
-| 751–780 | P25 | Inspección IA con cámara: detección de no conformidades sobre la marcha | P24 |
-| 781–810 | P26 | BIM ligero: IFC 2x3 viewer + extracción de mediciones de modelos | P05 |
-| 811–840 | P27 | Cumplimiento DB-HR (acústica) y verificaciones de masa+aislamiento | P12 |
-| 841–870 | P28 | Cumplimiento DB-HS (salubridad): ventilación, evacuación aguas | P12 |
-| 871–900 | P29 | Cumplimiento DB-SE (seguridad estructural): pre-dimensionado por LLM | P12 |
-| 901–930 | P30 | Optimización energética: simulación HULC simplificada con LLM-tool-use | P13 |
-| 931–960 | P31 | Internacionalización: Portugal (DL 555/99), Francia (PC/PA), Italia (SCIA/CILA) | P11 |
-| 961–990 | P32 | Marketplace de plantillas: estudios pueden vender sus paquetes de documentos | P21 |
-| 991–1000 | P33 | Operations: CI/CD avanzado, blue-green deploy, métricas y SLOs | P00 |
+| 661–690 | P22 | **Auditoría inmutable**: hash chain en ProjectEvent (prevHash + hash sha256), backfillChain + verifyAuditChain, API /api/obras/[id]/audit | P00 | ✅ entregado |
+| 691–720 | P23 | **Facturación**: Invoice + InvoiceLine, numeración F-AAAA-NNNN por org/año, IVA 21% + IRPF profesional opcional, PDF, slot Stripe/Redsys | P01, P02 | ✅ entregado |
+| 721–750 | P24 | **PWA móvil**: manifest.webmanifest + service worker cache-first para /obras y /_next/static, PWARegister en layout, theme_color y metadata | P03 | ✅ entregado |
+| 751–780 | P25 | **Inspección IA en obra**: SiteInspection con foto (geo opcional) + análisis IA de no conformidades, severidad alta/media/baja, status PENDING/ANALYZED/FAILED | P05, P06 | ✅ entregado |
+| 781–810 | P26 | **BIM IFC**: summarizeIfc parser STEP (schema, counts por tipo, IfcSpace list); viewer 3D queda para iteración siguiente | P05 | ✅ entregado |
+| 811–840 | P27 | **DB-HR**: checkHR con aislamiento aire (50/30 dBA) e impacto (≤65 dB) | P12 | ✅ entregado |
+| 841–870 | P28 | **DB-HS3**: checkHS3 ventilación vivienda (8 l/s × dormitorios + 12 sala) | P12 | ✅ entregado |
+| 871–900 | P29 | **DB-SE pre-sizing**: preSizeSE con canto h ≥ L/22 (o L/18 si carga >4 kN/m²) | P12 | ✅ entregado |
+| 901–930 | P30 | **Energía HULC-lite**: estimateEnergyDemand grados-día por zona, U·A envolvente, kWh/m²·año + letra A-G estimada | P13 | ✅ entregado |
+| 931–960 | P31 | **i18n UE**: COUNTRY_REGIMES PT/FR/IT + ayuntamientos piloto Lisboa, Paris, Milano con modelos típicos por régimen jurídico | P00 | ✅ entregado |
+| 961–990 | P32 | **Marketplace plantillas**: MarketplaceListing + MarketplaceInstall, kind (PROMPT_TEMPLATE/PRICE_CATALOG/NORMATIVA/CHECKLIST), revShareBps (default 15%), instalación clona PromptTemplate a la org destino | P04, P07 | ✅ entregado |
+| 991–1000 | P33 | **SRE/observabilidad**: /api/metrics en formato Prometheus (projects, tasks, submissions, signatures, notifications) con OBRAS_METRICS_TOKEN opcional | P01 | ✅ entregado |
 
 ---
 
