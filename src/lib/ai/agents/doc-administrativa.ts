@@ -5,6 +5,10 @@ export const docAdministrativaAgent: Agent = {
   phase: 'DOC_ADMINISTRATIVA',
   label: 'Documentación administrativa para licencia',
   emitsDocument: 'DECLARACION_RESPONSABLE',
+  // Trabajo más estructurado (rellenar plantillas). Sonnet es buena opción.
+  preferredModel: 'claude-sonnet-4-6',
+  preferredEffort: 'medium',
+  cachedPriorTypes: ['NORMATIVA_ANALYSIS'],
   systemPrompt: () =>
     `Eres un gestor administrativo experto en tramitación municipal de licencias de obra en España.
 

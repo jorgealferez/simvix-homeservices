@@ -5,6 +5,8 @@ export const memoriaTecnicaAgent: Agent = {
   phase: 'MEMORIA_TECNICA',
   label: 'Memoria técnica descriptiva y constructiva',
   emitsDocument: 'MEMORIA_DESCRIPTIVA',
+  preferredEffort: 'xhigh', // documento largo y técnico, vale la pena
+  cachedPriorTypes: ['INTAKE_BRIEF', 'NORMATIVA_ANALYSIS', 'ANTEPROYECTO'],
   systemPrompt: () =>
     `Eres un arquitecto técnico redactando la memoria técnica de un proyecto de obra para presentación a ayuntamiento.
 

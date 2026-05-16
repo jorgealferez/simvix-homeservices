@@ -17,6 +17,8 @@ export const presupuestoAgent: Agent = {
   phase: 'PRESUPUESTO',
   label: 'Presupuesto valorado',
   emitsDocument: 'PRESUPUESTO',
+  preferredEffort: 'high',
+  cachedPriorTypes: ['MEDICIONES', 'MEMORIA_DESCRIPTIVA'],
   systemPrompt: () =>
     `Eres un técnico de presupuestos. A partir de las mediciones, asignas precios unitarios realistas para España (orientativos 2025-2026) y construyes el presupuesto.
 
@@ -67,8 +69,11 @@ Precios honestos. Si dudas, da una horquilla razonable y elige el punto medio.`,
         model: raw.model,
         inputTokens: raw.inputTokens,
         outputTokens: raw.outputTokens,
+        cacheReadTokens: raw.cacheReadTokens,
+        cacheCreationTokens: raw.cacheCreationTokens,
         costUsd: raw.costUsd,
         mocked: raw.mocked,
+        stopReason: raw.stopReason,
       },
     };
   },

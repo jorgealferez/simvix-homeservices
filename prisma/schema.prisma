@@ -322,6 +322,8 @@ model Document {
 
   deletedAt DateTime?
 
+  feedbacks DocumentFeedback[]
+
   @@index([projectId, type])
   @@index([deletedAt])
 }
@@ -477,6 +479,69 @@ model ProjectAudit {
   after  String?
 
   @@index([projectId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Plantillas de prompts (versionadas, auditables) — P04
+// ---------------------------------------------------------------------------
+
+model PromptTemplate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Identificador estable del agente o uso (intake, normativa, chat, ...)
+  agentName String   @unique
+
+  // Versión activa actualmente (referenciada por el orquestador)
+  activeVersion Int @default(1)
+
+  // Notas humanas
+  description String?
+
+  versions PromptTemplateVersion[]
+}
+
+model PromptTemplateVersion {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  templateId String
+  template   PromptTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  version Int
+  body    String // El system prompt en sí
+  author  String? // userId que lo creó
+
+  // Métricas tras canary (rellenadas por evaluación humana o automática)
+  totalUses        Int   @default(0)
+  thumbsUp         Int   @default(0)
+  thumbsDown       Int   @default(0)
+  avgCostUsd       Float @default(0)
+  avgOutputTokens  Int   @default(0)
+
+  notes String?
+
+  @@unique([templateId, version])
+}
+
+// ---------------------------------------------------------------------------
+// Feedback humano sobre documentos generados — P04
+// ---------------------------------------------------------------------------
+
+model DocumentFeedback {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  userId String
+  rating String // UP | DOWN
+  reason String? // razón corta opcional
+
+  @@index([documentId])
+  @@index([userId])
 }
 
 // ---------------------------------------------------------------------------

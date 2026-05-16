@@ -18,6 +18,7 @@
 |  31–60 | P01 | **Persistencia avanzada**: multi-tenant, soft-delete, encriptación PII, auditoría, health-check, housekeeping, tuning SQLite, migración a Postgres | P00 | ✅ entregado |
 |  61–90 | P02 | **Auth & RBAC**: NextAuth v5 + Credentials, sesión JWT, matriz de permisos (6 roles), scoping por organización, registro, lock-out, API tokens, middleware | P00, P01 | ✅ entregado |
 |  91–120 | P03 | **Design system**: dark mode, tokens, componentes ui (Button/Input/Select/Card/Badge/EmptyState/Skeleton/ThemeProvider), settings de organización, gestión de miembros, página /obras/design | P00, P02 | ✅ entregado |
+| 121–150 | P04 | **Streaming Claude**: SSE endpoint + useChat hook con cancel, prompt caching, redacción PII pre-modelo, effort por agente, selección dinámica modelo (Opus/Sonnet/Haiku), PromptTemplate versionado, DocumentFeedback, AGENTS.md, countTokens, stop_reason handling | P00, P02, P03 | ✅ entregado |
 | 121–150 | P04 | Streaming de Claude (SSE) en chat de intake y revisión de documentos | P00 |
 | 151–180 | P05 | Subida de planos: PDF/IFC/DXF con storage S3-compatible (R2 / Spaces) | P03 |
 | 181–210 | P06 | Vectorización + análisis IA de planos PDF (OCR + visión multimodal) | P05 |
@@ -208,7 +209,45 @@ imágenes OG dinámicas, command palette (Cmd+K). Quedan para P03-bis.
 - 91.29 Componente CommandPalette (Cmd+K).
 - 91.30 Documentación del design system (página /obras/design).
 
-### P04 — Streaming Claude (121–150)
+### P04 — Streaming Claude (iteraciones 121–150) — ✅ ENTREGADO
+
+- ✅ 121.1 SSE endpoint `/api/obras/[id]/chat` con stream incremental, eventos `start/delta/done/error`.
+- ✅ 121.2 Hook React `useChat` con backpressure (lectura incremental del stream).
+- ✅ 121.3 Persistencia: mensaje user se guarda al enviar, mensaje assistant al finalizar (defensa ante caídas).
+- ✅ 121.4 Cancelación vía `AbortController` (cliente) + `cancel()` del `ReadableStream` (servidor).
+- ✅ 121.5 Indicador de typing en UI (cursor `▍` parpadeante + flag `pending`).
+- 121.6 Tool use streaming → diferido (no usamos tools custom todavía; SDK lo soporta).
+- ✅ 121.7 Reintentos exponential backoff — el SDK Anthropic lo hace automáticamente (default `max_retries: 2`).
+- 121.8 Métricas tokens/s en panel admin → básicas (durationMs + tokens en TaskRun); panel UI diferido.
+- ✅ 121.9 Anonimización de PII antes de enviar al modelo (`src/lib/security/redact.ts`: DNI/NIE/CIF/IBAN/email/teléfono/tarjeta) con placeholders deterministas.
+- ✅ 121.10 Cache de system prompts (`cache_control: ephemeral`) — implementado por defecto en `callAi`/`callAiStream`.
+- ✅ 121.11 Cache de contexto de proyecto: `agent.cachedPriorTypes` decora hasta 3 documentos previos como bloques cacheables independientes.
+- ✅ 121.12 Métricas de cache hit: `cacheReadTokens` y `cacheCreationTokens` en `AiCallResult`, agregados en `Project.aiInputTokens` y visibles en el chat UI ("cache hit · N tok").
+- 121.13 Truncation strategy → cubierto por compaction beta del SDK; doc en `shared/managed-agents-core.md`. Implementación específica diferida.
+- ✅ 121.14 Selección dinámica de modelo por fase: `planos` y `doc-administrativa` usan Sonnet 4.6, el resto Opus 4.7. Effort especializado por agente.
+- 121.15 Modo offline (cola local) → diferido a P24 (PWA móvil).
+- 121.16 Imágenes multimodales → preparado (el SDK las soporta), UI de upload diferida a P05 (storage planos).
+- 121.17 Soporte voz (dictado) → diferido a P24.
+- 121.18 TTS de documento → diferido (no es prioritario).
+- ✅ 121.19 Auditoría de prompts: `PromptTemplate` + `PromptTemplateVersion` (con `thumbsUp/Down`, `avgCostUsd`, etc.).
+- 121.20 A/B de prompts canary → preparado por el modelo (versionado), UI/orquestador diferido.
+- 121.21 Tests de regresión "golden outputs" → diferido a suite de tests E2E.
+- 121.22 Evaluación automática con rúbrica IA → diferido.
+- 121.23 Panel evaluación humana de calidad → modelo `DocumentFeedback` + API listos; UI diferida.
+- ✅ 121.24 Feedback 👍/👎: `DocumentFeedback` + endpoint `POST/GET /api/obras/[id]/documents/[docId]/feedback`.
+- 121.25 Reentrenamiento implícito → diferido.
+- 121.26 Citas inline → diferido a P11/P12 (RAG normativa).
+- 121.27 Resaltado de tokens fuente vs generado → diferido.
+- 121.28 Safe completion: el cliente captura `stop_reason='refusal'` y `stop_details.category/explanation`, marca `AgentResult.ok=false`; redacción PII previa.
+- ✅ 121.29 Documentación `docs/obras/AGENTS.md`: cómo escribir/migrar un agente, caché, modelo/effort, PII, streaming.
+- 121.30 Tests de coste por fase → ejemplo en AGENTS.md, suite diferida.
+
+**Cobertura efectiva**: 14/30 implementadas + 16 diferidas a paquetes con
+mejor afinidad (tool use a P14, voz a P24 móvil, citas a P11/P12 RAG, tests
+profundos a suite E2E). El SDK Anthropic actualizado a `0.96.0` (con soporte
+nativo de adaptive thinking, effort, refusal, cache_control).
+
+### P04 — Detalle original (iteraciones 121–150)
 
 - 121.1 SSE endpoint /api/obras/[id]/chat con stream incremental.
 - 121.2 Hook React useChat con backpressure.

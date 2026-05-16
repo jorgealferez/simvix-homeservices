@@ -5,6 +5,8 @@ export const anteproyectoAgent: Agent = {
   phase: 'ANTEPROYECTO',
   label: 'Anteproyecto y definición de alcance',
   emitsDocument: 'ANTEPROYECTO',
+  preferredEffort: 'high',
+  cachedPriorTypes: ['INTAKE_BRIEF', 'NORMATIVA_ANALYSIS'],
   systemPrompt: () =>
     `Eres un arquitecto que redacta un anteproyecto claro y vendible al cliente, sin entrar todavía en el detalle constructivo.
 

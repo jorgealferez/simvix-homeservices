@@ -7,6 +7,7 @@ import { PhaseTimeline } from '@/components/obras/PhaseTimeline';
 import { DocumentList } from '@/components/obras/DocumentList';
 import { BudgetTable } from '@/components/obras/BudgetTable';
 import { ProjectStats } from '@/components/obras/ProjectStats';
+import { Chat } from '@/components/obras/Chat';
 import type { PhaseType } from '@/lib/obras/enums';
 
 export const dynamic = 'force-dynamic';
@@ -68,6 +69,7 @@ export default async function ObraDetailPage({ params }: Params) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <PhaseTimeline projectId={project.id} phases={project.phases} />
+          <Chat projectId={project.id} currentPhase={project.currentPhase} />
           <DocumentList documents={project.documents} />
           {project.budgetItems.length > 0 && <BudgetTable items={project.budgetItems} />}
         </div>

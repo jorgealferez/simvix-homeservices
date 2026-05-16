@@ -5,6 +5,8 @@ export const essAgent: Agent = {
   phase: 'ESS',
   label: 'Estudio básico de seguridad y salud',
   emitsDocument: 'ESTUDIO_SS',
+  preferredEffort: 'high',
+  cachedPriorTypes: ['MEMORIA_DESCRIPTIVA', 'MEDICIONES'],
   systemPrompt: () =>
     `Eres un técnico de prevención. Redactas el Estudio Básico de Seguridad y Salud (RD 1627/1997 art. 4) para esta obra.
 
