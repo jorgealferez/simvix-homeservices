@@ -1,0 +1,125 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import type { Drawing } from '@prisma/client';
+import { Card, CardTitle } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { DRAWING_CATEGORIES } from '@/lib/obras/enums';
+
+const CATEGORY_OPTIONS = DRAWING_CATEGORIES.map((c) => ({ value: c, label: c.replace(/_/g, ' ') }));
+
+interface Props {
+  projectId: string;
+  drawings: Drawing[];
+}
+
+export function DrawingsPanel({ projectId, drawings }: Props) {
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    const fd = new FormData(e.currentTarget);
+    try {
+      const res = await fetch(`/api/obras/${projectId}/drawings`, {
+        method: 'POST',
+        body: fd,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Error ${res.status}`);
+      }
+      (e.target as HTMLFormElement).reset();
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function onDelete(id: string) {
+    if (!confirm('¿Eliminar este plano? Se podrá recuperar desde el log de auditoría.')) return;
+    const res = await fetch(`/api/obras/${projectId}/drawings/${id}`, { method: 'DELETE' });
+    if (res.ok) router.refresh();
+  }
+
+  return (
+    <Card>
+      <CardTitle>Planos del proyecto</CardTitle>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+        Sube PDF, PNG, JPG, SVG, DXF o IFC. Máx. 50 MB por archivo.
+      </p>
+
+      {drawings.length === 0 ? (
+        <EmptyState title="Sin planos todavía" description="Sube el primero abajo." />
+      ) : (
+        <ul className="divide-y divide-slate-100 dark:divide-slate-800 mb-4">
+          {drawings.map((d) => (
+            <li key={d.id} className="py-2 flex items-center justify-between gap-3">
+              <div className="text-sm">
+                <div className="font-medium">
+                  {d.code} · {d.title}
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <Badge tone="neutral">{d.category}</Badge>{' '}
+                  {d.scale && <Badge>esc {d.scale}</Badge>}{' '}
+                  {d.sizeBytes && (
+                    <span className="ml-1">{(d.sizeBytes / 1024).toFixed(1)} KB</span>
+                  )}{' '}
+                  · {d.mimeType ?? '?'}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/api/obras/${projectId}/drawings/${d.id}?download=1`}
+                  className="text-xs underline hover:text-emerald-600"
+                >
+                  descargar
+                </a>
+                <button
+                  onClick={() => onDelete(d.id)}
+                  className="text-xs text-red-600 hover:underline"
+                >
+                  eliminar
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <form onSubmit={onSubmit} className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <Input name="code" label="Código *" placeholder="P-01" required />
+          <Input name="title" label="Título *" placeholder="Planta baja reformada" required />
+          <Input name="scale" label="Escala" placeholder="1:50" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <Select name="category" label="Categoría *" options={CATEGORY_OPTIONS} required />
+          <Input
+            name="file"
+            type="file"
+            label="Archivo *"
+            accept=".pdf,.png,.jpg,.jpeg,.webp,.svg,.dxf,.ifc"
+            required
+          />
+        </div>
+        {error && <div className="text-xs text-red-600">{error}</div>}
+        <div className="flex justify-end">
+          <Button type="submit" loading={submitting} size="sm">
+            Subir plano
+          </Button>
+        </div>
+      </form>
+    </Card>
+  );
+}

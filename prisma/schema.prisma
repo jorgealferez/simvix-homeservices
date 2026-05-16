@@ -357,7 +357,7 @@ model BudgetItem {
 }
 
 // ---------------------------------------------------------------------------
-// Planos
+// Planos (con storage P05)
 // ---------------------------------------------------------------------------
 
 model Drawing {
@@ -374,6 +374,12 @@ model Drawing {
   category      String // DrawingCategory
   filePath      String?
   thumbnailPath String?
+  // P05: nuevos metadatos del fichero subido
+  originalName  String?
+  mimeType      String?
+  sizeBytes     Int?
+  sha256        String?
+  uploadedBy    String?
 
   aiAnnotationsJson String?
 
@@ -381,6 +387,7 @@ model Drawing {
 
   @@index([projectId])
   @@index([deletedAt])
+  @@index([sha256])
 }
 
 // ---------------------------------------------------------------------------
