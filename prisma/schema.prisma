@@ -502,6 +502,12 @@ model ProjectEvent {
   payload String
   actor   String?
 
+  /// Hash chain inmutable (P22). hash = sha256(prevHash + canonical(event)).
+  /// Si alguien manipula un evento intermedio, los hashes posteriores
+  /// dejan de cuadrar y verifyAuditChain() lo detecta.
+  prevHash String?
+  hash     String?
+
   @@index([projectId, createdAt])
   @@index([type, createdAt])
 }
