@@ -656,3 +656,50 @@ model RegulationTemplate {
   version   String?
   updatedAt DateTime @updatedAt
 }
+
+// ---------------------------------------------------------------------------
+// RAG normativa (PGOU, ordenanzas, CTE) — P11/P12
+// ---------------------------------------------------------------------------
+
+/// Documento normativo ingerido: PGOU municipal, ordenanza, DB del CTE.
+model KnowledgeDoc {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slug    String  @unique
+  title   String
+  kind    String  // "PGOU" | "CTE_DB" | "ORDENANZA" | "RD" | "AUTONOMICO"
+  region  String? // municipio o CCAA
+  source  String? // URL fuente
+  version String?
+
+  chunks KnowledgeChunk[]
+}
+
+/// Fragmento (chunk) indexado. searchKey tokeniza igual que catalogs.searchKey.
+/// embedding queda vacío en SQLite; en Postgres+pgvector se completa en P11b.
+model KnowledgeChunk {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  docId String
+  doc   KnowledgeDoc @relation(fields: [docId], references: [id], onDelete: Cascade)
+
+  /// Posición secuencial dentro del documento (0-indexed).
+  ordinal Int
+  /// Heading / sección a la que pertenece (para citar).
+  section String?
+  content String
+
+  /// Texto normalizado para búsqueda fuzzy actual (LIKE).
+  searchKey String
+
+  /// Vector serializado (JSON [number]). Vacío en SQLite; pgvector lo
+  /// sustituirá por una columna `vector` real en producción.
+  embeddingJson String?
+
+  @@unique([docId, ordinal])
+  @@index([docId])
+  @@index([searchKey])
+}
