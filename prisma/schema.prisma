@@ -562,6 +562,35 @@ model Signature {
 }
 
 // ---------------------------------------------------------------------------
+// Invitaciones a colaboradores (P21)
+// ---------------------------------------------------------------------------
+
+model Invitation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  orgId String
+
+  email String
+  role  String
+
+  /// Token URL-safe.
+  token String @unique
+
+  invitedBy String
+
+  expiresAt  DateTime?
+  acceptedAt DateTime?
+  revokedAt  DateTime?
+
+  /// Si la invitación restringe al colaborador a un único proyecto.
+  scopeProjectId String?
+
+  @@index([email])
+  @@index([orgId, expiresAt])
+}
+
+// ---------------------------------------------------------------------------
 // Portal cliente (P20): acceso firmado read-only
 // ---------------------------------------------------------------------------
 
