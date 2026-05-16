@@ -562,6 +562,55 @@ model Signature {
 }
 
 // ---------------------------------------------------------------------------
+// Notificaciones (P19): inbox in-app + webhooks salientes
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  /// Usuario destinatario (in-app). Si es null y email/webhook tienen valor,
+  /// se trata como notificación externa.
+  userId String?
+
+  orgId     String?
+  projectId String?
+
+  type    String // PROJECT_CREATED | PHASE_COMPLETED | SUBMITTED | ...
+  title   String
+  body    String
+
+  /// UNREAD | READ | DISMISSED
+  status String @default("UNREAD")
+
+  /// CSV de canales intentados: in-app,email,webhook.
+  channels     String @default("in-app")
+  /// JSON con resultado por canal.
+  deliveryJson String?
+
+  @@index([userId, status, createdAt])
+  @@index([projectId, createdAt])
+  @@index([orgId, createdAt])
+}
+
+model WebhookEndpoint {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId  String
+  name   String
+  url    String
+  /// Secret HMAC-SHA256 para firmar el payload saliente.
+  secret String
+  /// CSV de tipos de evento suscritos.
+  events String
+  active Boolean @default(true)
+
+  @@index([orgId, active])
+}
+
+// ---------------------------------------------------------------------------
 // Plantillas de prompts (versionadas, auditables) — P04
 // ---------------------------------------------------------------------------
 
