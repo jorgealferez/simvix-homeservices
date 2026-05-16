@@ -32,6 +32,32 @@ export default function ObrasLayout({ children }: { children: React.ReactNode })
                 <Link href="/obras" className="hover:text-emerald-300">
                   Proyectos
                 </Link>
+                <Link href="/obras/catalogos" className="hover:text-emerald-300 hidden md:inline">
+                  Catálogos
+                </Link>
+                <Link href="/obras/knowledge" className="hover:text-emerald-300 hidden md:inline">
+                  Normativa
+                </Link>
+                <Link href="/obras/cte" className="hover:text-emerald-300 hidden lg:inline">
+                  CTE
+                </Link>
+                <Link href="/obras/facturacion" className="hover:text-emerald-300 hidden md:inline">
+                  Facturación
+                </Link>
+                <Link href="/obras/marketplace" className="hover:text-emerald-300 hidden lg:inline">
+                  Marketplace
+                </Link>
+                <Link
+                  href="/obras/notificaciones"
+                  className="hover:text-emerald-300"
+                  aria-label="Notificaciones"
+                  title="Notificaciones"
+                >
+                  🔔
+                </Link>
+                <Link href="/obras/admin" className="hover:text-emerald-300 hidden md:inline">
+                  Admin
+                </Link>
                 <Link href="/obras/settings" className="hover:text-emerald-300">
                   Ajustes
                 </Link>
@@ -39,11 +65,11 @@ export default function ObrasLayout({ children }: { children: React.ReactNode })
                   href="/obras/nuevo"
                   className="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium px-3 py-1.5 rounded-md"
                 >
-                  Nuevo proyecto
+                  Nuevo
                 </Link>
                 <ThemeToggle />
                 <UserMenu />
-                <Link href="/" className="text-slate-300 hover:text-white hidden md:inline">
+                <Link href="/" className="text-slate-300 hover:text-white hidden xl:inline">
                   ← Home
                 </Link>
               </nav>
