@@ -568,6 +568,37 @@ model Signature {
 }
 
 // ---------------------------------------------------------------------------
+// Inspección en obra (P25)
+// ---------------------------------------------------------------------------
+
+model SiteInspection {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+
+  inspectorId   String?
+  inspectorName String
+
+  photoPath  String?
+  photoMime  String?
+  photoBytes Int?
+
+  latitude  Float?
+  longitude Float?
+  notes     String?
+
+  /// Resultado IA: lista de no conformidades + recomendaciones.
+  analysisJson String?
+  /// PENDING | ANALYZED | FAILED
+  status   String @default("PENDING")
+  costUsd  Float?
+
+  @@index([projectId, createdAt])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
 // Facturación (P23)
 // ---------------------------------------------------------------------------
 
