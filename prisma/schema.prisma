@@ -562,6 +562,36 @@ model Signature {
 }
 
 // ---------------------------------------------------------------------------
+// Portal cliente (P20): acceso firmado read-only
+// ---------------------------------------------------------------------------
+
+model PortalAccess {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+
+  /// Token firmado URL-safe que se manda al cliente final.
+  token String @unique
+
+  recipientEmail String
+  recipientName  String?
+
+  /// Si null, no expira.
+  expiresAt DateTime?
+
+  /// Telemetría de uso.
+  lastViewedAt DateTime?
+  viewCount    Int      @default(0)
+
+  /// Revocación manual desde el equipo del estudio.
+  revokedAt DateTime?
+
+  @@index([projectId])
+  @@index([token])
+}
+
+// ---------------------------------------------------------------------------
 // Notificaciones (P19): inbox in-app + webhooks salientes
 // ---------------------------------------------------------------------------
 
