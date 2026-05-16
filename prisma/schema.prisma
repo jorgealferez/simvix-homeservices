@@ -568,6 +568,66 @@ model Signature {
 }
 
 // ---------------------------------------------------------------------------
+// Facturación (P23)
+// ---------------------------------------------------------------------------
+
+model Invoice {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orgId    String
+  clientId String
+
+  /// Proyecto imputado (opcional).
+  projectId String?
+
+  /// Visible: F-AAAA-NNNN. Único por org.
+  number String
+
+  /// DRAFT | ISSUED | PAID | CANCELLED | OVERDUE
+  status String @default("DRAFT")
+
+  issueDate DateTime?
+  dueDate   DateTime?
+  paidAt    DateTime?
+
+  subtotal  Float @default(0)
+  vatRate   Float @default(21)
+  vatTotal  Float @default(0)
+  /// IRPF típico para honorarios profesionales en España = 15.
+  irpfRate  Float @default(0)
+  irpfTotal Float @default(0)
+  total     Float @default(0)
+
+  notes String?
+
+  /// Stripe / Redsys / null.
+  paymentProvider   String?
+  paymentExternalId String?
+
+  lines InvoiceLine[]
+
+  @@unique([orgId, number])
+  @@index([orgId, status])
+  @@index([clientId])
+  @@index([projectId])
+}
+
+model InvoiceLine {
+  id        String  @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  description String
+  quantity    Float  @default(1)
+  unitPrice   Float
+  total       Float
+
+  ordinal Int @default(0)
+}
+
+// ---------------------------------------------------------------------------
 // Invitaciones a colaboradores (P21)
 // ---------------------------------------------------------------------------
 
