@@ -4,6 +4,8 @@ import { getAuthContext } from '@/lib/auth/session';
 import { prisma } from '@/lib/db';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { InvitationsPanel } from '@/components/obras/InvitationsPanel';
+import { WebhooksPanel } from '@/components/obras/WebhooksPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -118,6 +120,9 @@ export default async function SettingsPage() {
           </p>
         </Card>
       )}
+
+      <InvitationsPanel />
+      <WebhooksPanel />
 
       <p className="text-xs text-slate-500">
         ¿Necesitas crear una organización nueva? Ver{' '}

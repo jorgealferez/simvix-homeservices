@@ -202,6 +202,45 @@ Una vez completadas todas las fases, `GET /api/obras/[id]/package` devuelve un
 PDF con portada + todos los documentos generados, en orden, listo para
 presentar al ayuntamiento.
 
+### Mapa completo de URLs
+
+Tras `npm run dev` y registrarte en `/obras/registro`:
+
+| Área | URL |
+|---|---|
+| Punto de entrada | `/obras` |
+| Crear / detalle proyecto | `/obras/nuevo`, `/obras/[id]` |
+| Catálogos CYPE/BEDEC | `/obras/catalogos` |
+| Base de normativa (PGOU + CTE) | `/obras/knowledge` |
+| Comprobador CTE | `/obras/cte` |
+| Facturación | `/obras/facturacion` |
+| Marketplace de plantillas | `/obras/marketplace` |
+| Notificaciones | `/obras/notificaciones` |
+| Admin & métricas | `/obras/admin` |
+| Perfil / org / miembros / webhooks | `/obras/settings` |
+| Design system | `/obras/design` |
+| Portal del cliente final | `/portal/[token]` (sin login) |
+| Healthcheck | `/api/health` |
+| Métricas Prometheus | `/api/metrics` |
+
+### Setup local en 1 comando
+
+```bash
+cp .env.example .env.local
+# Edita AUTH_SECRET: openssl rand -base64 32
+npm install
+DATABASE_URL="file:./dev.db" npm run seed:all   # push + seed + catalog + CTE + demo
+npm run dev
+```
+
+### Tests
+
+```bash
+npm run type-check
+npm run lint
+npm run test:cte    # cálculos CTE (HE1 / SI3 / SUA9 / HR / HS3 / SE / instalaciones)
+```
+
 Ver [`docs/obras/ARCHITECTURE.md`](docs/obras/ARCHITECTURE.md) y
 [`docs/obras/ROADMAP.md`](docs/obras/ROADMAP.md) para la planificación de las
 1.000 iteraciones siguientes (P01–P33).

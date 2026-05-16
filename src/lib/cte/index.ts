@@ -109,7 +109,8 @@ export interface SI3Result {
 export function checkSI3(input: SI3Inputs): SI3Result {
   const density = OCCUPANCY_DENSITY[input.useType] ?? OCCUPANCY_DENSITY.OTROS!;
   const occupancy = Math.ceil(input.usefulAreaM2 / density);
-  const requiredWidthCm = Math.max(80, Math.ceil(occupancy / 200) * 100); // A ≥ P/200, mín 80cm
+  // A ≥ P/200 metros, mínimo absoluto 80 cm.
+  const requiredWidthCm = Math.max(80, Math.ceil((occupancy / 200) * 100));
   const issues: string[] = [];
   if (input.exitWidthCm < requiredWidthCm) {
     issues.push(`Ancho de evacuación insuficiente: ${input.exitWidthCm} cm < ${requiredWidthCm} cm requeridos`);
