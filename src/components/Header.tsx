@@ -33,6 +33,12 @@ export default function Header() {
               Servicios
             </Link>
             <Link
+              href="/obras"
+              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+            >
+              🏗️ Obras
+            </Link>
+            <Link
               href="/contacto"
               className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 font-medium transition-colors"
             >
@@ -89,6 +95,13 @@ export default function Header() {
               onClick={() => setMenuOpen(false)}
             >
               Servicios
+            </Link>
+            <Link
+              href="/obras"
+              className="text-gray-600 hover:text-primary-700 font-medium py-2"
+              onClick={() => setMenuOpen(false)}
+            >
+              🏗️ Obras
             </Link>
             <Link
               href="/contacto"
