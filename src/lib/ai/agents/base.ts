@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { callAi, type AiCallResult } from '@/lib/ai/client';
 import type { Project } from '@prisma/client';
 import type { PhaseType, DocumentType } from '@/lib/obras/enums';
+import { assertAiTokenBudget, recordAiTokens } from '@/lib/obras/quotas';
 
 export interface AgentContext {
   project: Project;
@@ -69,6 +70,11 @@ export async function runAgent(agent: Agent, ctx: AgentContext): Promise<AgentRe
   });
 
   try {
+    // Pre-check de cuota (estimación conservadora ~2k tokens si no sabemos).
+    if (ctx.project.orgId) {
+      await assertAiTokenBudget(ctx.project.orgId, 2000);
+    }
+
     const messages = agent.buildMessages(ctx);
     const system = agent.systemPrompt(ctx);
     const raw = await callAi({
@@ -116,6 +122,15 @@ export async function runAgent(agent: Agent, ctx: AgentContext): Promise<AgentRe
         aiOutputTokens: { increment: result.usage.outputTokens },
       },
     });
+
+    // Acumular en la organización para cuotas y reporting
+    if (ctx.project.orgId) {
+      await recordAiTokens(
+        ctx.project.orgId,
+        result.usage.inputTokens + result.usage.outputTokens,
+        result.usage.costUsd,
+      );
+    }
 
     if (result.documentType && result.documentTitle) {
       await upsertDocument(ctx.project.id, result.documentType, result.documentTitle, result.outputText);

@@ -4,6 +4,16 @@
 // "postgresql" y la DATABASE_URL. Los enums de dominio están modelados como
 // String + constantes TS (src/lib/obras/enums.ts) para mantener portabilidad
 // entre providers (SQLite no soporta enums Prisma).
+//
+// P01 — Persistencia avanzada:
+//   - Multi-tenant: Organization + OrganizationMember, orgId opcional en
+//     Client/Project (resuelto a la org "default" cuando se omite, para no
+//     romper compat con el modo unipersonal del P00).
+//   - Soft-delete: campo `deletedAt` en entidades de proyecto.
+//   - Auditoría granular: ProjectAudit.
+//   - Índices compuestos en TaskRun y ProjectEvent (consultas frecuentes).
+//   - Constraints lógicas: aplicadas en código (SQLite no soporta CHECK
+//     completos vía Prisma).
 
 generator client {
   provider = "prisma-client-js"
@@ -15,6 +25,54 @@ datasource db {
 }
 
 // ---------------------------------------------------------------------------
+// Multi-tenant
+// ---------------------------------------------------------------------------
+
+model Organization {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slug      String   @unique // "default", "estudio-perez", ...
+  name      String
+  // JSON con preferencias visuales, firma, etc.
+  settingsJson String?
+
+  // Cuotas (null = sin límite)
+  maxProjects        Int?
+  maxAiTokensMonthly Int?
+  maxStorageMb       Int?
+
+  // Métricas acumuladas (rolling window mensual gestionado por housekeeping)
+  aiTokensMonthly Int   @default(0)
+  aiCostUsdTotal  Float @default(0)
+
+  members  OrganizationMember[]
+  clients  Client[]
+  projects Project[]
+
+  deletedAt DateTime?
+
+  @@index([slug])
+}
+
+model OrganizationMember {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  // userId apunta a un User externo (NextAuth lo introducirá en P02). De
+  // momento lo dejamos como string libre para permitir invitaciones por email.
+  userId String
+  role   String // OWNER | ADMIN | ARCHITECT | TECHNICIAN | EXTERNAL | VIEWER
+
+  @@unique([orgId, userId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
 // Cliente y proyecto
 // ---------------------------------------------------------------------------
 
@@ -23,14 +81,22 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Multi-tenant
+  orgId String?
+  org   Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
+
   fullName String
+  // Campos que pueden ir cifrados (AES-256-GCM, formato "enc:v1:<b64>")
   email    String
   phone    String?
   dni      String?
   address  String?
 
+  deletedAt DateTime?
+
   projects Project[]
 
+  @@index([orgId])
   @@index([email])
 }
 
@@ -38,6 +104,10 @@ model Project {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Multi-tenant
+  orgId String?
+  org   Organization? @relation(fields: [orgId], references: [id], onDelete: SetNull)
 
   reference String  @unique
   title     String
@@ -49,7 +119,7 @@ model Project {
   postalCode  String?
   cadastralId String?
 
-  obraType    String // ObraType enum, ver src/lib/obras/enums.ts
+  obraType    String // ObraType enum
   useType     String // UseType
   surfaceM2   Float?
 
@@ -65,6 +135,8 @@ model Project {
   aiInputTokens  Int   @default(0)
   aiOutputTokens Int   @default(0)
 
+  deletedAt DateTime?
+
   phases        Phase[]
   documents     Document[]
   conversations Conversation[]
@@ -73,10 +145,13 @@ model Project {
   budgetItems   BudgetItem[]
   drawings      Drawing[]
   events        ProjectEvent[]
+  audits        ProjectAudit[]
 
+  @@index([orgId])
   @@index([clientId])
   @@index([status])
   @@index([currentPhase])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -155,7 +230,10 @@ model Document {
   reviewedByHuman Boolean @default(false)
   reviewerNote    String?
 
+  deletedAt DateTime?
+
   @@index([projectId, type])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -180,7 +258,10 @@ model BudgetItem {
 
   source String?
 
+  deletedAt DateTime?
+
   @@index([projectId, chapter])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -204,7 +285,10 @@ model Drawing {
 
   aiAnnotationsJson String?
 
+  deletedAt DateTime?
+
   @@index([projectId])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -233,6 +317,8 @@ model TaskRun {
   durationMs   Int?
 
   @@index([projectId, agent])
+  @@index([projectId, createdAt])
+  @@index([status, createdAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -260,7 +346,10 @@ model Submission {
 
   responseNotes String?
 
+  deletedAt DateTime?
+
   @@index([projectId])
+  @@index([deletedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -277,6 +366,25 @@ model ProjectEvent {
   type    String
   payload String
   actor   String?
+
+  @@index([projectId, createdAt])
+  @@index([type, createdAt])
+}
+
+// Auditoría granular a nivel de campo. Cada cambio relevante en Project crea
+// una fila. P02 podrá colgar también cambios de Client/Document.
+model ProjectAudit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  actor  String
+  action String // CREATE | UPDATE | SOFT_DELETE | RESTORE | ...
+  field  String? // null cuando es un evento global del registro
+  before String?
+  after  String?
 
   @@index([projectId, createdAt])
 }
