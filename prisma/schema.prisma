@@ -350,10 +350,15 @@ model BudgetItem {
 
   source String?
 
+  /// Trazabilidad al catálogo de precios (P07). slug del catálogo + código.
+  catalogSlug     String?
+  catalogItemCode String?
+
   deletedAt DateTime?
 
   @@index([projectId, chapter])
   @@index([deletedAt])
+  @@index([catalogSlug, catalogItemCode])
 }
 
 // ---------------------------------------------------------------------------
@@ -580,6 +585,59 @@ model DocumentFeedback {
 
   @@index([documentId])
   @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Catálogo de precios (CYPE / BEDEC / propio) — P07
+// ---------------------------------------------------------------------------
+
+model PriceCatalog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Slug único: cype-2026, bedec-2026, propio-acme, ...
+  slug   String  @unique
+  name   String
+  source String  // "CYPE" | "BEDEC" | "PROPIO" | "OTRO"
+  region String? // opcional para precios localizados
+  year   Int?
+  active Boolean @default(true)
+
+  /// Multi-tenant: null = catálogo público (compartido entre organizaciones).
+  /// Si tiene orgId, sólo lo ve esa organización (catálogos propios).
+  orgId String?
+
+  /// Notas del importador: path origen, sha256, total items.
+  importNotes String?
+
+  items PriceCatalogItem[]
+
+  @@index([orgId])
+}
+
+model PriceCatalogItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  catalogId String
+  catalog   PriceCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+
+  chapter         String  // ej. "01 Demoliciones"
+  code            String  // ej. "01.01.005"
+  description     String
+  longDescription String?
+  unit            String  // m2, m3, ud, h, pa, kg
+  unitPrice       Float
+  /// Versión del precio: AAAA-MM o similar para auditoría.
+  priceVersion    String?
+
+  /// Tokenización barata para búsqueda LIKE/contains (lowercase + sin acentos).
+  searchKey String
+
+  @@unique([catalogId, code])
+  @@index([catalogId, chapter])
+  @@index([searchKey])
 }
 
 // ---------------------------------------------------------------------------

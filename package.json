@@ -16,6 +16,7 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:seed-demo": "tsx prisma/scripts/seed-demo.ts",
+    "prisma:seed-catalog": "tsx prisma/scripts/seed-catalog.ts",
     "obras:housekeeping": "tsx prisma/scripts/housekeeping.ts",
     "obras:backfill-org": "tsx prisma/scripts/backfill-org.ts",
     "obras:encrypt-pii": "tsx prisma/scripts/encrypt-existing-pii.ts",
