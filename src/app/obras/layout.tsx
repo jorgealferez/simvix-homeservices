@@ -3,17 +3,21 @@ import Link from 'next/link';
 import { ObrasSessionProvider } from '@/components/obras/SessionProvider';
 import { UserMenu } from '@/components/obras/UserMenu';
 import { ThemeProvider, ThemeToggle } from '@/components/ui/ThemeProvider';
+import { PWARegister } from '@/components/obras/PWARegister';
 
 export const metadata: Metadata = {
   title: 'Simvix Obras — Orquestación IA cliente → ayuntamiento',
   description:
     'Plataforma de orquestación con IA para llevar tu proyecto de obra desde la primera conversación con el cliente hasta la presentación al ayuntamiento.',
+  manifest: '/manifest.webmanifest',
+  themeColor: '#10b981',
 };
 
 export default function ObrasLayout({ children }: { children: React.ReactNode }) {
   return (
     <ObrasSessionProvider>
       <ThemeProvider>
+        <PWARegister />
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
           <div className="bg-slate-900 text-white">
             <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
