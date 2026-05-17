@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Input, Textarea } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
+import { CadastralLookupField } from './CadastralLookupField';
 
 interface Props {
   ayuntamientos: { slug: string; nombre: string }[];
@@ -113,11 +114,11 @@ export function NewProjectForm({ ayuntamientos }: Props) {
 
       <Fieldset legend="Emplazamiento">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <CadastralLookupField />
           <Input name="addressLine" label="Dirección" full />
           <Input name="city" label="Ciudad" />
           <Input name="province" label="Provincia" />
           <Input name="postalCode" label="CP" />
-          <Input name="cadastralId" label="Ref. catastral" full />
         </div>
       </Fieldset>
 
