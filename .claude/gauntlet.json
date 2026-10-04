@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "project": "simvix-homeservices",
+  "description": "Puertas del Gauntlet Loop, en orden de ejecucion (de la mas barata a la mas cara). Generado por loop-init v0.1.0 para los toolchains: node. Documentacion: skill gauntlet-loop (reference.md).",
+  "defaults": {
+    "timeout_seconds": 900
+  },
+  "gates": [
+    {
+      "id": "hygiene",
+      "title": "Higiene del repositorio",
+      "command": "bash .claude/loop-engineering/checks/hygiene.sh",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 180,
+      "notes": "Unica puerta activa desde el primer commit de cualquier proyecto: no depende de ningun toolchain."
+    },
+    {
+      "id": "enforcement",
+      "title": "Integridad del cumplimiento (hooks, pre-commit, ledger, carta)",
+      "command": "bash .claude/loop-engineering/checks/enforcement.sh",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 120,
+      "notes": "Impide que la regla se desactive en silencio: capa mecanica presente y ejecutable, hooks registrados, core.hooksPath enganchado, estado local ignorado, ledger y carta presentes.",
+      "fix_hint": "restaura lo que falte con `loop-init --update` (desde el repositorio de reglas) o `git config core.hooksPath .githooks`; desactivar el sistema exige peticion explicita del usuario"
+    },
+    {
+      "id": "ledger",
+      "title": "Ledger de continuidad y carta de meta (un fichero por repositorio)",
+      "command": "python3 .claude/loop-engineering/checks/ledger.py",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 60,
+      "notes": "PENDIENTES.<repo>.md y OBJETIVO.<repo>.md con estructura valida; falla si se falsea la meta o si aparece un fichero sin nombre de repositorio junto al nombrado.",
+      "fix_hint": "corrige la estructura (secciones, cabecera, `BLOQUEADO:`), no bajes el liston: una meta no se declara alcanzada, se mide"
+    },
+    {
+      "id": "ratchet",
+      "title": "Ratchet: las medidas publicadas no empeoran ni se salen del presupuesto",
+      "command": "python3 .claude/loop-engineering/checks/ratchet.py",
+      "when": "ls docs/benchmarks/fase_*.json >/dev/null 2>&1",
+      "when_description": "no aplica: todavia no hay benchmarks de fase publicados en docs/benchmarks/",
+      "blocking": true,
+      "profiles": [
+        "full"
+      ],
+      "timeout_seconds": 120,
+      "fix_hint": "no toques el presupuesto para que cuadre: si una medida empeora, el cambio es el problema; si la metrica no existe, anadela al presupuesto en un commit aparte con su ADR"
+    },
+    {
+      "id": "sh:syntax",
+      "title": "Sintaxis de los scripts de shell",
+      "command": "set -e; files=$(git ls-files -- '*.sh' '.githooks/*' 'bin/*' | while read -r f; do head -c 64 \"$f\" 2>/dev/null | grep -qE '^#!.*(ba)?sh' && echo \"$f\"; done); [ -z \"$files\" ] || printf '%s\\n' \"$files\" | xargs -r -n1 bash -n",
+      "when": "git ls-files -- '*.sh' '.githooks/*' 'bin/*' | grep -q .",
+      "when_description": "no aplica: no hay scripts de shell versionados",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "sh:shellcheck",
+      "title": "shellcheck de los scripts de shell",
+      "command": "files=$(git ls-files -- '*.sh' '.githooks/*' 'bin/*' | while read -r f; do head -c 64 \"$f\" 2>/dev/null | grep -qE '^#!.*(ba)?sh' && echo \"$f\"; done); [ -z \"$files\" ] || printf '%s\\n' \"$files\" | xargs -r shellcheck",
+      "when": "command -v shellcheck >/dev/null 2>&1 && git ls-files -- '*.sh' '.githooks/*' 'bin/*' | grep -q .",
+      "when_description": "no aplica: shellcheck no esta instalado (SKIP declarado, no es un PASS) o no hay scripts",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 300,
+      "fix_hint": "corrige el aviso; una directiva `# shellcheck disable` solo con justificacion en el propio script",
+      "notes": "Sin filtro de severidad: los avisos de estilo tambien cuentan. Si shellcheck no esta instalado la puerta se omite con motivo, no en silencio, porque es la unica herramienta del sistema que ningun proyecto declara."
+    },
+    {
+      "id": "node:deps",
+      "title": "Dependencias node instaladas",
+      "command": "if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; elif [ -f yarn.lock ]; then yarn install --frozen-lockfile; else npm ci --no-audit --no-fund; fi",
+      "when": "test -f package.json && { test -f package-lock.json || test -f pnpm-lock.yaml || test -f yarn.lock; } && test ! -d node_modules",
+      "when_description": "no aplica: no hay lockfile o node_modules ya existe",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 900,
+      "fix_hint": "si la instalacion falla por lockfile desincronizado, regenera el lockfile con el gestor del proyecto y versionalo"
+    },
+    {
+      "id": "node:scripts-contract",
+      "title": "Contrato de scripts de package.json",
+      "command": "node -e 'const req=[\"lint\", \"build\"];const s=require(\"./package.json\").scripts||{};const missing=req.filter(n=>!s[n]);if(missing.length){console.error(\"package.json ha dejado de declarar scripts que el gauntlet ejecutaba: \"+missing.join(\", \"));process.exit(1)}console.log(\"contrato de scripts OK: \"+(req.join(\", \")||\"(sin scripts al instalar)\"))'",
+      "when": "test -f package.json",
+      "when_description": "no aplica: no hay package.json",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 60,
+      "notes": "La lista se congelo al instalar el loop con los scripts que existian entonces: impide que una puerta desaparezca en silencio al borrar un script.",
+      "fix_hint": "restaura el script o cambia el contrato en .claude/gauntlet.json de forma explicita, en su propio commit y con peticion del usuario"
+    },
+    {
+      "id": "node:format",
+      "title": "Formato",
+      "command": "npm run format:check",
+      "when": "node -e 'const s=(require(\"./package.json\").scripts)||{};process.exit(s[\"format:check\"]?0:1)'",
+      "when_description": "no aplica: package.json no declara el script format:check",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 300,
+      "fix_hint": "ejecuta el formateador del proyecto en lugar de reescribir el codigo a mano"
+    },
+    {
+      "id": "node:lint",
+      "title": "Lint",
+      "command": "npm run lint",
+      "when": "node -e 'const s=(require(\"./package.json\").scripts)||{};process.exit(s[\"lint\"]?0:1)'",
+      "when_description": "no aplica: package.json no declara el script lint",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 600,
+      "fix_hint": "corrige la regla; nunca anadas supresiones sin justificarlo al usuario"
+    },
+    {
+      "id": "node:typecheck",
+      "title": "Tipos",
+      "command": "npm run typecheck",
+      "when": "node -e 'const s=(require(\"./package.json\").scripts)||{};process.exit(s[\"typecheck\"]?0:1)'",
+      "when_description": "no aplica: package.json no declara el script typecheck",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 600,
+      "fix_hint": "arregla el tipo real; `any` y `@ts-ignore` no son soluciones validas para cerrar esta puerta"
+    },
+    {
+      "id": "node:test",
+      "title": "Tests unitarios",
+      "command": "if node -e 'const s=(require(\"./package.json\").scripts)||{};process.exit(s[\"test:unit\"]?0:1)'; then npm run test:unit; else npm test; fi",
+      "when": "node -e 'const s=(require(\"./package.json\").scripts)||{};process.exit((s[\"test:unit\"]||(s[\"test\"]&&!/no test specified/.test(s[\"test\"])))?0:1)'",
+      "when_description": "no aplica: package.json no declara test:unit ni test",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 900,
+      "fix_hint": "arregla el codigo o el test si el test estaba mal; jamas marques un test como skip/only para pasar la puerta"
+    },
+    {
+      "id": "node:build",
+      "title": "Build de produccion",
+      "command": "npm run build",
+      "when": "node -e 'const s=(require(\"./package.json\").scripts)||{};process.exit(s[\"build\"]?0:1)'",
+      "when_description": "no aplica: package.json no declara el script build",
+      "blocking": true,
+      "profiles": [
+        "full"
+      ],
+      "timeout_seconds": 1200
+    },
+    {
+      "id": "node:e2e",
+      "title": "Tests end-to-end",
+      "command": "npm run test:e2e",
+      "when": "node -e 'const s=(require(\"./package.json\").scripts)||{};process.exit(s[\"test:e2e\"]?0:1)'",
+      "when_description": "no aplica: package.json no declara el script test:e2e",
+      "blocking": true,
+      "profiles": [
+        "full"
+      ],
+      "timeout_seconds": 1800
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$comentario": [
+    "Plantilla de benchmark por fase. Copiar a fase_N.json y rellenar con numeros MEDIDOS.",
+    "Las claves de `medidas` deben existir en presupuesto.json: la puerta ratchet falla si no.",
+    "Un numero estimado, deducido o recordado no vale: el Ratchet solo acepta salida de ejecucion.",
+    "Un valor que este entorno no puede medir se escribe como texto: 'NO VERIFICADO (<motivo>)'.",
+    "Uno que el usuario saca del alcance: 'FUERA DE ALCANCE por decision del usuario (<fecha>)'."
+  ],
+  "fase": 0,
+  "titulo": "",
+  "fecha": "AAAA-MM-DD",
+  "entorno": {
+    "maquina": "",
+    "toolchains": {}
+  },
+  "medidas": {},
+  "criterios_de_salida": {},
+  "no_verificable": [],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}

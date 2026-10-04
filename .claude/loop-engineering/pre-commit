@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Pre-commit (loop-engineering): ejecuta el perfil `fast` del Gauntlet Loop.
+#
+# Se instala con loop-init o a mano:  git config core.hooksPath .githooks
+#
+# Comprueba el arbol de trabajo, no el indice: manten el arbol limpio al commitear.
+# El perfil completo (`-p full`) sigue siendo obligatorio antes de cerrar una tarea; este hook
+# es una red de seguridad, no el gauntlet.
+
+set -uo pipefail
+
+root=$(git rev-parse --show-toplevel 2>/dev/null) || root=$(cd "$(dirname "$0")/.." && pwd -P)
+runner="$root/.claude/loop-engineering/gauntlet.py"
+
+[ -f "$runner" ] || exit 0  # el gauntlet no esta en esta revision: no bloqueamos
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "pre-commit: se necesita python3 para ejecutar el gauntlet." >&2
+  echo "            instalalo, o commitea con --no-verify asumiendo la decision (solo personas)." >&2
+  exit 1
+fi
+
+echo "pre-commit: gauntlet (perfil fast)..."
+if ! python3 "$runner" --profile fast --root "$root"; then
+  cat >&2 <<'MSG'
+
+pre-commit: GAUNTLET EN ROJO -- commit abortado.
+  Arregla la causa raiz y repite el gauntlet completo:  bin/gauntlet -p full
+  Protocolo: skill gauntlet-loop.
+  El bypass (--no-verify) es una decision humana explicita, no una salida del agente.
+MSG
+  exit 1
+fi
+exit 0

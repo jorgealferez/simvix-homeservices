@@ -1,0 +1,32 @@
+{
+  "version": "0.1.0",
+  "source_repo": "loop-engineering-rules",
+  "source_path": "/home/user/loop-engineering-rules",
+  "source_commit": "32e40ba919d72325ddf7ea94be82acc2a36601d5",
+  "repo_name": "simvix-homeservices",
+  "toolchains": [
+    "node"
+  ],
+  "installed_at": "2026-10-04T18:38:46+00:00",
+  "files": {
+    ".claude/loop-engineering/VERSION": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67",
+    ".claude/loop-engineering/bin-gauntlet": "1d69011f461c2206025186f4e9f0ec62bee97d02c89a2f04ad114a965674aeec",
+    ".claude/loop-engineering/checks/enforcement.sh": "9231c416f80b3ae2289bb54c1c6794fc5df2d8424305e96bb75ba1c9f8f3d6ff",
+    ".claude/loop-engineering/checks/hygiene.sh": "08a15ee78af5b7cb268873d30dc85fbe266fe015072ec549dc61b464e1dafed8",
+    ".claude/loop-engineering/checks/ledger.py": "74d6ab2df556770acc4f5998ba09b243a9b347195e151552639ff50f35ee7330",
+    ".claude/loop-engineering/checks/ratchet.py": "faec35de724725cec108e7d7b8495bc7620c4e503470334a7fdb04c0efaa9958",
+    ".claude/loop-engineering/gauntlet.py": "a3ea880a1fec3762070fb44bbba59311fe7919bd8f46b62804c5121226be34e6",
+    ".claude/loop-engineering/hooks/protect-rules-repo.py": "afe0ba4caecb09d36a84cb09314bd3e04bacc100dd38e3ca5fd965e6ac75cfcf",
+    ".claude/loop-engineering/hooks/session-start.sh": "34b41ca3aae1bf4fa50715f363ac20c9825cef311789cf33c77624cd0d16f3c6",
+    ".claude/loop-engineering/hooks/stop-continuity-guard.py": "fb4fd093bd35f94a1f2fb9c85f2472f0a5a0e2d20584daacb325f90774467daa",
+    ".claude/loop-engineering/hooks/stop-gauntlet-guard.py": "efddd83a7b70f840f41b664133e14fba55b583f907fde19f781af704e6003bd6",
+    ".claude/loop-engineering/hooks/user-prompt.sh": "ea8543c4b0c05fbe3eeb65209fab6e73ae97d6bef372b309419d0c180c0443ca",
+    ".claude/loop-engineering/pre-commit": "a4bf1c8dd3287bb1f69bcdb802d3b34a2b746a1e4b0b080a99a1d157c0512cd9",
+    ".claude/skills/loop-engineering/SKILL.md": "4e69c1443c6e36f5738f5db01bafe98f25e5f9066584683ec3dcb3fa84e02ebc",
+    ".claude/skills/gauntlet-loop/SKILL.md": "12a0eb163bd1903b27e7735f9c4fc699fbb9dc66ad2b6d8b491945d75ff6456e",
+    ".claude/skills/gauntlet-loop/reference.md": "f8d0432c0b1d37e64c200e6b6b30a4d712af0999c39ba8473912d480df2d3411",
+    ".claude/skills/continuidad/SKILL.md": "33110b39c56b906a514b93d11c04d34ef9612a2270d286f9589de5e4c5a39018",
+    ".githooks/pre-commit": "a4bf1c8dd3287bb1f69bcdb802d3b34a2b746a1e4b0b080a99a1d157c0512cd9",
+    "bin/gauntlet": "1d69011f461c2206025186f4e9f0ec62bee97d02c89a2f04ad114a965674aeec"
+  }
+}
