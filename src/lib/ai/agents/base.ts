@@ -146,6 +146,7 @@ export async function runAgent(agent: Agent, ctx: AgentContext): Promise<AgentRe
       maxTokens: 4096,
       effort: agent.preferredEffort ?? 'high',
       cacheableBlocks: cacheableBlocks.slice(0, 3), // límite seguro: 3 + system = 4 breakpoints
+      brain: { automatizacion: agent.name, tipo: 'agente', nombre: `Agente ${agent.label}` },
     });
 
     const result: AgentResult = agent.postProcess

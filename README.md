@@ -95,6 +95,8 @@ npm run prisma:seed      # Sembrar plantillas de normativa
 | `DATABASE_URL` | Base de datos (SQLite por defecto / Postgres en prod) | `file:./prisma/dev.db` |
 | `ANTHROPIC_API_KEY` | API key de Anthropic Claude (módulo /obras) | `sk-ant-...` |
 | `OBRAS_AI_MODE` | `auto` (default) / `live` / `mock` | `mock` |
+| `BRAIN_URL` | URL de Brain (`simvix-brain`) para la telemetría de IA; opcional, sin ella no se informa nada | `https://simvix-brain-production.up.railway.app` |
+| `BRAIN_TOKEN` | Token del conector `simvix-homeservices` en Brain (se muestra una sola vez) | `sb_...` |
 | `OBRAS_DEFAULT_MODEL` | Modelo Claude por defecto | `claude-opus-4-7` |
 | `OBRAS_FIRMA_*` | Datos del estudio para firmar PDFs generados | (opcionales) |
 | `OBRAS_AYUNTAMIENTOS_HABILITADOS` | CSV de slugs activos | `madrid,barcelona,...` |

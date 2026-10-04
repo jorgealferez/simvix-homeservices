@@ -90,6 +90,7 @@ Si no detectas problemas, devuelve nonConformities vacío.`,
       attachments: [attachment],
       effort: 'high',
       maxTokens: 2000,
+      brain: { automatizacion: 'inspeccion-obra', tipo: 'tarea', nombre: 'Inspección IA en obra' },
     });
     const parsed = tryExtractJson(r.text) ?? { raw: r.text };
     return prisma.siteInspection.update({

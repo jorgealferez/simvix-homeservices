@@ -61,13 +61,14 @@ usuario la incorpore.
 - [x] Loop instalado y gauntlet honesto — medida: `bin/gauntlet -p full` ejecuta `node:typecheck` y
   `node:test` (no SKIP) — objetivo: 0 FAIL con ambas puertas en PASS (medido 2026-10-04: 10 PASS, 0 FAIL,
   `node:typecheck` 19.0 s y `node:test` 1.7 s en PASS; `docs/benchmarks/fase_0.json`, #5)
-- [ ] Cliente de Brain inocuo — medida: `npm run test:brain` (sin `BRAIN_URL`/`BRAIN_TOKEN` no hace ninguna
+- [x] Cliente de Brain inocuo — medida: `npm run test:brain` (sin `BRAIN_URL`/`BRAIN_TOKEN` no hace ninguna
   peticion; con `fetch` inyectado envia el cuerpo del contrato; un fallo de red no lanza; el token no
-  aparece en logs) — objetivo: todas las aserciones PASS
-- [ ] Cobertura de llamadores — medida: llamadores de `callAi`/`callAiStream` en `src/` fuera del wrapper
-  que no declaran `automatizacion` (`grep`) — objetivo: 0
-- [ ] Variables documentadas — medida: `BRAIN_URL` y `BRAIN_TOKEN` presentes en `.env.example`, `README.md`
-  y `DEPLOY.md` — objetivo: 3 de 3 ficheros
+  aparece en logs) — objetivo: todas las aserciones PASS (medido 2026-10-04: 26 aserciones PASS, 0 KO;
+  `docs/benchmarks/fase_1.json`)
+- [x] Cobertura de llamadores — medida: llamadores de `callAi`/`callAiStream` en `src/` fuera del wrapper
+  que no declaran `automatizacion` (`grep`) — objetivo: 0 (medido 2026-10-04: 5 llamadores, 0 sin identificador)
+- [x] Variables documentadas — medida: `BRAIN_URL` y `BRAIN_TOKEN` presentes en `.env.example`, `README.md`
+  y `DEPLOY.md` — objetivo: 3 de 3 ficheros (medido 2026-10-04: 3 de 3)
 - [ ] Ejecuciones visibles en Brain — medida: ejecuciones del conector `simvix-homeservices` en el panel
   de Brain tras configurar las variables en Railway — objetivo: >= 1 ejecucion recibida.
   NO VERIFICADO (este entorno no tiene credenciales de Railway ni token de Brain)

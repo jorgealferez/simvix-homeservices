@@ -1,0 +1,37 @@
+{
+  "$comentario": [
+    "Numeros MEDIDOS al cerrar la Fase 1 (Conectar con Brain). Fuente: salida de `bin/gauntlet -p full`, `npm test` y el recuento de llamadores (script sobre `git ls-files src`).",
+    "tests_aserciones = 20 (src/lib/cte/index.test.ts) + 26 (src/lib/brain.test.ts)."
+  ],
+  "fase": 1,
+  "titulo": "Conectar con Brain: telemetria de automatizaciones con IA",
+  "fecha": "2026-10-04",
+  "entorno": {
+    "maquina": "contenedor claude.ai (linux x86_64)",
+    "toolchains": { "node": "22.22.0", "npm": "10.9.4", "python3": "3.x (runner del gauntlet)" }
+  },
+  "medidas": {
+    "gauntlet_fail": 0,
+    "gauntlet_pass": 10,
+    "tests_aserciones": 46,
+    "tests_fallidos": 0,
+    "ia_llamadores_sin_automatizacion": 0
+  },
+  "criterios_de_salida": {
+    "cliente_brain_inocuo": "npm run test:brain: 26 aserciones PASS (sin variables no hay fetch; cuerpo del contrato; red/5xx tragados; token ausente de los warn)",
+    "cobertura_de_llamadores": "5 llamadores de callAi/callAiStream fuera del wrapper, 0 sin `brain.automatizacion` (intake..ayuntamiento via runAgent, chat-<agente>, analisis-planos, inspeccion-obra, planos-svg)",
+    "variables_documentadas": "BRAIN_URL y BRAIN_TOKEN en .env.example, README.md y DEPLOY.md (3 de 3)",
+    "ejecuciones_visibles_en_brain": "NO VERIFICADO (sin credenciales de Railway ni token de Brain en este entorno)"
+  },
+  "no_verificable": [
+    "ejecuciones visibles en Brain produccion: faltan BRAIN_URL/BRAIN_TOKEN reales y acceso a Railway",
+    "sh:shellcheck: shellcheck no esta instalado en este entorno (SKIP declarado)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Configurar BRAIN_URL y BRAIN_TOKEN en el servicio de Railway `simvix-homeservices` (token del conector en Brain)",
+    "Fase 2: `npm test` en ci.yml; README dice Next.js 14",
+    "Propuesta: tabla de precios de IA duplicada entre servicios; Brain estima coste si falta coste_usd",
+    "Propuesta: un stream de chat abortado por el cliente no se informa a Brain"
+  ]
+}

@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { reportToBrain, type BrainRun, type BrainTipo } from '@/lib/brain';
 
 /**
  * Cliente Anthropic con tres modos:
@@ -106,6 +107,56 @@ export interface AiCallParams {
   thinking?: boolean;
   /** Adjuntos multimodales (visión/PDF) que se inyectan en el primer user turn. */
   attachments?: MultimodalAttachment[];
+  /**
+   * Identidad de la automatización para la telemetría de Brain (simvix-brain).
+   * Si falta, la llamada se informa como `obras-ia` (tipo `tarea`). En modo mock
+   * no se informa nada.
+   */
+  brain?: BrainMeta;
+}
+
+export interface BrainMeta {
+  /** Identificador estable: nombre del agente, `chat-<agente>`, `analisis-planos`... */
+  automatizacion: string;
+  tipo?: BrainTipo;
+  nombre?: string;
+  /** URL del panel o chat, para los asistentes. */
+  url?: string;
+}
+
+/** Traduce los parámetros de una llamada a la ejecución base que Brain espera. */
+export function brainRunFor(params: AiCallParams, model: string): BrainRun {
+  const meta = params.brain ?? { automatizacion: 'obras-ia' };
+  return {
+    automatizacion: meta.automatizacion,
+    tipo: meta.tipo ?? 'tarea',
+    nombre: meta.nombre,
+    url: meta.url,
+    proveedor: 'anthropic',
+    modelo: model,
+  };
+}
+
+function reportAiResult(base: BrainRun, t0: number, r: AiCallResult): void {
+  const refused = r.stopReason === 'refusal';
+  void reportToBrain({
+    ...base,
+    estado: refused ? 'error' : 'ok',
+    duracion_ms: Date.now() - t0,
+    tokens_entrada: r.inputTokens + r.cacheReadTokens + r.cacheCreationTokens,
+    tokens_salida: r.outputTokens,
+    coste_usd: r.costUsd,
+    error: refused ? `refusal${r.refusal?.category ? ` (${r.refusal.category})` : ''}` : undefined,
+  });
+}
+
+function reportAiFailure(base: BrainRun, t0: number, err: unknown): void {
+  void reportToBrain({
+    ...base,
+    estado: 'error',
+    duracion_ms: Date.now() - t0,
+    error: err instanceof Error ? err.message : String(err),
+  });
 }
 
 export interface AiCallResult {
@@ -227,8 +278,16 @@ export async function callAi(params: AiCallParams): Promise<AiCallResult> {
 
   // Streaming siempre que max_tokens >= 4096 (recomendación SDK para evitar
   // timeouts HTTP). Usamos finalMessage() para recoger el agregado.
-  const stream = client.messages.stream(create);
-  const final = await stream.finalMessage();
+  const brain = brainRunFor(params, model);
+  const t0 = Date.now();
+  let final: Anthropic.Messages.Message;
+  try {
+    const stream = client.messages.stream(create);
+    final = await stream.finalMessage();
+  } catch (err) {
+    reportAiFailure(brain, t0, err);
+    throw err;
+  }
 
   const text = final.content
     .map((b) => (b.type === 'text' ? b.text : ''))
@@ -261,6 +320,7 @@ export async function callAi(params: AiCallParams): Promise<AiCallResult> {
     };
   }
 
+  reportAiResult(brain, t0, result);
   return result;
 }
 
@@ -297,15 +357,23 @@ export async function* callAiStream(
   const oc = effortToConfig(params.effort);
   if (oc) create.output_config = oc;
 
-  const stream = client.messages.stream(create);
+  const brain = brainRunFor(params, model);
+  const t0 = Date.now();
+  let final: Anthropic.Messages.Message;
+  try {
+    const stream = client.messages.stream(create);
 
-  for await (const event of stream) {
-    if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-      yield { delta: event.delta.text };
+    for await (const event of stream) {
+      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+        yield { delta: event.delta.text };
+      }
     }
-  }
 
-  const final = await stream.finalMessage();
+    final = await stream.finalMessage();
+  } catch (err) {
+    reportAiFailure(brain, t0, err);
+    throw err;
+  }
   const text = final.content
     .map((b) => (b.type === 'text' ? b.text : ''))
     .join('\n')
@@ -336,6 +404,7 @@ export async function* callAiStream(
       explanation: details?.explanation ?? null,
     };
   }
+  reportAiResult(brain, t0, result);
   return result;
 }
 
