@@ -79,7 +79,7 @@ usuario la incorpore.
 - [x] Fase 0 — Encuadre (#5, squash `ae40418`): loop instalado, esta carta rellena desde la base real,
   alias `typecheck`/`test` en `package.json` para que el gauntlet ejecute tipos y tests (ADR 0001),
   ledger sembrado, gauntlet en VERDE. Acerca el criterio 1.
-- [ ] Fase 1 — Conectar con Brain: `src/lib/brain.ts`, telemetria desde `callAi`/`callAiStream`
+- [x] Fase 1 — Conectar con Brain (#6, squash `7751e5a`): `src/lib/brain.ts`, telemetria desde `callAi`/`callAiStream`
   (agentes, `chat-<agente>`, `analisis-planos`, inspecciones, SVG), `test:brain`, variables documentadas.
   Acerca los criterios 2, 3, 4 y 5.
 - [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con el stack real
