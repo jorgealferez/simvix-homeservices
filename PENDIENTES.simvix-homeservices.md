@@ -26,8 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 0 — Encuadre: loop instalado, carta rellena, alias `typecheck`/`test`, gauntlet en VERDE (PR "Fase 0 — Encuadre") EN CURSO (sesion claude 01SzUvjv, 2026-10-04)
-- [ ] Conectar con Brain: telemetria de automatizaciones con IA (ref. simvix-brain Fase 11, #21) — Fase 1 de la carta
+- [ ] Conectar con Brain: telemetria de automatizaciones con IA (ref. simvix-brain Fase 11, #21) — Fase 1 de la carta EN CURSO (sesion claude 01SzUvjv, 2026-10-04)
   - [ ] `src/lib/brain.ts` (BRAIN_URL/BRAIN_TOKEN, fetch con timeout 5 s, errores tragados)
   - [ ] informar desde `callAi`/`callAiStream` con `automatizacion` por llamador (agentes, `chat-<agente>`, `analisis-planos`, inspecciones, SVG); no informar en mock
   - [ ] `test:brain` colgado de `npm test`
@@ -44,4 +43,4 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Hecho
 
-(vacio)
+- [x] Fase 0 — Encuadre: loop instalado, carta rellena, alias `typecheck`/`test`, gauntlet en VERDE (#5, squash `ae40418`, 2026-10-04)

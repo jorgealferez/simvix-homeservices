@@ -58,8 +58,9 @@ usuario la incorpore.
 
 ## Criterios de salida
 
-- [ ] Loop instalado y gauntlet honesto — medida: `bin/gauntlet -p full` ejecuta `node:typecheck` y
-  `node:test` (no SKIP) — objetivo: 0 FAIL con ambas puertas en PASS
+- [x] Loop instalado y gauntlet honesto — medida: `bin/gauntlet -p full` ejecuta `node:typecheck` y
+  `node:test` (no SKIP) — objetivo: 0 FAIL con ambas puertas en PASS (medido 2026-10-04: 10 PASS, 0 FAIL,
+  `node:typecheck` 19.0 s y `node:test` 1.7 s en PASS; `docs/benchmarks/fase_0.json`, #5)
 - [ ] Cliente de Brain inocuo — medida: `npm run test:brain` (sin `BRAIN_URL`/`BRAIN_TOKEN` no hace ninguna
   peticion; con `fetch` inyectado envia el cuerpo del contrato; un fallo de red no lanza; el token no
   aparece en logs) — objetivo: todas las aserciones PASS
@@ -74,9 +75,9 @@ usuario la incorpore.
 
 ## Fases
 
-- [ ] Fase 0 — Encuadre: loop instalado, esta carta rellena desde la base real, alias `typecheck`/`test`
-  en `package.json` para que el gauntlet ejecute tipos y tests (ADR 0001), ledger sembrado, gauntlet en
-  VERDE. Acerca el criterio 1.
+- [x] Fase 0 — Encuadre (#5, squash `ae40418`): loop instalado, esta carta rellena desde la base real,
+  alias `typecheck`/`test` en `package.json` para que el gauntlet ejecute tipos y tests (ADR 0001),
+  ledger sembrado, gauntlet en VERDE. Acerca el criterio 1.
 - [ ] Fase 1 — Conectar con Brain: `src/lib/brain.ts`, telemetria desde `callAi`/`callAiStream`
   (agentes, `chat-<agente>`, `analisis-planos`, inspecciones, SVG), `test:brain`, variables documentadas.
   Acerca los criterios 2, 3, 4 y 5.
