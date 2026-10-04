@@ -137,6 +137,7 @@ export async function analyzeDrawing(drawingId: string, opts: AnalyzeOptions) {
       attachments,
       maxTokens: 3000,
       effort: 'high',
+      brain: { automatizacion: 'analisis-planos', tipo: 'tarea', nombre: 'Análisis IA de planos' },
     });
     rawText = result.text;
     parsed = tryExtractJson(rawText) ?? { raw: rawText };

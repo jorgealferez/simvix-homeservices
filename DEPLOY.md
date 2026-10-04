@@ -13,6 +13,10 @@
    NEXT_PUBLIC_SITE_URL=https://tu-dominio.up.railway.app
    NEXT_PUBLIC_SITE_NAME=Simvix Home Services
    NODE_ENV=production
+   # Telemetría de IA hacia Brain (simvix-brain). Opcional: sin ellas no se informa nada.
+   # El token lo da el conector `simvix-homeservices` en Brain (Automatizaciones → Conectores).
+   BRAIN_URL=https://simvix-brain-production.up.railway.app
+   BRAIN_TOKEN=sb_...
    ```
 6. El servicio arranca independiente, sin afectar a `renovation-company-website`
 7. Asigna un dominio personalizado si tienes uno

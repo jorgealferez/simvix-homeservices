@@ -42,6 +42,7 @@ export async function generateSvgDrawing(opts: GenerateOptions) {
     ],
     effort: 'high',
     maxTokens: 8000,
+    brain: { automatizacion: 'planos-svg', tipo: 'tarea', nombre: 'Generación de planos SVG' },
   });
 
   let svg = result.text.trim();

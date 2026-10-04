@@ -107,6 +107,12 @@ export async function POST(req: Request, { params }: Params) {
             model: agent.preferredModel,
             maxTokens: 4096,
             effort: (agent.preferredEffort ?? 'medium') as Effort,
+            brain: {
+              automatizacion: `chat-${agent.name}`,
+              tipo: 'asistente',
+              nombre: `Chat ${agent.label}`,
+              url: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/obras/${id}`,
+            },
           });
 
           // Recogemos manualmente el value de la última iteración (que un
