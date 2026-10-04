@@ -47,3 +47,6 @@ next-env.d.ts
 /storage/
 /public/uploads/
 
+# Loop Engineering: estado local del gauntlet y bytecode de los hooks
+.claude/.gauntlet/
+.claude/loop-engineering/**/__pycache__/

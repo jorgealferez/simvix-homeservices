@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Envoltorio del runner del Gauntlet Loop. Resuelve la raiz desde su propia ubicacion, asi que
+# funciona desde cualquier directorio (en sesiones web el cwd puede no ser el repositorio).
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P) || { echo "bin/gauntlet: no se puede resolver la raiz" >&2; exit 2; }
+exec python3 "$root/.claude/loop-engineering/gauntlet.py" --root "$root" "$@"

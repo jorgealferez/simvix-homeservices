@@ -1,0 +1,30 @@
+{
+  "$comentario": [
+    "Numeros MEDIDOS al cerrar la Fase 0 (encuadre). Fuente: salida de `bin/gauntlet -p full` y de `npm test`.",
+    "Pasada de referencia ANTES de los alias typecheck/test: VERDE -- 6 PASS, 0 FAIL, 8 SKIP en 189.2s (node:typecheck y node:test en SKIP)."
+  ],
+  "fase": 0,
+  "titulo": "Encuadre: loop instalado, carta rellena, alias typecheck/test",
+  "fecha": "2026-10-04",
+  "entorno": {
+    "maquina": "contenedor claude.ai (linux x86_64)",
+    "toolchains": { "node": "22.22.0", "npm": "10.9.4", "python3": "3.x (runner del gauntlet)" }
+  },
+  "medidas": {
+    "gauntlet_fail": 0,
+    "gauntlet_pass": 10,
+    "tests_aserciones": 20,
+    "tests_fallidos": 0
+  },
+  "criterios_de_salida": {
+    "loop_instalado_y_gauntlet_honesto": "node:typecheck y node:test en PASS (antes SKIP por nombre de script)"
+  },
+  "no_verificable": [
+    "sh:shellcheck: shellcheck no esta instalado en este entorno (SKIP declarado)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Fase 1: ia_llamadores_sin_automatizacion vale hoy 5 (base.ts, chat/route.ts, drawings.ts, site-inspections.ts, svg-generator.ts); se publica cuando llegue a 0",
+    "Fase 2: CI no ejecuta `npm test`; README dice Next.js 14"
+  ]
+}

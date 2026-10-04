@@ -1,0 +1,121 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read",
+      "Bash(bin/gauntlet *)",
+      "Bash(bin/gauntlet)",
+      "Bash(python3 .claude/loop-engineering/gauntlet.py *)",
+      "Bash(python3 .claude/loop-engineering/checks/*)",
+      "Bash(bash .claude/loop-engineering/checks/*)",
+      "Bash(bash .claude/loop-engineering/hooks/session-start.sh)",
+      "Bash(git status *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git diff)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git rev-parse *)",
+      "Bash(git merge-base *)",
+      "Bash(git ls-files *)",
+      "Bash(git grep *)",
+      "Bash(git fetch *)",
+      "Bash(git add *)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git config core.hooksPath .githooks)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(diff *)",
+      "Bash(mkdir *)",
+      "Bash(chmod +x *)",
+      "Bash(which *)",
+      "Bash(command -v *)",
+      "Bash(pwd)",
+      "Bash(python3 -m unittest *)",
+      "Bash(python3 -m py_compile *)",
+      "Bash(python3 -m compileall *)",
+      "Bash(bash *)",
+      "Bash(shellcheck *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(pnpm *)",
+      "Bash(yarn *)"
+    ],
+    "deny": [
+      "Bash(git commit --no-verify*)",
+      "Bash(git commit -n *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git config core.hooksPath*)",
+      "Bash(git config --global core.hooksPath*)",
+      "Bash(touch .claude/.gauntlet/disable-stop-guard*)",
+      "Bash(touch .claude/.gauntlet/disable-continuity-guard*)",
+      "Bash(rm .claude/loop-engineering/*)",
+      "Bash(rm -r .claude/loop-engineering*)",
+      "Bash(rm -rf .claude/loop-engineering*)",
+      "Bash(rm .githooks/*)",
+      "Edit(.claude/settings.json)",
+      "Edit(.claude/settings.local.json)",
+      "Edit(.claude/loop-engineering/**)",
+      "Edit(.githooks/**)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/loop-engineering/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/loop-engineering/hooks/user-prompt.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/loop-engineering/hooks/protect-rules-repo.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/loop-engineering/hooks/stop-gauntlet-guard.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/loop-engineering/hooks/stop-continuity-guard.py"
+          }
+        ]
+      }
+    ]
+  }
+}

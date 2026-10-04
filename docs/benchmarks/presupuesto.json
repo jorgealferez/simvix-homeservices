@@ -1,0 +1,46 @@
+{
+  "$comentario": [
+    "Presupuesto del proyecto como DATOS, nunca como prosa. Cada metrica que una fase publique en `medidas` tiene que existir aqui.",
+    "direccion: 'max' -> el valor medido debe ser <= objetivo (tiempos, tamanos, errores); 'min' -> >= objetivo (cobertura, throughput).",
+    "Una metrica sin medida publicada no es una violacion; una medida publicada sin metrica si (queda fuera del ratchet).",
+    "Bajar un objetivo exige peticion explicita del usuario, commit aparte y ADR."
+  ],
+  "version": 1,
+  "metricas": [
+    {
+      "id": "gauntlet_fail",
+      "descripcion": "Puertas en FAIL en la pasada full posterior al ultimo cambio",
+      "unidad": "puertas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "gauntlet_pass",
+      "descripcion": "Puertas ejecutadas en PASS en la pasada full (un SKIP no cuenta)",
+      "unidad": "puertas",
+      "direccion": "min",
+      "objetivo": 8
+    },
+    {
+      "id": "tests_aserciones",
+      "descripcion": "Aserciones ejecutadas por `npm test` (suma de los ficheros *.test.ts)",
+      "unidad": "aserciones",
+      "direccion": "min",
+      "objetivo": 20
+    },
+    {
+      "id": "tests_fallidos",
+      "descripcion": "Aserciones fallidas en `npm test`",
+      "unidad": "aserciones",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "ia_llamadores_sin_automatizacion",
+      "descripcion": "Llamadas a callAi/callAiStream en src/ fuera del wrapper que no declaran `automatizacion` para Brain",
+      "unidad": "llamadores",
+      "direccion": "max",
+      "objetivo": 0
+    }
+  ]
+}
