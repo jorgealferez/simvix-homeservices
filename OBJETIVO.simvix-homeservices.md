@@ -54,7 +54,9 @@ servicio ni filtrar el token; el repositorio tiene el Loop Engineering instalado
 que ejecuta de verdad tipos, lint, tests y build; y la deuda visible de la base que afecta a la
 verificacion (tests fuera de CI, README desalineado) esta cerrada. Suposicion revisable: la meta de
 producto del modulo /obras (roadmap en `docs/obras/ROADMAP.md`) queda fuera de esta carta hasta que el
-usuario la incorpore.
+usuario la incorpore. El 2026-11-02 el usuario incorpora la **captacion local de Home Services**
+(SEO/GEO, zonas de captacion de familias y profesionales, modelo legal de intermediacion y entrada en
+Meta): esa parte tambien forma parte de la meta (Fase 3).
 
 ## Criterios de salida
 
@@ -73,6 +75,12 @@ usuario la incorpore.
   de Brain tras configurar las variables en Railway — objetivo: >= 1 ejecucion recibida.
   NO VERIFICADO (este entorno no tiene credenciales de Railway ni token de Brain)
 - [ ] Tests en CI — medida: `.github/workflows/ci.yml` ejecuta `npm test` — objetivo: paso presente
+- [x] Captacion local publicada — medida: `npm run test:zonas` y URLs `/zonas/*` + `/empleo/*` en
+  `sitemap.ts` — objetivo: >= 9 zonas, >= 18 URLs locales, 0 aserciones fallidas (medido 2026-11-02:
+  9 zonas, 18 URLs locales, 53 aserciones PASS, 0 KO; `docs/benchmarks/fase_3.json`)
+- [ ] Paginas locales indexadas — medida: informe «Paginas» de Google Search Console — objetivo: >= 18
+  URLs locales indexadas. NO VERIFICADO (este entorno no tiene acceso a Search Console; lo mide el
+  usuario tras enviar el sitemap, ver `docs/marketing/seo-geo.md`)
 
 ## Fases
 
@@ -84,6 +92,11 @@ usuario la incorpore.
   Acerca los criterios 2, 3, 4 y 5.
 - [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con el stack real
   (Next 15). Acerca el criterio 6.
+- [ ] Fase 3 — Captacion local: SEO/GEO, zonas y Meta (peticion del usuario 2026-11-02, se ejecuta
+  antes que la Fase 2 por ser peticion explicita): `src/lib/zonas.ts` (9 zonas, Parla piloto),
+  `/zonas/*`, `/empleo/*` con `JobPosting`, `/como-funciona`, JSON-LD, `robots.ts`, `sitemap.ts`,
+  `llms.txt`, `og:image`, formulario con rol/zona/origen/consentimiento, `test:zonas`, ADR 0003,
+  `docs/marketing/{seo-geo,meta}.md`, `docs/negocio/modelo-legal.md`. Acerca los criterios 7 y 8.
 
 ## Calidad y proyeccion
 
@@ -106,3 +119,16 @@ siguientes; nada de fases de relleno: cada fase acerca un criterio de salida y l
   ajenos; lo que se vea se anota en el ledger como propuesta.
 - 2026-10-04 — CI existe (GitHub Actions). Si no tiene runners o cuota, la pasada local del gauntlet es
   el unico veredicto y se declara en el PR.
+- 2026-11-02 — Captacion local de Home Services (peticion del usuario): modelo tipo plataforma que
+  cumpla la legislacion vigente, con Simvix como intermediario que asesora y añade compromiso; zonas
+  de captacion de familias y de profesionales; plan para entrar en Meta. La comparacion con una app de
+  movilidad no aparece en la web: se cuenta lo que recibe cada parte.
+- 2026-11-02 — Suposiciones (revisables por el usuario, escritas aqui y no preguntadas): (1) modelo A
+  de `docs/negocio/modelo-legal.md` (Simvix emplea; la familia recibe factura) como producto principal
+  y modelo B (agencia de colocacion + gestion) como asesoramiento; nunca marketplace de autonomas;
+  (2) limpieza a 25 €/h **IVA incluido** (el precio que el usuario ya ofrece en publico; la normativa
+  de consumo exige precio final); (3) Parla como zona piloto (es donde el usuario capta hoy) y
+  crecimiento por municipios colindantes del sur de Madrid; (4) compromisos publicados: sustitucion,
+  repaso sin coste en 48 h, seguro de RC, sin permanencia con 24 h de aviso, nunca se cobra a las
+  profesionales; (5) el salario bruto/hora de la oferta de empleo no se publica hasta que el usuario lo
+  fije (`ofertaEmpleo.salarioHoraBrutoDesde`).

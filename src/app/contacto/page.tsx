@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Contacta con Simvix Home Services para solicitar recogida de niños, limpieza del hogar, niñera, hacer la compra o cuidado de personas mayores. Respuesta en menos de 24 horas.',
   alternates: {
-    canonical: 'https://homeservices.simvix.com/contacto',
+    canonical: '/contacto',
   },
 };
 

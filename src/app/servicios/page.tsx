@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     'Explora todos nuestros servicios domésticos: recogida de niños del colegio, limpieza del hogar, niñera, hacer la compra, cuidado de personas mayores y más.',
   alternates: {
-    canonical: 'https://homeservices.simvix.com/servicios',
+    canonical: '/servicios',
   },
 };
 

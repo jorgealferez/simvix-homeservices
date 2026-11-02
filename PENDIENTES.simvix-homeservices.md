@@ -26,6 +26,18 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
+- [ ] Fase 3 — Captacion local: SEO/GEO, zonas de captacion (familias y profesionales), modelo legal de intermediacion y estrategia en Meta (peticion del usuario 2026-11-02) — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-02)
+  - [x] zonas tipadas (`src/lib/zonas.ts`, 9 zonas, Parla piloto) y JSON-LD (`src/lib/seo.ts`)
+  - [x] `/zonas/*`, `/empleo/*` (JobPosting), `/como-funciona`, `robots.ts`, `sitemap.ts`, `/llms.txt`, `og:image`
+  - [x] canonicas relativas, titulo de portada sin duplicar, enlazado interno (cabecera, pie, servicio -> zonas)
+  - [x] formulario y API con rol, zona, origen y consentimiento (`src/lib/leads.ts`, zod)
+  - [x] `test:zonas` en `npm test`; ADR 0003; docs de Meta, SEO/GEO y modelo legal
+  - [ ] gauntlet full en VERDE, benchmark `fase_3.json`, PR "Fase 3 — Captacion local" y squash merge
+  - propuesta (decision del usuario): persistir los leads (BD o email) y sacar los datos personales del log; limitar frecuencia en `/api/contact` (ADR 0003, Seguridad)
+  - propuesta (decision del usuario): paginas de aviso legal, privacidad y condiciones; necesitan razon social, CIF y domicilio, que no se inventan
+  - propuesta (decision del usuario): banner de cookies y despues pixel + API de conversiones de Meta (`docs/marketing/meta.md`, paso 3)
+  - propuesta (decision del usuario): precios de niñera (12 €/h) y cuidado de mayores (14 €/h) no cubren un contrato laboral; revisar con los numeros de `docs/negocio/modelo-legal.md`
+  - propuesta (decision del usuario): telefono real en `NEXT_PUBLIC_CONTACT_PHONE` antes de lanzar anuncios (hoy sale uno de ejemplo, tambien en el JSON-LD)
 - [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con Next 15
 
 ## Esperando

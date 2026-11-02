@@ -4,36 +4,19 @@ import Services from '@/components/Services';
 import ContactForm from '@/components/ContactForm';
 
 export const metadata: Metadata = {
-  title: 'Servicios del Hogar Profesionales | Simvix Home Services',
+  title: {
+    absolute: 'Limpieza del hogar por horas con contrato | Simvix Home Services',
+  },
   description:
-    'Descubre todos nuestros servicios domésticos: recogida de niños, limpieza del hogar, niñera, hacer la compra y cuidado de personas mayores. Solicita tu servicio hoy.',
+    'Limpiadoras por horas verificadas, con contrato, alta en la Seguridad Social, factura y sustitución garantizada. Parla y sur de Madrid. Respuesta en 24 h.',
   alternates: {
-    canonical: 'https://homeservices.simvix.com',
+    canonical: '/',
   },
 };
 
 export default function HomePage() {
   return (
     <>
-      {/* Structured data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'LocalBusiness',
-            name: 'Simvix Home Services',
-            description:
-              'Servicios del hogar profesionales: recogida de niños, limpieza, niñera, compra y cuidado de mayores.',
-            url: 'https://homeservices.simvix.com',
-            telephone: '+34-900-000-000',
-            email: 'hola@simvix.com',
-            areaServed: 'ES',
-            serviceType: 'Servicios domésticos',
-            priceRange: '€€',
-          }),
-        }}
-      />
       <Hero />
       <Services />
       <ContactForm />

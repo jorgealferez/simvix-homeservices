@@ -1,63 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-interface ContactPayload {
-  name: string;
-  email: string;
-  phone?: string;
-  service: string;
-  message?: string;
-}
+import { leadSchema } from '@/lib/leads';
 
 export async function POST(request: NextRequest) {
+  let body: unknown;
   try {
-    const body = (await request.json()) as ContactPayload;
-
-    // Validate required fields
-    if (!body.name || !body.email || !body.service) {
-      return NextResponse.json(
-        { error: 'Campos requeridos: nombre, email y servicio' },
-        { status: 400 }
-      );
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(body.email)) {
-      return NextResponse.json(
-        { error: 'Formato de email inválido' },
-        { status: 400 }
-      );
-    }
-
-    // TODO: Integrate with email service (Resend, SendGrid, etc.)
-    // Example with Resend:
-    // import { Resend } from 'resend';
-    // const resend = new Resend(process.env.RESEND_API_KEY);
-    // await resend.emails.send({
-    //   from: 'onboarding@resend.dev',
-    //   to: process.env.CONTACT_EMAIL ?? 'hola@simvix.com',
-    //   subject: `Solicitud de servicio: ${body.service} — ${body.name}`,
-    //   html: `<p>Nombre: ${body.name}</p><p>Email: ${body.email}</p><p>Teléfono: ${body.phone ?? 'No proporcionado'}</p><p>Servicio: ${body.service}</p><p>Mensaje: ${body.message ?? 'Sin mensaje'}</p>`,
-    // });
-
-    // For now, log the contact request (replace with actual email sending)
-    console.log('Contact form submission:', {
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
-      service: body.service,
-      message: body.message,
-      timestamp: new Date().toISOString(),
-    });
-
-    return NextResponse.json(
-      { message: 'Solicitud recibida correctamente' },
-      { status: 200 }
-    );
+    body = await request.json();
   } catch {
+    return NextResponse.json({ error: 'Cuerpo JSON inválido' }, { status: 400 });
+  }
+
+  const parsed = leadSchema.safeParse(body);
+  if (!parsed.success) {
+    const campos = [...new Set(parsed.error.issues.map((i) => String(i.path[0] ?? '')))];
+    const sinConsentimiento = campos.includes('consentimiento');
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
+      {
+        error: sinConsentimiento
+          ? 'Necesitamos tu consentimiento para tratar tus datos'
+          : 'Revisa los campos: nombre, email, servicio y zona',
+        campos,
+      },
+      { status: 400 }
     );
   }
+  const lead = parsed.data;
+
+  // TODO: persistir el lead (o enviarlo por email con Resend/SendGrid). Hasta
+  // entonces se registra en el log del servicio, como antes de esta fase;
+  // ver docs/adr/0003 (Seguridad) para el plan de retirada de datos del log.
+  console.log('Contact form submission:', {
+    rol: lead.rol,
+    zona: lead.zona,
+    service: lead.service,
+    origen: lead.origen,
+    name: lead.name,
+    email: lead.email,
+    phone: lead.phone,
+    message: lead.message,
+    timestamp: new Date().toISOString(),
+  });
+
+  return NextResponse.json({ message: 'Solicitud recibida correctamente' }, { status: 200 });
 }

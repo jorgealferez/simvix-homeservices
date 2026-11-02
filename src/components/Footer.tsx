@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { zonas } from '@/lib/zonas';
+import { CONTACT } from '@/lib/site';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -6,7 +8,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -76,6 +78,25 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Zonas: enlazado interno hacia las páginas locales */}
+          <div>
+            <h3 className="font-semibold text-white mb-4">Zonas</h3>
+            <ul className="space-y-2 text-sm">
+              {zonas.map((z) => (
+                <li key={z.slug}>
+                  <Link href={`/zonas/${z.slug}`} className="hover:text-white transition-colors">
+                    Limpieza en {z.nombre}
+                  </Link>
+                </li>
+              ))}
+              <li className="pt-2">
+                <Link href="/empleo" className="hover:text-white transition-colors">
+                  Trabaja con nosotros
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* Contact */}
           <div>
             <h3 className="font-semibold text-white mb-4">Contacto</h3>
@@ -83,19 +104,19 @@ export default function Footer() {
               <li className="flex items-center gap-2">
                 <span aria-hidden="true">📞</span>
                 <a
-                  href="tel:+34900000000"
+                  href={`tel:${CONTACT.telefono.replace(/\s+/g, '')}`}
                   className="hover:text-white transition-colors"
                 >
-                  +34 900 000 000
+                  {CONTACT.telefono}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <span aria-hidden="true">📧</span>
                 <a
-                  href="mailto:hola@simvix.com"
+                  href={`mailto:${CONTACT.email}`}
                   className="hover:text-white transition-colors"
                 >
-                  hola@simvix.com
+                  {CONTACT.email}
                 </a>
               </li>
               <li className="mt-4">
@@ -112,7 +133,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-gray-500 flex flex-col sm:flex-row justify-between gap-2">
           <p>© {currentYear} Simvix Home Services. Todos los derechos reservados.</p>
-          <p>Servicios del hogar profesionales en España</p>
+          <p>Limpieza del hogar con contrato en Parla y el sur de Madrid</p>
         </div>
       </div>
     </footer>

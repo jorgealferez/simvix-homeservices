@@ -1,0 +1,45 @@
+{
+  "$comentario": [
+    "Numeros MEDIDOS al cerrar la Fase 3 (Captacion local). Fuente: `bin/gauntlet -p full`, `npm test` y `next start` + curl sobre el build.",
+    "tests_aserciones = 20 (cte) + 26 (brain) + 53 (zonas)."
+  ],
+  "fase": 3,
+  "titulo": "Captacion local: SEO/GEO, zonas de captacion y estrategia en Meta",
+  "fecha": "2026-11-02",
+  "entorno": {
+    "maquina": "contenedor claude.ai (linux x86_64)",
+    "toolchains": { "node": "22.22.0", "npm": "10.9.4", "python3": "3.x (runner del gauntlet)" }
+  },
+  "medidas": {
+    "gauntlet_fail": 0,
+    "gauntlet_pass": 10,
+    "tests_aserciones": 99,
+    "tests_fallidos": 0,
+    "ia_llamadores_sin_automatizacion": 0,
+    "zonas_captacion": 9,
+    "paginas_locales_en_sitemap": 18
+  },
+  "criterios_de_salida": {
+    "captacion_local_publicada": "9 zonas; 18 URLs /zonas/* + /empleo/* en el sitemap (30 URLs en total); npm run test:zonas 53 aserciones PASS",
+    "paginas_locales_indexadas": "NO VERIFICADO (sin acceso a Google Search Console desde este entorno)"
+  },
+  "comprobacion_manual": [
+    "next start: 200 en /, /zonas, /zonas/parla, /empleo/parla, /como-funciona, /llms.txt, /robots.txt, /sitemap.xml, /opengraph-image, /contacto; 404 en /zonas/barcelona",
+    "/zonas/parla publica JSON-LD Service, FAQPage (6 preguntas), BreadcrumbList, HousekeepingService y WebSite",
+    "POST /api/contact sin consentimiento -> 400; con consentimiento -> 200",
+    "titulo de portada: 'Limpieza del hogar por horas con contrato | Simvix Home Services' (antes la marca salia dos veces)"
+  ],
+  "no_verificable": [
+    "indexacion y resultados enriquecidos: requieren Search Console y la prueba de resultados enriquecidos de Google sobre produccion",
+    "rendimiento de campañas en Meta: requiere la cartera comercial del usuario",
+    "sh:shellcheck: shellcheck no esta instalado en este entorno (SKIP declarado)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Persistir leads y sacar datos personales del log; limitar frecuencia de /api/contact",
+    "Paginas legales (aviso legal, privacidad, condiciones): faltan razon social, CIF y domicilio",
+    "Banner de cookies y despues pixel + API de conversiones de Meta",
+    "Revisar precios de niñera y cuidado de mayores frente al coste de un contrato laboral",
+    "Telefono real en NEXT_PUBLIC_CONTACT_PHONE antes de lanzar anuncios"
+  ]
+}

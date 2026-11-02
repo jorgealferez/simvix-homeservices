@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { services, getServiceBySlug } from '@/lib/services';
+import JsonLd from '@/components/JsonLd';
+import { zonas } from '@/lib/zonas';
+import { OG_IMAGE, SITE_URL } from '@/lib/site';
+import { breadcrumbJsonLd } from '@/lib/seo';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -23,11 +27,12 @@ export async function generateMetadata({
     description: service.fullDescription.slice(0, 160),
     keywords: service.keywords,
     alternates: {
-      canonical: `https://homeservices.simvix.com/servicios/${service.slug}`,
+      canonical: `/servicios/${service.slug}`,
     },
     openGraph: {
       title: `${service.title} | Simvix Home Services`,
       description: service.shortDescription,
+      images: [OG_IMAGE],
     },
   };
 }
@@ -44,26 +49,24 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     <div className="py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+        <JsonLd
+          data={[
+            {
               '@context': 'https://schema.org',
               '@type': 'Service',
               name: service.title,
               description: service.fullDescription,
-              provider: {
-                '@type': 'LocalBusiness',
-                name: 'Simvix Home Services',
-                url: 'https://homeservices.simvix.com',
-              },
-              areaServed: 'ES',
-              offers: {
-                '@type': 'Offer',
-                description: service.price,
-              },
-            }),
-          }}
+              url: `${SITE_URL}/servicios/${service.slug}`,
+              provider: { '@id': `${SITE_URL}/#organizacion` },
+              areaServed: zonas.map((z) => ({ '@type': 'City', name: z.nombre })),
+              offers: { '@type': 'Offer', priceCurrency: 'EUR', description: service.price },
+            },
+            breadcrumbJsonLd([
+              { nombre: 'Inicio', path: '/' },
+              { nombre: 'Servicios', path: '/servicios' },
+              { nombre: service.title, path: `/servicios/${service.slug}` },
+            ]),
+          ]}
         />
 
         {/* Breadcrumb */}
@@ -134,6 +137,22 @@ export default async function ServiceDetailPage({ params }: PageProps) {
             <p className="text-xs text-center text-gray-500">
               Sin compromiso · Respuesta en 24h
             </p>
+          </div>
+        </div>
+
+        {/* Zonas: enlazado interno a las páginas locales */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Dónde lo ofrecemos</h2>
+          <div className="flex flex-wrap gap-2">
+            {zonas.map((z) => (
+              <Link
+                key={z.slug}
+                href={service.slug === 'limpieza-hogar' ? `/zonas/${z.slug}` : `/contacto?servicio=${service.id}&zona=${z.slug}`}
+                className="border border-gray-200 hover:border-primary-300 hover:bg-primary-50 text-gray-700 px-3 py-1.5 rounded-lg text-sm"
+              >
+                {service.slug === 'limpieza-hogar' ? `Limpieza en ${z.nombre}` : z.nombre}
+              </Link>
+            ))}
           </div>
         </div>
 

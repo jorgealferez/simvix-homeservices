@@ -22,7 +22,7 @@ Repositorio con dos productos coexistiendo:
 | Servicio | Slug | Precio desde |
 |---|---|---|
 | Recogida de niños del colegio | `/servicios/recogida-ninos` | 8€/recogida |
-| Limpieza del hogar | `/servicios/limpieza-hogar` | 15€/hora |
+| Limpieza del hogar | `/servicios/limpieza-hogar` | 25€/hora (IVA incl., con contrato) |
 | Niñera y cuidado de niños | `/servicios/ninera` | 12€/hora |
 | Hacer la compra | `/servicios/hacer-la-compra` | 10€/servicio |
 | Cuidado de personas mayores | `/servicios/cuidado-mayores` | 14€/hora |
@@ -90,6 +90,9 @@ npm run prisma:seed      # Sembrar plantillas de normativa
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | URL pública del sitio | `https://homeservices.simvix.com` |
 | `NEXT_PUBLIC_SITE_NAME` | Nombre del sitio | `Simvix Home Services` |
+| `NEXT_PUBLIC_CONTACT_PHONE` | Teléfono público (web y JSON-LD); hoy hay uno de ejemplo | `+34 600 000 000` |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Email público | `hola@simvix.com` |
+| `NEXT_PUBLIC_WHATSAPP` | WhatsApp Business, internacional sin `+` (opcional) | `34600000000` |
 | `RESEND_API_KEY` | API key para envío de emails (opcional) | `re_xxxxx` |
 | `CONTACT_EMAIL` | Email de destino del formulario | `hola@simvix.com` |
 | `DATABASE_URL` | Base de datos (SQLite por defecto / Postgres en prod) | `file:./prisma/dev.db` |
@@ -126,19 +129,25 @@ restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
 ```
 
-## SEO
+## Captación local, SEO y GEO
 
-- Metadata completa (title, description, OG, Twitter) en `layout.tsx`
-- Sitemap dinámico en `/sitemap.xml` via `app/sitemap.ts`
-- `robots.txt` en `/public/robots.txt`
-- Structured data JSON-LD (LocalBusiness + Service) en homepage y páginas de detalle
-- Breadcrumbs semánticos en páginas interiores
-- `canonical` en cada página
-- `lang="es"` en `<html>`
+- **Zonas de captación** en `src/lib/zonas.ts` (Parla piloto + sur de Madrid): cada zona genera
+  `/zonas/<zona>` (familias) y `/empleo/<zona>` (profesionales, con `JobPosting`).
+- `/como-funciona`: el modelo (Simvix emplea, la familia recibe factura) y los compromisos.
+- JSON-LD en `src/lib/seo.ts`: `HousekeepingService`, `WebSite`, `Service` por zona, `FAQPage`,
+  `BreadcrumbList`, `JobPosting`.
+- `src/app/robots.ts` (admite rastreadores de IA, cierra `/obras`, `/portal`, `/api`),
+  `src/app/sitemap.ts`, `/llms.txt` y `opengraph-image`.
+- Tests: `npm run test:zonas`.
+- Documentación: [`docs/marketing/seo-geo.md`](docs/marketing/seo-geo.md),
+  [`docs/marketing/meta.md`](docs/marketing/meta.md) (cómo entrar en Facebook, Instagram y WhatsApp) y
+  [`docs/negocio/modelo-legal.md`](docs/negocio/modelo-legal.md) (modelo legal y números por hora).
 
 ## Formulario de contacto
 
-El endpoint `/api/contact` valida nombre, email y servicio. Para activar el envío de emails:
+El endpoint `/api/contact` valida con zod (`src/lib/leads.ts`) nombre, email, servicio, rol
+(familia/profesional), zona, origen del anuncio y consentimiento RGPD obligatorio. El formulario se
+prerrellena con `?servicio=&zona=&rol=&utm_source=&utm_campaign=`. Para activar el envío de emails:
 
 1. Instalar Resend: `npm install resend`
 2. Añadir `RESEND_API_KEY` en las variables de entorno
