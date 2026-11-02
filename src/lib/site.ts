@@ -18,8 +18,7 @@ export const TAGLINE =
   'Pides en dos minutos, te asignamos una profesional verificada de tu zona, con contrato y garantía de sustitución.';
 
 export const CONTACT = {
-  /** Sustituir por el teléfono real antes de invertir en anuncios (ver docs/marketing/meta.md). */
-  telefono: process.env.NEXT_PUBLIC_CONTACT_PHONE ?? '+34 900 000 000',
+  telefono: process.env.NEXT_PUBLIC_CONTACT_PHONE ?? '+34 711 526 127',
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'hola@simvix.com',
   /** Número de WhatsApp Business en formato internacional sin "+" (opcional). */
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? '',

@@ -24,8 +24,8 @@ Meta permite llegar a ambos de tres maneras, de gratis a pago:
   teléfono y web ayuda también al SEO local y a que las IAs nos reconozcan como una sola entidad.
 - [ ] **WhatsApp Business** con un número dedicado; catálogo con «Limpieza por horas — 25 €/h IVA
   incl.» y respuestas rápidas. Guardar el número en `NEXT_PUBLIC_WHATSAPP` y el teléfono real en
-  `NEXT_PUBLIC_CONTACT_PHONE` (hoy la web muestra un número de ejemplo: **sustituirlo antes de gastar
-  un euro en anuncios**).
+  `NEXT_PUBLIC_CONTACT_PHONE` (hoy la web ya muestra el teléfono real, +34 711 526 127, también en el
+  JSON-LD; si WhatsApp Business usa otro número, cambiar las dos variables a la vez).
 - [ ] **Verificar el dominio** `homeservices.simvix.com` en la cartera (Configuración → Seguridad de la
   marca → Dominios).
 - [ ] Método de pago y límite de gasto de cuenta (empezar con 600 €/mes).

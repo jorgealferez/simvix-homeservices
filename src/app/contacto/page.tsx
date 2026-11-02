@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ContactForm from '@/components/ContactForm';
+import { CONTACT } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Contacto — Solicita tu Servicio',
@@ -25,10 +26,10 @@ export default function ContactoPage() {
               </div>
               <h3 className="font-bold text-gray-900 mb-1">Llámanos</h3>
               <a
-                href="tel:+34900000000"
+                href={`tel:${CONTACT.telefono.replace(/\s+/g, '')}`}
                 className="text-primary-600 hover:text-primary-800 font-medium"
               >
-                +34 900 000 000
+                {CONTACT.telefono}
               </a>
             </div>
             <div className="p-6">
@@ -39,10 +40,10 @@ export default function ContactoPage() {
                 Escríbenos
               </h3>
               <a
-                href="mailto:hola@simvix.com"
+                href={`mailto:${CONTACT.email}`}
                 className="text-primary-600 hover:text-primary-800 font-medium"
               >
-                hola@simvix.com
+                {CONTACT.email}
               </a>
             </div>
             <div className="p-6">

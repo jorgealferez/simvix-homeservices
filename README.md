@@ -92,7 +92,7 @@ npm run prisma:seed      # Sembrar plantillas de normativa
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | URL pública del sitio | `https://homeservices.simvix.com` |
 | `NEXT_PUBLIC_SITE_NAME` | Nombre del sitio | `Simvix Home Services` |
-| `NEXT_PUBLIC_CONTACT_PHONE` | Teléfono público (web y JSON-LD); hoy hay uno de ejemplo | `+34 600 000 000` |
+| `NEXT_PUBLIC_CONTACT_PHONE` | Teléfono público (web y JSON-LD); por defecto el real | `+34 711 526 127` |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Email público | `hola@simvix.com` |
 | `NEXT_PUBLIC_WHATSAPP` | WhatsApp Business, internacional sin `+` (opcional) | `34600000000` |
 | `RESEND_API_KEY` | API key para envío de emails (opcional) | `re_xxxxx` |
