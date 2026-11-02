@@ -27,6 +27,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 ## Activo
 
 - [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con Next 15 — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-02)
+  - [x] paso `Tests` (`npm test`) en `ci.yml`
+  - [x] README: Next.js 15 + Prisma; `npm test` en scripts
+  - [ ] gauntlet full en VERDE, PR "Fase 2 — Verificacion en CI y README al dia" y squash merge
 
 ## Esperando
 

@@ -12,7 +12,8 @@ Repositorio con dos productos coexistiendo:
 
 ## Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 15 (App Router) + React 18
+- **Datos**: Prisma 5 (SQLite por defecto, Postgres por `DATABASE_URL`)
 - **Lenguaje**: TypeScript
 - **Estilos**: Tailwind CSS
 - **Deploy**: Railway (servicio independiente)
@@ -78,6 +79,7 @@ npm run dev              # Servidor de desarrollo
 npm run build            # Build de producción (genera Prisma client antes)
 npm run start            # Servidor de producción
 npm run lint             # ESLint
+npm test                 # Tests (CTE, Brain, zonas); también en CI
 npm run type-check       # TypeScript sin emitir
 npm run prisma:push      # Aplica el schema a la BD (dev)
 npm run prisma:studio    # Prisma Studio en localhost
