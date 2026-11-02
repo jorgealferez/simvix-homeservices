@@ -75,8 +75,9 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   de Brain tras configurar las variables en Railway — objetivo: >= 1 ejecucion recibida.
   NO VERIFICADO (este entorno no tiene credenciales de Railway ni token de Brain)
 - [ ] Tests en CI — medida: `.github/workflows/ci.yml` ejecuta `npm test` — objetivo: paso presente
-- [ ] Captacion local publicada — medida: `npm run test:zonas` y URLs `/zonas/*` + `/empleo/*` en
-  `sitemap.ts` — objetivo: >= 9 zonas, >= 18 URLs locales, 0 aserciones fallidas
+- [x] Captacion local publicada — medida: `npm run test:zonas` y URLs `/zonas/*` + `/empleo/*` en
+  `sitemap.ts` — objetivo: >= 9 zonas, >= 18 URLs locales, 0 aserciones fallidas (medido 2026-11-02:
+  9 zonas, 18 URLs locales, 53 aserciones PASS, 0 KO; `docs/benchmarks/fase_3.json`)
 - [ ] Paginas locales indexadas — medida: informe «Paginas» de Google Search Console — objetivo: >= 18
   URLs locales indexadas. NO VERIFICADO (este entorno no tiene acceso a Search Console; lo mide el
   usuario tras enviar el sitemap, ver `docs/marketing/seo-geo.md`)
