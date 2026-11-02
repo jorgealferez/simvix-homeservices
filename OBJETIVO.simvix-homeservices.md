@@ -74,7 +74,8 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
 - [ ] Ejecuciones visibles en Brain — medida: ejecuciones del conector `simvix-homeservices` en el panel
   de Brain tras configurar las variables en Railway — objetivo: >= 1 ejecucion recibida.
   NO VERIFICADO (este entorno no tiene credenciales de Railway ni token de Brain)
-- [ ] Tests en CI — medida: `.github/workflows/ci.yml` ejecuta `npm test` — objetivo: paso presente
+- [x] Tests en CI — medida: `.github/workflows/ci.yml` ejecuta `npm test` — objetivo: paso presente
+  (medido 2026-11-02: paso `Tests` presente; `docs/benchmarks/fase_2.json`)
 - [x] Captacion local publicada — medida: `npm run test:zonas` y URLs `/zonas/*` + `/empleo/*` en
   `sitemap.ts` — objetivo: >= 9 zonas, >= 18 URLs locales, 0 aserciones fallidas (medido 2026-11-02:
   9 zonas, 18 URLs locales, 53 aserciones PASS, 0 KO; `docs/benchmarks/fase_3.json`)
@@ -92,7 +93,7 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   Acerca los criterios 2, 3, 4 y 5.
 - [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con el stack real
   (Next 15). Acerca el criterio 6.
-- [ ] Fase 3 — Captacion local: SEO/GEO, zonas y Meta (peticion del usuario 2026-11-02, se ejecuta
+- [x] Fase 3 — Captacion local: SEO/GEO, zonas y Meta (#8, squash `ee2afc9`; peticion del usuario 2026-11-02, se ejecuta
   antes que la Fase 2 por ser peticion explicita): `src/lib/zonas.ts` (9 zonas, Parla piloto),
   `/zonas/*`, `/empleo/*` con `JobPosting`, `/como-funciona`, JSON-LD, `robots.ts`, `sitemap.ts`,
   `llms.txt`, `og:image`, formulario con rol/zona/origen/consentimiento, `test:zonas`, ADR 0003,
