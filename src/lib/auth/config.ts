@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { verifyPassword } from './passwords';
 import { getOrCreateDefaultOrg } from '@/lib/obras/organizations';
+import { edgeAuthConfig } from './edge';
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -15,12 +16,9 @@ const MAX_FAILED = Number(process.env.OBRAS_MAX_FAILED_LOGINS ?? 5);
 const LOCK_MIN = Number(process.env.OBRAS_LOCK_MINUTES ?? 15);
 
 export const authConfig: NextAuthConfig = {
+  ...edgeAuthConfig,
   // PrismaAdapter requiere modelos User/Account/Session/VerificationToken.
   adapter: PrismaAdapter(prisma),
-  session: { strategy: 'jwt' },
-  pages: {
-    signIn: '/obras/login',
-  },
   providers: [
     Credentials({
       name: 'Email y contraseña',
@@ -73,6 +71,7 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
+    ...edgeAuthConfig.callbacks,
     async jwt({ token, user }) {
       if (user?.id) {
         token.uid = user.id;
@@ -112,16 +111,6 @@ export const authConfig: NextAuthConfig = {
         token.isPlatformAdmin = !!u?.isPlatformAdmin;
       }
       return token;
-    },
-    async session({ session, token }) {
-      if (session.user && token.uid) {
-        session.user.id = token.uid as string;
-        session.user.isPlatformAdmin = !!token.isPlatformAdmin;
-        session.user.memberships =
-          (token.memberships as { orgId: string; orgSlug: string; role: string }[]) ?? [];
-        session.user.activeOrgId = (token.activeOrgId as string | null) ?? null;
-      }
-      return session;
     },
   },
 };
