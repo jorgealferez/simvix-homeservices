@@ -26,7 +26,8 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
+- [ ] `/obras` responde 500 en produccion: el middleware (Edge) importa Prisma via `@/lib/auth/config` — EN CURSO (session_017UCRTEgUDGJZnVo3xJpKX9, 2026-11-02)
+  - detectado en Railway: 4 respuestas 5xx en 24 h, todas `GET /obras`; log `PrismaClient is not configured to run in Edge Runtime` en `.next/server/src/middleware.js`
 
 ## Esperando
 
