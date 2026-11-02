@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { auth } from '@/lib/auth/config';
+import NextAuth from 'next-auth';
+import { edgeAuthConfig } from '@/lib/auth/edge';
+
+// Solo la parte Edge de Auth.js: el middleware no puede cargar Prisma.
+const { auth } = NextAuth(edgeAuthConfig);
 
 /**
  * Protege:
