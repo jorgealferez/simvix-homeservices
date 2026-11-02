@@ -92,7 +92,7 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   Acerca los criterios 2, 3, 4 y 5.
 - [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con el stack real
   (Next 15). Acerca el criterio 6.
-- [ ] Fase 3 — Captacion local: SEO/GEO, zonas y Meta (peticion del usuario 2026-11-02, se ejecuta
+- [x] Fase 3 — Captacion local: SEO/GEO, zonas y Meta (#8, squash `ee2afc9`; peticion del usuario 2026-11-02, se ejecuta
   antes que la Fase 2 por ser peticion explicita): `src/lib/zonas.ts` (9 zonas, Parla piloto),
   `/zonas/*`, `/empleo/*` con `JobPosting`, `/como-funciona`, JSON-LD, `robots.ts`, `sitemap.ts`,
   `llms.txt`, `og:image`, formulario con rol/zona/origen/consentimiento, `test:zonas`, ADR 0003,
