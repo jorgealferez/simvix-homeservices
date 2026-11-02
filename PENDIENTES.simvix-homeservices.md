@@ -26,6 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
+- [ ] Fase 3 — Captacion local: SEO/GEO, zonas de captacion (familias y profesionales), modelo legal de intermediacion y estrategia en Meta (peticion del usuario 2026-11-02) — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-02)
 - [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con Next 15
 
 ## Esperando
