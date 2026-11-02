@@ -28,8 +28,8 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 - [ ] Telefono real de contacto (+34 711 526 127) en la web (peticion del usuario 2026-11-02) — EN CURSO (session_017UCRTEryz4nKdARnA3CQvj, 2026-11-02)
   - [x] Railway (simvix-homeservices, production): `NEXT_PUBLIC_CONTACT_PHONE`, `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_WHATSAPP`
-  - [ ] `src/lib/site.ts` con el telefono real por defecto y `/contacto` leyendo de `CONTACT` (sin numero de ejemplo en el codigo)
-  - [ ] docs (`README.md`, `.env.example`, `docs/marketing/*`) sin "numero de ejemplo"
+  - [x] `src/lib/site.ts` con el telefono real por defecto y `/contacto` leyendo de `CONTACT` (sin numero de ejemplo en el codigo)
+  - [x] docs (`README.md`, `.env.example`, `docs/marketing/*`) sin "numero de ejemplo"
   - [ ] gauntlet full en VERDE, PR y squash merge
 
 ## Esperando

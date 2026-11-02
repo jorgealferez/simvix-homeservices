@@ -37,7 +37,7 @@ Todo está cubierto por `npm run test:zonas` (coherencia de zonas, JSON-LD, site
    fuerte y las IAs las resumen.
 5. **Coherencia de entidad (NAP)**: mismo nombre, teléfono y web en Google, Facebook, Instagram,
    WhatsApp y directorios (Páginas Amarillas, Cylex, etc.).
-6. **Teléfono real** en `NEXT_PUBLIC_CONTACT_PHONE` (hoy es un número de ejemplo y sale en el JSON-LD).
+6. **Teléfono real** en `NEXT_PUBLIC_CONTACT_PHONE`: hecho, +34 711 526 127 (web y JSON-LD).
 
 ## Contenido que conviene escribir después (por orden)
 
