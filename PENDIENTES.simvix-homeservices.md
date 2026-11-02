@@ -26,8 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] `/obras` responde 500 en produccion: el middleware (Edge) importa Prisma via `@/lib/auth/config` — EN CURSO (session_017UCRTEgUDGJZnVo3xJpKX9, 2026-11-02)
-  - detectado en Railway: 4 respuestas 5xx en 24 h, todas `GET /obras`; log `PrismaClient is not configured to run in Edge Runtime` en `.next/server/src/middleware.js`
+(vacio)
 
 ## Esperando
 
@@ -35,10 +34,21 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-(vacio)
+- [ ] Poner en marcha el modulo /obras en produccion — BLOQUEADO: cambio de arquitectura y de alcance que la carta no contempla (la Meta deja fuera el producto /obras)
+  - que se necesita: (1) `schema.prisma` a `postgresql` y migracion inicial (ADR `Tipo: datos`); (2) `DATABASE_URL` del Postgres del proyecto Railway (sin comprobar si ya lo usa `renovation-company-website`: ¿compartir o BD propia?); (3) `AUTH_SECRET` propio y `AUTH_TRUST_HOST=true` (detras del proxy de Railway)
+  - que se ha intentado: arreglo del middleware Edge (#12), desplegado; el log de produccion muestra las dos causas restantes
+  - opcion A: activar /obras (Postgres propio en el proyecto, coste de un servicio mas; incorporar el producto /obras a la carta con sus criterios)
+  - opcion B: dejarlo apagado y que `/obras` responda 404 o una pagina "proximamente" en vez de 500 (un PR pequeño, sin coste); el modulo sigue en el codigo
 
 ## Hecho
 
+- [x] `/obras` responde 500 en produccion: el middleware (Edge) importa Prisma via `@/lib/auth/config` — (#12, squash `09a8843`, 2026-11-02)
+  - detectado en Railway: 4 respuestas 5xx en 24 h, todas `GET /obras`; log `PrismaClient is not configured to run in Edge Runtime` en `.next/server/src/middleware.js`
+  - [x] `src/lib/auth/edge.ts` (sin BD) para el middleware; `config.ts` la extiende; ADR 0004 con `## Seguridad`
+  - [x] `src/middleware.test.ts` en `npm test`: rojo contra el codigo anterior, verde con el nuevo; bundle del middleware sin `PrismaClient`
+  - [x] gauntlet full en VERDE (10 PASS, 4 SKIP), PR y squash merge
+  - [x] desplegado en Railway (22:27 UTC): el error de Edge desaparece del log
+  - `/obras` SIGUE en 500 por dos causas que el error de Edge tapaba: `UntrustedHost` de Auth.js y `DATABASE_URL` sin definir con `schema.prisma` en SQLite (ver `## Bloqueado`)
 - [x] Telefono real de contacto (+34 711 526 127) en la web (peticion del usuario 2026-11-02) — (#10, squash `5a9061a`, 2026-11-02)
   - [x] Railway (simvix-homeservices, production): `NEXT_PUBLIC_CONTACT_PHONE`, `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_WHATSAPP`
   - [x] `src/lib/site.ts` con el telefono real por defecto y `/contacto` leyendo de `CONTACT` (sin numero de ejemplo en el codigo)
