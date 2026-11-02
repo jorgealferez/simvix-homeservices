@@ -26,11 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Telefono real de contacto (+34 711 526 127) en la web (peticion del usuario 2026-11-02) — EN CURSO (session_017UCRTEryz4nKdARnA3CQvj, 2026-11-02)
-  - [x] Railway (simvix-homeservices, production): `NEXT_PUBLIC_CONTACT_PHONE`, `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_WHATSAPP`
-  - [x] `src/lib/site.ts` con el telefono real por defecto y `/contacto` leyendo de `CONTACT` (sin numero de ejemplo en el codigo)
-  - [x] docs (`README.md`, `.env.example`, `docs/marketing/*`) sin "numero de ejemplo"
-  - [ ] gauntlet full en VERDE, PR y squash merge
+(vacio)
 
 ## Esperando
 
@@ -42,6 +38,12 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Hecho
 
+- [x] Telefono real de contacto (+34 711 526 127) en la web (peticion del usuario 2026-11-02) — (#10, squash `5a9061a`, 2026-11-02)
+  - [x] Railway (simvix-homeservices, production): `NEXT_PUBLIC_CONTACT_PHONE`, `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_WHATSAPP`
+  - [x] `src/lib/site.ts` con el telefono real por defecto y `/contacto` leyendo de `CONTACT` (sin numero de ejemplo en el codigo)
+  - [x] docs (`README.md`, `.env.example`, `docs/marketing/*`) sin "numero de ejemplo"
+  - [x] gauntlet full en VERDE, PR y squash merge
+  - NO VERIFICADO: que el buzon `hola@simvix.com` exista en OVH (puerto 25 bloqueado en el entorno)
 - [x] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con Next 15 — (#9, squash `829580b`, 2026-11-02)
   - [x] paso `Tests` (`npm test`) en `ci.yml`
   - [x] README: Next.js 15 + Prisma; `npm test` en scripts
@@ -57,7 +59,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - propuesta (decision del usuario): paginas de aviso legal, privacidad y condiciones; necesitan razon social, CIF y domicilio, que no se inventan
   - propuesta (decision del usuario): banner de cookies y despues pixel + API de conversiones de Meta (`docs/marketing/meta.md`, paso 3)
   - propuesta (decision del usuario): precios de niñera (12 €/h) y cuidado de mayores (14 €/h) no cubren un contrato laboral; revisar con los numeros de `docs/negocio/modelo-legal.md`
-  - propuesta (decision del usuario): telefono real en `NEXT_PUBLIC_CONTACT_PHONE` antes de lanzar anuncios (hoy sale uno de ejemplo, tambien en el JSON-LD)
+  - [x] telefono real en `NEXT_PUBLIC_CONTACT_PHONE` (hecho en #10)
 - [x] Conectar con Brain: telemetria de automatizaciones con IA (ref. simvix-brain Fase 11, #21) — Fase 1 de la carta (#6, squash `7751e5a`, 2026-10-04)
   - [x] `src/lib/brain.ts` (BRAIN_URL/BRAIN_TOKEN, fetch con timeout 5 s, errores tragados)
   - [x] informar desde `callAi`/`callAiStream` con `automatizacion` por llamador (agentes, `chat-<agente>`, `analisis-planos`, inspecciones, SVG); no informar en mock
