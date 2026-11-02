@@ -41,6 +41,20 @@
       "unidad": "llamadores",
       "direccion": "max",
       "objetivo": 0
+    },
+    {
+      "id": "zonas_captacion",
+      "descripcion": "Zonas de captacion en src/lib/zonas.ts (cada una genera /zonas/<zona> y /empleo/<zona>); ADR 0003",
+      "unidad": "zonas",
+      "direccion": "min",
+      "objetivo": 9
+    },
+    {
+      "id": "paginas_locales_en_sitemap",
+      "descripcion": "URLs /zonas/* y /empleo/* que publica src/app/sitemap.ts; ADR 0003",
+      "unidad": "urls",
+      "direccion": "min",
+      "objetivo": 18
     }
   ]
 }
