@@ -26,10 +26,11 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con Next 15 — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-02)
-  - [x] paso `Tests` (`npm test`) en `ci.yml`
-  - [x] README: Next.js 15 + Prisma; `npm test` en scripts
-  - [ ] gauntlet full en VERDE, PR "Fase 2 — Verificacion en CI y README al dia" y squash merge
+- [ ] Telefono real de contacto (+34 711 526 127) en la web (peticion del usuario 2026-11-02) — EN CURSO (session_017UCRTEryz4nKdARnA3CQvj, 2026-11-02)
+  - [x] Railway (simvix-homeservices, production): `NEXT_PUBLIC_CONTACT_PHONE`, `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_WHATSAPP`
+  - [ ] `src/lib/site.ts` con el telefono real por defecto y `/contacto` leyendo de `CONTACT` (sin numero de ejemplo en el codigo)
+  - [ ] docs (`README.md`, `.env.example`, `docs/marketing/*`) sin "numero de ejemplo"
+  - [ ] gauntlet full en VERDE, PR y squash merge
 
 ## Esperando
 
@@ -41,6 +42,10 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Hecho
 
+- [x] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con Next 15 — (#9, squash `829580b`, 2026-11-02)
+  - [x] paso `Tests` (`npm test`) en `ci.yml`
+  - [x] README: Next.js 15 + Prisma; `npm test` en scripts
+  - [x] gauntlet full en VERDE, PR "Fase 2 — Verificacion en CI y README al dia" y squash merge
 - [x] Fase 3 — Captacion local: SEO/GEO, zonas de captacion (familias y profesionales), modelo legal de intermediacion y estrategia en Meta (peticion del usuario 2026-11-02) — (#8, squash `ee2afc9`, 2026-11-02)
   - [x] zonas tipadas (`src/lib/zonas.ts`, 9 zonas, Parla piloto) y JSON-LD (`src/lib/seo.ts`)
   - [x] `/zonas/*`, `/empleo/*` (JobPosting), `/como-funciona`, `robots.ts`, `sitemap.ts`, `/llms.txt`, `og:image`
