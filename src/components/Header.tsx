@@ -33,6 +33,24 @@ export default function Header() {
               Servicios
             </Link>
             <Link
+              href="/zonas"
+              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+            >
+              Zonas
+            </Link>
+            <Link
+              href="/como-funciona"
+              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+            >
+              Cómo funciona
+            </Link>
+            <Link
+              href="/empleo"
+              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+            >
+              Trabaja con nosotros
+            </Link>
+            <Link
               href="/obras"
               className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
             >
@@ -96,6 +114,20 @@ export default function Header() {
             >
               Servicios
             </Link>
+            {[
+              ['/zonas', 'Zonas'],
+              ['/como-funciona', 'Cómo funciona'],
+              ['/empleo', 'Trabaja con nosotros'],
+            ].map(([href, label]) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-gray-600 hover:text-primary-700 font-medium py-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            ))}
             <Link
               href="/obras"
               className="text-gray-600 hover:text-primary-700 font-medium py-2"

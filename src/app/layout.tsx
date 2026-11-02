@@ -2,17 +2,19 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import JsonLd from '@/components/JsonLd';
+import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { organizationJsonLd, websiteJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://homeservices.simvix.com'
-  ),
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: {
-    default: 'Simvix Home Services | Servicios del Hogar de Confianza',
+    default: 'Simvix Home Services | Limpieza del hogar con contrato en Parla y sur de Madrid',
     template: '%s | Simvix Home Services',
   },
   description:
-    'Recogida de niños del colegio, limpieza del hogar, niñera, hacer la compra y cuidado de personas mayores. Servicios domésticos profesionales y de confianza en España.',
+    'Limpiadoras por horas con contrato, alta en la Seguridad Social y factura en Parla, Pinto, Fuenlabrada, Getafe y el sur de Madrid. También niñera, recogida del colegio y cuidado de mayores.',
   keywords: [
     'servicios del hogar',
     'recogida niños colegio',
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_ES',
-    url: 'https://homeservices.simvix.com',
+    url: '/',
     siteName: 'Simvix Home Services',
     title: 'Simvix Home Services | Servicios del Hogar de Confianza',
     description:
@@ -54,7 +56,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://homeservices.simvix.com',
+    canonical: '/',
   },
 };
 
@@ -66,6 +68,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-primary-600 text-white px-4 py-2 rounded-lg"
