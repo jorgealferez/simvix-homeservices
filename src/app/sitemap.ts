@@ -14,6 +14,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: url('/como-funciona'), lastModified, changeFrequency: 'monthly', priority: 0.8 },
     { url: url('/empleo'), lastModified, changeFrequency: 'weekly', priority: 0.8 },
     { url: url('/contacto'), lastModified, changeFrequency: 'monthly', priority: 0.7 },
+    { url: url('/aviso-legal'), lastModified, changeFrequency: 'yearly', priority: 0.2 },
+    { url: url('/privacidad'), lastModified, changeFrequency: 'yearly', priority: 0.2 },
+    { url: url('/condiciones'), lastModified, changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   const servicios: MetadataRoute.Sitemap = services.map((s) => ({

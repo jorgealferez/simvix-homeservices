@@ -25,6 +25,21 @@ export const CONTACT = {
   horario: 'Lunes a viernes 8:00–20:00 · Sábados 9:00–14:00',
 } as const;
 
+/**
+ * Titular de la web (LSSI art. 10). Datos tomados de los avisos legales del
+ * propio usuario (simvix-corporate-website `apps/api/src/seed/data/legal.ts`,
+ * ai-nodecode-core-api `resources/views/web/terms.blade.php`). Los datos
+ * registrales no aparecen en ninguna fuente: quedan en null y la página lo
+ * declara pendiente en vez de inventarlos.
+ */
+export const TITULAR = {
+  razonSocial: 'BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL',
+  marca: 'Simvix',
+  cif: 'B87816419',
+  domicilio: 'Calle Congo 29, 45210 Yuncos (Toledo), España',
+  registroMercantil: null as string | null,
+} as const;
+
 /** Imagen para compartir (src/app/opengraph-image.tsx); las páginas que definen openGraph la repiten. */
 export const OG_IMAGE = { url: '/opengraph-image', width: 1200, height: 630 };
 

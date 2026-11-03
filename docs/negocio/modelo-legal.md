@@ -66,8 +66,11 @@ responde**. El modelo C no se usa.
 - Precio final con IVA incluido en toda publicidad (25 €/h ya lo incluye: base 20,66 € + IVA 21 %).
 - Contrato a distancia: información previa, derecho de desistimiento de 14 días (salvo servicio ya
   prestado a petición expresa) y hojas de reclamaciones de la Comunidad de Madrid.
-- **Pendiente**: páginas de aviso legal, política de privacidad y condiciones del servicio. Necesitan
-  razón social, CIF y domicilio: no se inventan, las aporta el usuario.
+- Páginas `/aviso-legal`, `/privacidad` y `/condiciones` publicadas (Fase 4) con el titular de los
+  avisos legales del usuario: BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL, CIF B87816419,
+  Calle Congo 29, 45210 Yuncos (Toledo). **Pendiente**: los datos del Registro Mercantil (tomo,
+  folio, hoja), que no aparecen en ninguna fuente; no se inventan y la página no los muestra hasta
+  que el usuario los aporte (`TITULAR.registroMercantil`).
 
 ### Datos personales (RGPD / LOPDGDD)
 

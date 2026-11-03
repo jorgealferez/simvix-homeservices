@@ -279,7 +279,12 @@ export default function ContactForm() {
             <span>
               Acepto que Simvix trate mis datos para responder a esta solicitud
               {form.rol === 'profesional' ? ' y valorar mi candidatura' : ''}. No los
-              cedemos a terceros y puedes pedir que los borremos en {CONTACT.email}.
+              cedemos a terceros y puedes pedir que los borremos en {CONTACT.email}. Más
+              información en la{' '}
+              <a href="/privacidad" target="_blank" className="underline">
+                política de privacidad
+              </a>
+              .
             </span>
           </label>
 

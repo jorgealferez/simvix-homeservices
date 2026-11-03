@@ -991,3 +991,33 @@ model KnowledgeChunk {
   @@index([docId])
   @@index([searchKey])
 }
+
+// ---------------------------------------------------------------------------
+// Home Services — leads del formulario público (familias y profesionales).
+// ADR 0006 (Tipo: datos). Datos personales cifrados en reposo con
+// src/lib/security/crypto.ts (AES-256-GCM, prefijo "enc:v1:"); emailHash
+// permite localizar a una persona para el derecho de supresión sin descifrar.
+// rol/zona/servicio/estado son String + constantes TS (src/lib/leads.ts),
+// como el resto del esquema (SQLite no soporta enums Prisma).
+// ---------------------------------------------------------------------------
+
+model Lead {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  rol              String // familia | profesional
+  zona             String // slug de src/lib/zonas.ts u "otra"
+  servicio         String // id de src/lib/services.ts
+  origen           String   @default("") // utm_source:utm_campaign
+  estado           String   @default("nuevo") // nuevo | contactado | convertido | descartado
+  nombre           String // cifrado
+  email            String // cifrado
+  emailHash        String // deterministicHash(email en minúsculas)
+  telefono         String? // cifrado
+  mensaje          String? // cifrado
+  consentimientoAt DateTime
+
+  @@index([createdAt])
+  @@index([zona, rol, estado])
+  @@index([emailHash])
+}
