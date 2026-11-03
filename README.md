@@ -149,11 +149,19 @@ restartPolicyMaxRetries = 3
 
 El endpoint `/api/contact` valida con zod (`src/lib/leads.ts`) nombre, email, servicio, rol
 (familia/profesional), zona, origen del anuncio y consentimiento RGPD obligatorio. El formulario se
-prerrellena con `?servicio=&zona=&rol=&utm_source=&utm_campaign=`. Para activar el envío de emails:
+prerrellena con `?servicio=&zona=&rol=&utm_source=&utm_campaign=`.
 
-1. Instalar Resend: `npm install resend`
-2. Añadir `RESEND_API_KEY` en las variables de entorno
-3. Descomentar el bloque de Resend en `src/app/api/contact/route.ts`
+Los leads se guardan en la tabla `Lead` (ADR 0006): nombre, email, teléfono y mensaje **cifrados**
+con `OBRAS_FIELD_KEY`, y en claro solo rol, zona, servicio, origen y estado. Límite de 5 envíos por IP
+cada 10 minutos; el log no lleva datos personales. Para activarlo en producción:
+
+1. `DATABASE_URL` (SQLite en un volumen, o Postgres cambiando el `provider` del esquema)
+2. `OBRAS_FIELD_KEY` (`openssl rand -base64 32`)
+3. `npm run prisma:push`
+
+Mientras no haya `DATABASE_URL`, la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`) para
+no perderlo. Para verlos: `npm run prisma:studio`. Páginas legales: `/aviso-legal`, `/privacidad` y
+`/condiciones`, con el titular de `TITULAR` en `src/lib/site.ts`.
 
 ## CI/CD
 

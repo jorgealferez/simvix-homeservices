@@ -26,7 +26,14 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
+- [ ] Fase 4 — Leads con almacen propio y paginas legales (decision del usuario 2026-11-03: leads en tabla de la BD con ADR `Tipo: datos`; razon social, CIF y domicilio buscados en sus repos/webs, sin inventarlos) — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-03)
+  - [x] tabla `Lead` con datos personales cifrados y `emailHash` (ADR 0006 `Tipo: datos`); `src/lib/leads-store.ts`
+  - [x] `/api/contact` guarda en BD, log sin datos personales, 429 a partir del sexto envio por IP en 10 min; sin BD conserva el lead en el log
+  - [x] `/aviso-legal`, `/privacidad`, `/condiciones` con el titular de los avisos legales del usuario (BYTEMEGA..., CIF B87816419, Yuncos); pie y formulario enlazados
+  - [x] `test:leads` (33 aserciones) y prueba con SQLite limpia; benchmark `fase_4.json`
+  - [ ] gauntlet full en VERDE, PR "Fase 4 — Leads con almacen propio y paginas legales" y squash merge
+  - pendiente (dato del usuario): datos del Registro Mercantil; no aparecen en ninguna fuente y no se inventan
+  - pendiente (configuracion, usuario): `DATABASE_URL` + `OBRAS_FIELD_KEY` en Railway y `npm run prisma:push`; hasta entonces los leads de produccion quedan en el log
 
 ## Esperando
 

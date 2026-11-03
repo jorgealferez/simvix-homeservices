@@ -83,6 +83,12 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   URLs locales indexadas. NO VERIFICADO (este entorno no tiene acceso a Search Console; lo mide el
   usuario tras enviar el sitemap, ver `docs/marketing/seo-geo.md`)
 
+- [x] Leads guardados y paginas legales — medida: `npm run test:leads` y prueba con SQLite limpia
+  (fila cifrada, 429 al sexto envio, log sin datos personales; `/aviso-legal`, `/privacidad`,
+  `/condiciones` en 200) — objetivo: 0 aserciones fallidas y las 3 paginas publicadas (medido
+  2026-11-03: 33 aserciones PASS, 5 filas cifradas, 429, 0 datos personales en log, 3 de 3 paginas;
+  `docs/benchmarks/fase_4.json`). Datos registrales: NO VERIFICADO (no aparecen en ninguna fuente)
+
 ## Fases
 
 - [x] Fase 0 — Encuadre (#5, squash `ae40418`): loop instalado, esta carta rellena desde la base real,
@@ -91,13 +97,17 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
 - [x] Fase 1 — Conectar con Brain (#6, squash `7751e5a`): `src/lib/brain.ts`, telemetria desde `callAi`/`callAiStream`
   (agentes, `chat-<agente>`, `analisis-planos`, inspecciones, SVG), `test:brain`, variables documentadas.
   Acerca los criterios 2, 3, 4 y 5.
-- [ ] Fase 2 — Verificacion en CI y README al dia: `npm test` en `ci.yml`, README con el stack real
+- [x] Fase 2 — Verificacion en CI y README al dia (#9, squash `829580b`): `npm test` en `ci.yml`, README con el stack real
   (Next 15). Acerca el criterio 6.
 - [x] Fase 3 — Captacion local: SEO/GEO, zonas y Meta (#8, squash `ee2afc9`; peticion del usuario 2026-11-02, se ejecuta
   antes que la Fase 2 por ser peticion explicita): `src/lib/zonas.ts` (9 zonas, Parla piloto),
   `/zonas/*`, `/empleo/*` con `JobPosting`, `/como-funciona`, JSON-LD, `robots.ts`, `sitemap.ts`,
   `llms.txt`, `og:image`, formulario con rol/zona/origen/consentimiento, `test:zonas`, ADR 0003,
   `docs/marketing/{seo-geo,meta}.md`, `docs/negocio/modelo-legal.md`. Acerca los criterios 7 y 8.
+- [ ] Fase 4 — Leads con almacen propio y paginas legales: tabla `Lead` en la BD (ADR `Tipo: datos`),
+  sin datos personales en el log, limite de frecuencia en `/api/contact`; aviso legal, privacidad y
+  condiciones del servicio con los datos de empresa que existan (los que falten, bloqueados, nunca
+  inventados).
 
 ## Calidad y proyeccion
 
@@ -133,3 +143,6 @@ siguientes; nada de fases de relleno: cada fase acerca un criterio de salida y l
   repaso sin coste en 48 h, seguro de RC, sin permanencia con 24 h de aviso, nunca se cobra a las
   profesionales; (5) el salario bruto/hora de la oferta de empleo no se publica hasta que el usuario lo
   fije (`ofertaEmpleo.salarioHoraBrutoDesde`).
+- 2026-11-03 — Leads en una tabla de la base de datos (no email/Resend), con ADR `Tipo: datos`.
+  Razon social, CIF, domicilio y telefono se buscan en los repositorios y webs legales del usuario; si
+  no aparecen, no se inventan: quedan bloqueados con motivo y se publica el resto.

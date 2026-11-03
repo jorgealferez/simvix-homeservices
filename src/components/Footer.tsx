@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { zonas } from '@/lib/zonas';
-import { CONTACT } from '@/lib/site';
+import { CONTACT, TITULAR } from '@/lib/site';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -132,7 +132,12 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-gray-500 flex flex-col sm:flex-row justify-between gap-2">
-          <p>© {currentYear} Simvix Home Services. Todos los derechos reservados.</p>
+          <p>© {currentYear} Simvix Home Services · {TITULAR.razonSocial}</p>
+          <p className="flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/aviso-legal" className="hover:text-white">Aviso legal</Link>
+            <Link href="/privacidad" className="hover:text-white">Privacidad</Link>
+            <Link href="/condiciones" className="hover:text-white">Condiciones</Link>
+          </p>
           <p>Limpieza del hogar con contrato en Parla y el sur de Madrid</p>
         </div>
       </div>
