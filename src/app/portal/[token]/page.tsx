@@ -52,7 +52,7 @@ export default async function PortalPage({ params }: Params) {
             <div>Fase actual: <strong>{project.currentPhase}</strong></div>
             <div className="mt-2 flex items-center gap-3">
               <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div className="h-2 bg-emerald-500" style={{ width: `${pct}%` }} />
+                <div className="h-2 bg-accent-500" style={{ width: `${pct}%` }} />
               </div>
               <span className="text-xs">{completed}/{PHASES.length}</span>
             </div>

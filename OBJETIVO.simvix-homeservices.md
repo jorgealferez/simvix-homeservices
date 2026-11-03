@@ -88,6 +88,9 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   `/condiciones` en 200) — objetivo: 0 aserciones fallidas y las 3 paginas publicadas (medido
   2026-11-03: 33 aserciones PASS, 5 filas cifradas, 429, 0 datos personales en log, 3 de 3 paginas;
   `docs/benchmarks/fase_4.json`). Datos registrales: NO VERIFICADO (no aparecen en ninguna fuente)
+- [x] Identidad del grupo «simvix.» aplicada — medida: grep en `src/` y `public/` de hex antiguos,
+  degradados y logos emoji, y contraste WCAG de los pares de texto — objetivo: 0, 0, 0 y >= 4,5:1
+  (medido 2026-11-03: 0, 0, 0 y minimo 4,82:1; capturas en `docs/brand/capturas/`; `docs/benchmarks/fase_5.json`)
 
 ## Fases
 
@@ -108,6 +111,8 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   sin datos personales en el log, limite de frecuencia en `/api/contact`; aviso legal, privacidad y
   condiciones del servicio con los datos de empresa que existan (los que falten, bloqueados, nunca
   inventados).
+- [ ] Fase 5 — Identidad del grupo «simvix.» (peticion urgente del usuario 2026-11-03): marca «simvix. home»
+  y simbolo «h.» en trazados de Fraunces 600, tokens tinta/coral, iconos, manifest, Open Graph, ADR 0008.
 
 ## Calidad y proyeccion
 

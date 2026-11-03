@@ -63,9 +63,9 @@ export default async function ZonaPage({ params }: PageProps) {
 
         <nav aria-label="Ruta de navegación" className="mb-8">
           <ol className="flex items-center gap-2 text-sm text-gray-500">
-            <li><Link href="/" className="hover:text-primary-600">Inicio</Link></li>
+            <li><Link href="/" className="hover:text-accent-600">Inicio</Link></li>
             <li aria-hidden="true">/</li>
-            <li><Link href="/zonas" className="hover:text-primary-600">Zonas</Link></li>
+            <li><Link href="/zonas" className="hover:text-accent-600">Zonas</Link></li>
             <li aria-hidden="true">/</li>
             <li className="text-gray-900 font-medium">{zona.nombre}</li>
           </ol>
@@ -89,13 +89,13 @@ export default async function ZonaPage({ params }: PageProps) {
         <div className="flex flex-col sm:flex-row gap-4 mb-12">
           <Link
             href={pedir}
-            className="inline-flex justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md"
+            className="inline-flex justify-center bg-accent-600 hover:bg-accent-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md"
           >
             Pedir limpieza en {zona.nombre}
           </Link>
           <Link
             href="/como-funciona"
-            className="inline-flex justify-center border-2 border-primary-600 text-primary-700 font-semibold text-lg px-8 py-4 rounded-xl hover:bg-primary-50"
+            className="inline-flex justify-center border-2 border-accent-600 text-primary-700 font-semibold text-lg px-8 py-4 rounded-xl hover:bg-primary-50"
           >
             Cómo funciona
           </Link>

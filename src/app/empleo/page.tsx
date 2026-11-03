@@ -47,7 +47,7 @@ export default function EmpleoPage() {
         </ul>
         <Link
           href="/contacto?rol=profesional&servicio=limpieza-hogar"
-          className="inline-flex bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md"
+          className="inline-flex bg-accent-600 hover:bg-accent-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md"
         >
           Apuntarme
         </Link>

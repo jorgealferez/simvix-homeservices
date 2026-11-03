@@ -73,13 +73,13 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         <nav aria-label="Ruta de navegación" className="mb-8">
           <ol className="flex items-center gap-2 text-sm text-gray-500">
             <li>
-              <Link href="/" className="hover:text-primary-600">
+              <Link href="/" className="hover:text-accent-600">
                 Inicio
               </Link>
             </li>
             <li aria-hidden="true">/</li>
             <li>
-              <Link href="/servicios" className="hover:text-primary-600">
+              <Link href="/servicios" className="hover:text-accent-600">
                 Servicios
               </Link>
             </li>
@@ -130,7 +130,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
             <p className="text-sm text-gray-500 mb-6">{service.priceNote}</p>
             <Link
               href={`/contacto?servicio=${service.id}`}
-              className="block w-full text-center bg-primary-600 text-white hover:bg-primary-700 font-bold text-lg py-4 rounded-xl shadow-md transition-all mb-3"
+              className="block w-full text-center bg-accent-600 text-white hover:bg-accent-700 font-bold text-lg py-4 rounded-xl shadow-md transition-all mb-3"
             >
               Solicitar ahora
             </Link>

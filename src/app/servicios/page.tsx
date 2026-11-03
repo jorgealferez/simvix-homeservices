@@ -20,7 +20,7 @@ export default function ServiciosPage() {
         <nav aria-label="Ruta de navegación" className="mb-8">
           <ol className="flex items-center gap-2 text-sm text-gray-500">
             <li>
-              <Link href="/" className="hover:text-primary-600">
+              <Link href="/" className="hover:text-accent-600">
                 Inicio
               </Link>
             </li>
@@ -58,7 +58,7 @@ export default function ServiciosPage() {
           </p>
           <Link
             href="/contacto"
-            className="inline-flex items-center gap-2 bg-primary-600 text-white hover:bg-primary-700 font-bold text-lg px-8 py-4 rounded-xl shadow-md transition-all"
+            className="inline-flex items-center gap-2 bg-accent-600 text-white hover:bg-accent-700 font-bold text-lg px-8 py-4 rounded-xl shadow-md transition-all"
           >
             Contactar ahora
           </Link>

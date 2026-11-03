@@ -155,7 +155,7 @@ export default function ContactForm() {
               value={form.name}
               onChange={handleChange}
               placeholder="Tu nombre y apellidos"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition"
             />
           </div>
 
@@ -177,7 +177,7 @@ export default function ContactForm() {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="tu@email.com"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition"
               />
             </div>
             <div>
@@ -195,7 +195,7 @@ export default function ContactForm() {
                 value={form.phone}
                 onChange={handleChange}
                 placeholder="+34 600 000 000"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition"
               />
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function ContactForm() {
               required
               value={form.service}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition bg-white"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition bg-white"
             >
               <option value="">Selecciona un servicio</option>
               {services.map((s) => (
@@ -235,7 +235,7 @@ export default function ContactForm() {
               name="zona"
               value={form.zona}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition bg-white"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition bg-white"
             >
               <option value="">Selecciona tu municipio</option>
               {zonas.map((z) => (
@@ -262,7 +262,7 @@ export default function ContactForm() {
               value={form.message}
               onChange={handleChange}
               placeholder="Descríbenos qué necesitas, horarios, zona..."
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition resize-none"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition resize-none"
             />
           </div>
 
@@ -310,7 +310,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={status === 'loading' || !form.consentimiento}
-            className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-bold text-lg py-4 rounded-xl shadow-md hover:shadow-lg transition-all"
+            className="w-full bg-accent-600 hover:bg-accent-700 disabled:bg-accent-400 text-white font-bold text-lg py-4 rounded-xl shadow-md hover:shadow-lg transition-all"
           >
             {status === 'loading'
               ? 'Enviando...'

@@ -34,7 +34,7 @@ export default function Services() {
         <div className="text-center">
           <Link
             href="/contacto"
-            className="inline-flex items-center gap-2 bg-primary-600 text-white hover:bg-primary-700 font-bold text-lg px-8 py-4 rounded-xl shadow-md hover:shadow-lg transition-all"
+            className="inline-flex items-center gap-2 bg-accent-600 text-white hover:bg-accent-700 font-bold text-lg px-8 py-4 rounded-xl shadow-md hover:shadow-lg transition-all"
           >
             Solicitar tu servicio ahora
             <span aria-hidden="true">→</span>

@@ -10,36 +10,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Identidad del grupo «simvix.» (ADR 0008): un solo color propio, el coral del punto.
+        // primary = tinta (#0B1220 en 700) y grises fríos; accent = coral (#FF5A3C en 500,
+        // #D23A1A en 600 para botones con texto blanco: 4,8:1 sobre blanco, AA).
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#F5F6F8',
+          100: '#E8EAEE',
+          200: '#CDD1D9',
+          300: '#A3AAB8',
+          400: '#6B7385',
+          500: '#3F4759',
+          600: '#1F2737',
+          700: '#0B1220',
+          800: '#080D18',
+          900: '#050810',
         },
         accent: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
+          50: '#FFF1EE',
+          100: '#FFE0D9',
+          200: '#FFC2B3',
+          300: '#FF9A85',
+          400: '#FF7A60',
+          500: '#FF5A3C',
+          600: '#D23A1A',
+          700: '#B02E12',
+          800: '#8A240E',
+          900: '#5E190A',
         },
+        ink: '#0B1220',
+        coral: { DEFAULT: '#FF5A3C', strong: '#D23A1A' },
         // Tokens semánticos del design system /obras.
         // Cada par {DEFAULT, dark} se referencia con bg-surface / dark:bg-surface-dark, etc.
         // Usar las clases utilitarias normales de Tailwind cubre la mayoría de casos.
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

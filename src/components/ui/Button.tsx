@@ -14,7 +14,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT_CLASS: Record<Variant, string> = {
   primary:
-    'bg-emerald-500 hover:bg-emerald-400 text-slate-900 dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:text-slate-950 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:text-slate-500',
+    'bg-accent-600 hover:bg-accent-700 text-white dark:bg-accent-600 dark:hover:bg-accent-700 dark:text-white disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:text-slate-500',
   secondary:
     'bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-100 dark:border-slate-600',
   ghost:
@@ -40,7 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-md font-medium transition disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900',
+        'inline-flex items-center justify-center gap-2 rounded-md font-medium transition disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900',
         VARIANT_CLASS[variant],
         SIZE_CLASS[size],
         className,

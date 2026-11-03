@@ -9,7 +9,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const BASE =
-  'h-9 w-full rounded-md border bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 border-slate-300 px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400';
+  'h-9 w-full rounded-md border bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 border-slate-300 px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500';
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   { label, hint, error, full, className, id, ...rest },
@@ -72,7 +72,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         rows={3}
         aria-invalid={error ? true : undefined}
         className={cn(
-          'min-h-[5rem] w-full rounded-md border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 dark:border-slate-700 border-slate-300 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400',
+          'min-h-[5rem] w-full rounded-md border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 dark:border-slate-700 border-slate-300 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500',
           error && 'border-red-500 focus:ring-red-400 focus:border-red-400',
           className,
         )}

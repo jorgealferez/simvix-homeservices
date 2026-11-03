@@ -29,7 +29,7 @@ export default function ZonasPage() {
         </p>
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {zonas.map((z) => (
-            <li key={z.slug} className="border border-gray-200 rounded-xl p-5 hover:border-primary-300">
+            <li key={z.slug} className="border border-gray-200 rounded-xl p-5 hover:border-accent-500">
               <span className="text-xs font-semibold text-accent-700">{ETIQUETA_PRIORIDAD[z.prioridad]}</span>
               <h2 className="text-lg font-bold text-gray-900 mt-1">{z.nombre}</h2>
               <p className="text-sm text-gray-500 mb-3">CP {z.codigosPostales.join(', ')}</p>
