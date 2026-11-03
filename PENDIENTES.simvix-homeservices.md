@@ -26,14 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] BD de produccion en Railway: Postgres propio con copias programadas, migraciones versionadas y leads cifrados (peticion del usuario 2026-11-03: "crea la base de datos y todo lo necesario en railway, estable y solido sin perder informacion") — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-03)
-  - [x] Railway: servicio `Postgres-Mn3R` dedicado (PG 18, volumen `homeservices-postgres-data` 50 GB), separado del `Postgres` de renovation-company-website
-  - [x] Railway: `DATABASE_URL=${{Postgres-Mn3R.DATABASE_URL}}` en simvix-homeservices (sin redesplegar) y `preDeployCommand = npm run db:migrate`
-  - [x] codigo: `provider = postgresql`, migracion `0_init`, `db:migrate`, /obras tras `OBRAS_HABILITADO`, sin escritura de leads en prod sin `OBRAS_FIELD_KEY`; ADR 0007; probado con Postgres 16 local
-  - [x] comprobado: 0 `POST /api/contact` en los logs HTTP de produccion desde octubre, no hay leads que recuperar
-  - [x] ledger reparado: el cierre de la Fase 4 (#17) duplico la cabecera y dejo la Fase 4 en `## Activo` (busqueda de `## Esperando` sin anclar a linea completa)
-  - [ ] gauntlet full en VERDE, PR, squash merge, despliegue verificado (migracion aplicada, /api/health ok, /obras 404)
-  - pendiente (persona, panel de Railway): `OBRAS_FIELD_KEY` y copias programadas del volumen (Daily/Weekly/Monthly); el agente de Railway llego a su limite de uso y la clave no debe pasar por el agente
+(vacio)
 
 ## Esperando
 
@@ -41,12 +34,23 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
+- [ ] Clave de cifrado y copias programadas de la BD de produccion — BLOQUEADO: requiere un secreto y una accion del panel que este entorno no concede (2026-11-03)
+  - que se necesita: (1) en Railway, servicio `simvix-homeservices` -> Variables -> `OBRAS_FIELD_KEY` = salida de `openssl rand -base64 32`, guardada tambien en un gestor de contraseñas (no debe pasar por el agente); (2) servicio `Postgres-Mn3R` -> volumen `homeservices-postgres-data` -> Backups -> activar Daily, Weekly y Monthly
+  - que se ha intentado: el agente de Railway (limite de uso alcanzado); generar la clave aqui (denegado con razon: el secreto quedaria en la conversacion). Las herramientas directas no exponen las copias programadas
+  - mientras tanto: los leads van al log con motivo `sin-clave` (no se pierden); el volumen persiste entre despliegues
 - [ ] Datos registrales del titular (la BD de produccion pasa a `## Activo` por peticion del usuario 2026-11-03) — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
   - que se necesita: (1) elegir la BD de produccion del servicio de Railway `simvix-homeservices`: opcion A SQLite en un volumen de Railway (barato, una sola replica, `provider` sin cambios), opcion B Postgres de Railway (escala y backups, pero exige cambiar `provider` a `postgresql`, lo que afecta tambien a /obras, ADR 0005); despues `OBRAS_FIELD_KEY` y `npm run prisma:push`; (2) los datos del Registro Mercantil de BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL (tomo, folio, hoja) para `TITULAR.registroMercantil`
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
 
 ## Hecho
 
+- [x] BD de produccion en Railway: Postgres propio con copias programadas, migraciones versionadas y leads cifrados (peticion del usuario 2026-11-03: "crea la base de datos y todo lo necesario en railway, estable y solido sin perder informacion") — (#18, squash `b9fc72a`, 2026-11-03)
+  - [x] Railway: servicio `Postgres-Mn3R` dedicado (PG 18, volumen `homeservices-postgres-data` 50 GB), separado del `Postgres` de renovation-company-website
+  - [x] Railway: `DATABASE_URL=${{Postgres-Mn3R.DATABASE_URL}}` en simvix-homeservices (sin redesplegar) y `preDeployCommand = npm run db:migrate`
+  - [x] codigo: `provider = postgresql`, migracion `0_init`, `db:migrate`, /obras tras `OBRAS_HABILITADO`, sin escritura de leads en prod sin `OBRAS_FIELD_KEY`; ADR 0007; probado con Postgres 16 local
+  - [x] comprobado: 0 `POST /api/contact` en los logs HTTP de produccion desde octubre, no hay leads que recuperar
+  - [x] ledger reparado: el cierre de la Fase 4 (#17) duplico la cabecera y dejo la Fase 4 en `## Activo` (busqueda de `## Esperando` sin anclar a linea completa)
+  - [x] gauntlet full en VERDE, PR #18, squash merge; despliegue e4b64aee SUCCESS: `0_init` aplicada en el pre-deploy, /api/health db.ok con provider postgres, /obras 404
 - [x] Fase 4 — Leads con almacen propio y paginas legales (decision del usuario 2026-11-03: leads en tabla de la BD con ADR `Tipo: datos`; razon social, CIF y domicilio buscados en sus repos/webs, sin inventarlos) — (#16, squash `2bccf84`, 2026-11-03)
   - [x] tabla `Lead` con datos personales cifrados y `emailHash` (ADR 0006 `Tipo: datos`); `src/lib/leads-store.ts`
   - [x] `/api/contact` guarda en BD, log sin datos personales, 429 a partir del sexto envio por IP en 10 min; sin BD conserva el lead en el log
