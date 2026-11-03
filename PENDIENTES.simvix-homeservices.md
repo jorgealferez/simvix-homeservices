@@ -26,7 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
+- [ ] BD de produccion en Railway: Postgres propio con copias programadas, migraciones versionadas y leads cifrados (peticion del usuario 2026-11-03: "crea la base de datos y todo lo necesario en railway, estable y solido sin perder informacion") — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-03)
 
 ## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
   agente **programa un despertador** antes de cerrar el turno. Si no puede programarlo, el item no se
@@ -56,7 +56,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-- [ ] Leads de produccion a la tabla y datos registrales del titular — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
+- [ ] Datos registrales del titular (la BD de produccion pasa a `## Activo` por peticion del usuario 2026-11-03) — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
   - que se necesita: (1) elegir la BD de produccion del servicio de Railway `simvix-homeservices`: opcion A SQLite en un volumen de Railway (barato, una sola replica, `provider` sin cambios), opcion B Postgres de Railway (escala y backups, pero exige cambiar `provider` a `postgresql`, lo que afecta tambien a /obras, ADR 0005); despues `OBRAS_FIELD_KEY` y `npm run prisma:push`; (2) los datos del Registro Mercantil de BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL (tomo, folio, hoja) para `TITULAR.registroMercantil`
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
 
