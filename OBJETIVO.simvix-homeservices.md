@@ -111,7 +111,7 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   sin datos personales en el log, limite de frecuencia en `/api/contact`; aviso legal, privacidad y
   condiciones del servicio con los datos de empresa que existan (los que falten, bloqueados, nunca
   inventados).
-- [ ] Fase 5 — Identidad del grupo «simvix.» (peticion urgente del usuario 2026-11-03): marca «simvix. home»
+- [x] Fase 5 — Identidad del grupo «simvix.» (#22, squash `d810539`; peticion urgente del usuario 2026-11-03): marca «simvix. home»
   y simbolo «h.» en trazados de Fraunces 600, tokens tinta/coral, iconos, manifest, Open Graph, ADR 0008.
 
 ## Calidad y proyeccion
