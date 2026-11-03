@@ -93,15 +93,16 @@ Estado en el proyecto de Railway «Servicios Domesticos SImvix», entorno `produ
 | `DATABASE_URL` del servicio web | `${{Postgres-Mn3R.DATABASE_URL}}` (red privada; la contraseña no sale de Railway) |
 | Migraciones | `prisma/migrations` (inicial `0_init`), aplicadas por `preDeployCommand = npm run db:migrate` (en `railway.toml` y en la configuración del servicio) |
 | /obras | apagado salvo `OBRAS_HABILITADO=true` |
+| Secretos del servicio web | `OBRAS_FIELD_KEY` (cifrado de leads, **no cambiar nunca**), `AUTH_SECRET`, `OBRAS_METRICS_TOKEN` (`/api/metrics` exige `Authorization: Bearer <token>`), `AUTH_TRUST_HOST=true`; todos puestos el 2026-11-03 |
 
-Pasos que hace la persona en el panel (no se pueden hacer desde fuera sin exponer secretos):
+Pendientes (decisión del usuario, 2026-11-03: se omiten por ahora):
 
-1. **Clave de cifrado**: `simvix-homeservices` → Variables → `OBRAS_FIELD_KEY` = salida de
-   `openssl rand -base64 32`. Guárdala también en un gestor de contraseñas. **No la cambies nunca**:
-   cifra los leads y sin ella las copias no sirven. Hasta que exista, los leads van al log.
-2. **Copias programadas**: `Postgres-Mn3R` → volumen `homeservices-postgres-data` → pestaña
-   **Backups** → activar *Daily* (6 días), *Weekly* (1 mes) y *Monthly* (3 meses). Restaurar es
-   «Restore» sobre una copia: Railway monta un volumen nuevo y conserva el anterior.
+- **Copias programadas** del volumen: `Postgres-Mn3R` → volumen `homeservices-postgres-data` →
+  pestaña **Backups** → *Daily* (6 días), *Weekly* (1 mes) y *Monthly* (3 meses). Restaurar es
+  «Restore» sobre una copia: Railway monta un volumen nuevo y conserva el anterior. **Mientras no
+  estén activas, borrar o corromper el volumen no tiene vuelta atrás.**
+- **Copia de `OBRAS_FIELD_KEY` fuera de Railway** (gestor de contraseñas): sin ella, una copia de la
+  base de datos no se puede descifrar.
 
 Reglas para no perder información:
 
