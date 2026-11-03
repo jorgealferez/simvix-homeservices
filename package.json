@@ -12,7 +12,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "typecheck": "npm run type-check",
-    "test": "npm run test:cte && npm run test:brain && npm run test:zonas && npm run test:middleware",
+    "test": "npm run test:cte && npm run test:brain && npm run test:zonas && npm run test:middleware && npm run test:obras-disponible",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
@@ -29,7 +29,8 @@
     "obras:encrypt-pii": "tsx prisma/scripts/encrypt-existing-pii.ts",
     "obras:migrate-to-postgres": "tsx prisma/scripts/migrate-to-postgres.ts",
     "postinstall": "prisma generate || true",
-    "test:middleware": "tsx --tsconfig tsconfig.json src/middleware.test.ts"
+    "test:middleware": "tsx --tsconfig tsconfig.json src/middleware.test.ts",
+    "test:obras-disponible": "tsx --tsconfig tsconfig.json src/lib/obras/disponible.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
