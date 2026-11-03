@@ -5,6 +5,9 @@ builder = "NIXPACKS"
 nodejs_20 = true
 
 [deploy]
+# Migraciones versionadas antes de cada despliegue (ADR 0007). Si fallan, el
+# despliegue se aborta y sigue sirviendo la version anterior: no se pierde nada.
+preDeployCommand = ["npm run db:migrate"]
 startCommand = "npm run start"
 healthcheckPath = "/"
 healthcheckTimeout = 300

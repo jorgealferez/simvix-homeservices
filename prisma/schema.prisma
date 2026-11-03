@@ -1,7 +1,7 @@
 // Simvix Obras — esquema del orquestador IA cliente → ayuntamiento
 //
-// Provider sqlite por defecto (zero-config). Para producción basta cambiar a
-// "postgresql" y la DATABASE_URL. Los enums de dominio están modelados como
+// Provider postgresql (ADR 0007): producción en Railway con migraciones
+// versionadas en prisma/migrations (`prisma migrate deploy`). Los enums de dominio están modelados como
 // String + constantes TS (src/lib/obras/enums.ts) para mantener portabilidad
 // entre providers (SQLite no soporta enums Prisma).
 //
@@ -20,7 +20,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

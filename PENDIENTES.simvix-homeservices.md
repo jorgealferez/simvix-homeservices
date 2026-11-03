@@ -26,29 +26,14 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
-
-## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
-  agente **programa un despertador** antes de cerrar el turno. Si no puede programarlo, el item no se
-  mueve: se sigue trabajando.
-- `## Bloqueado`: solo con `BLOQUEADO: <motivo>` y solo si el motivo es una de las causas de la seccion
-  "Cuando SI hay que parar y preguntar". Es la unica forma legitima de dejar de avanzar.
-- `continuidad: pausada` la escribe **una persona**, nunca un agente.
-- **Antes de empezar un item se RESERVA**: se le anade `EN CURSO (<sesion>, <fecha>)` y se publica el
-  ledger (commit y push) *antes* de escribir codigo. Otra sesion que vea una reserva viva se salta ese
-  item y toma el siguiente sin reservar. Una reserva caduca si su rama remota no se mueve en 24 h.
-- Una seccion vacia se escribe `(vacio)`; nunca se borra la seccion.
-
-## Activo
-
-- [ ] Fase 4 — Leads con almacen propio y paginas legales (decision del usuario 2026-11-03: leads en tabla de la BD con ADR `Tipo: datos`; razon social, CIF y domicilio buscados en sus repos/webs, sin inventarlos) — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-03)
-  - [x] tabla `Lead` con datos personales cifrados y `emailHash` (ADR 0006 `Tipo: datos`); `src/lib/leads-store.ts`
-  - [x] `/api/contact` guarda en BD, log sin datos personales, 429 a partir del sexto envio por IP en 10 min; sin BD conserva el lead en el log
-  - [x] `/aviso-legal`, `/privacidad`, `/condiciones` con el titular de los avisos legales del usuario (BYTEMEGA..., CIF B87816419, Yuncos); pie y formulario enlazados
-  - [x] `test:leads` (33 aserciones) y prueba con SQLite limpia; benchmark `fase_4.json`
-  - [ ] gauntlet full en VERDE, PR "Fase 4 — Leads con almacen propio y paginas legales" y squash merge
-  - pendiente (dato del usuario): datos del Registro Mercantil; no aparecen en ninguna fuente y no se inventan
-  - pendiente (configuracion, usuario): `DATABASE_URL` + `OBRAS_FIELD_KEY` en Railway y `npm run prisma:push`; hasta entonces los leads de produccion quedan en el log
+- [ ] BD de produccion en Railway: Postgres propio con copias programadas, migraciones versionadas y leads cifrados (peticion del usuario 2026-11-03: "crea la base de datos y todo lo necesario en railway, estable y solido sin perder informacion") — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-03)
+  - [x] Railway: servicio `Postgres-Mn3R` dedicado (PG 18, volumen `homeservices-postgres-data` 50 GB), separado del `Postgres` de renovation-company-website
+  - [x] Railway: `DATABASE_URL=${{Postgres-Mn3R.DATABASE_URL}}` en simvix-homeservices (sin redesplegar) y `preDeployCommand = npm run db:migrate`
+  - [x] codigo: `provider = postgresql`, migracion `0_init`, `db:migrate`, /obras tras `OBRAS_HABILITADO`, sin escritura de leads en prod sin `OBRAS_FIELD_KEY`; ADR 0007; probado con Postgres 16 local
+  - [x] comprobado: 0 `POST /api/contact` en los logs HTTP de produccion desde octubre, no hay leads que recuperar
+  - [x] ledger reparado: el cierre de la Fase 4 (#17) duplico la cabecera y dejo la Fase 4 en `## Activo` (busqueda de `## Esperando` sin anclar a linea completa)
+  - [ ] gauntlet full en VERDE, PR, squash merge, despliegue verificado (migracion aplicada, /api/health ok, /obras 404)
+  - pendiente (persona, panel de Railway): `OBRAS_FIELD_KEY` y copias programadas del volumen (Daily/Weekly/Monthly); el agente de Railway llego a su limite de uso y la clave no debe pasar por el agente
 
 ## Esperando
 
@@ -56,13 +41,20 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-- [ ] Leads de produccion a la tabla y datos registrales del titular — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
+- [ ] Datos registrales del titular (la BD de produccion pasa a `## Activo` por peticion del usuario 2026-11-03) — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
   - que se necesita: (1) elegir la BD de produccion del servicio de Railway `simvix-homeservices`: opcion A SQLite en un volumen de Railway (barato, una sola replica, `provider` sin cambios), opcion B Postgres de Railway (escala y backups, pero exige cambiar `provider` a `postgresql`, lo que afecta tambien a /obras, ADR 0005); despues `OBRAS_FIELD_KEY` y `npm run prisma:push`; (2) los datos del Registro Mercantil de BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL (tomo, folio, hoja) para `TITULAR.registroMercantil`
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
 
 ## Hecho
 
-
+- [x] Fase 4 — Leads con almacen propio y paginas legales (decision del usuario 2026-11-03: leads en tabla de la BD con ADR `Tipo: datos`; razon social, CIF y domicilio buscados en sus repos/webs, sin inventarlos) — (#16, squash `2bccf84`, 2026-11-03)
+  - [x] tabla `Lead` con datos personales cifrados y `emailHash` (ADR 0006 `Tipo: datos`); `src/lib/leads-store.ts`
+  - [x] `/api/contact` guarda en BD, log sin datos personales, 429 a partir del sexto envio por IP en 10 min; sin BD conserva el lead en el log
+  - [x] `/aviso-legal`, `/privacidad`, `/condiciones` con el titular de los avisos legales del usuario (BYTEMEGA..., CIF B87816419, Yuncos); pie y formulario enlazados
+  - [x] `test:leads` (33 aserciones) y prueba con SQLite limpia; benchmark `fase_4.json`
+  - [x] gauntlet full en VERDE, PR "Fase 4 — Leads con almacen propio y paginas legales" y squash merge
+  - pendiente (dato del usuario): datos del Registro Mercantil; no aparecen en ninguna fuente y no se inventan
+  - pendiente (configuracion, usuario): `DATABASE_URL` + `OBRAS_FIELD_KEY` en Railway y `npm run prisma:push`; hasta entonces los leads de produccion quedan en el log
 - [x] `/obras` responde 404 en vez de 500 mientras no tenga base de datos (opcion B del bloqueo; pedida por la sesion coordinadora el 2026-11-03, sin mensaje del usuario localizable) — (#14, squash `8969d40`, 2026-11-03)
   - [x] `obrasDisponible()` + `notFound()` en el layout de /obras; test rojo sin el guard; ADR 0005
   - [x] gauntlet full en VERDE (10 PASS, 4 SKIP), PR y squash merge

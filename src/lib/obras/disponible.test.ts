@@ -9,8 +9,10 @@ const casos: [Record<string, string | undefined>, boolean, string][] = [
   [{}, false, 'sin DATABASE_URL'],
   [{ DATABASE_URL: '' }, false, 'DATABASE_URL vacía'],
   [{ DATABASE_URL: '   ' }, false, 'DATABASE_URL en blanco'],
-  [{ DATABASE_URL: 'postgresql://u:p@h:5432/db' }, true, 'con Postgres'],
-  [{ DATABASE_URL: 'file:./dev.db' }, true, 'con SQLite local'],
+  [{ DATABASE_URL: 'postgresql://u:p@h:5432/db' }, false, 'con Postgres pero sin OBRAS_HABILITADO (ADR 0007)'],
+  [{ DATABASE_URL: 'postgresql://u:p@h:5432/db', OBRAS_HABILITADO: 'false' }, false, 'OBRAS_HABILITADO=false'],
+  [{ DATABASE_URL: 'postgresql://u:p@h:5432/db', OBRAS_HABILITADO: 'true' }, true, 'con Postgres y OBRAS_HABILITADO=true'],
+  [{ OBRAS_HABILITADO: 'true' }, false, 'OBRAS_HABILITADO sin base de datos'],
 ];
 
 let fallos = 0;
