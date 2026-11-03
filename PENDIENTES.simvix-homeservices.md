@@ -1,5 +1,3 @@
-(vacio)
-
 # PENDIENTES — ledger de continuidad de simvix-homeservices
 
 continuidad: activa
@@ -28,9 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 5 — Identidad del grupo «simvix.» en todo el producto (peticion urgente del usuario 2026-11-03) — EN CURSO (session_017UCRTFRDxRFutSMif6G7gt, 2026-11-03)
-  - [x] marca, simbolo, iconos, manifest y Open Graph; tokens tinta/coral; ADR 0008; capturas
-  - [ ] PR, squash merge y aviso a la sesion de la web corporativa
+(vacio)
 
 ## Esperando
 
@@ -43,6 +39,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
 
 ## Hecho
+
+- [x] Fase 5 (cont.) — Dibujos definitivos de la marca del grupo (simbolo «h.» y logotipo «simvix. home services», recibidos de la sesion de identidad 2026-11-03) — (#24, squash `7f156c2`, 2026-11-03); ADR 0009
+  - [x] ledger reparado: el cierre de #23 busco `## Esperando` sin anclar a linea completa, dejo `(vacio)` en la cabecera y la Fase 5 en `## Activo`
 
 - [x] Fase 5 — Identidad del grupo «simvix.» en todo el producto (peticion urgente del usuario 2026-11-03) — (#22, squash `d810539`, 2026-11-03)
   - [x] marca «simvix. home» y simbolo «h.» en trazados, iconos, manifest, Open Graph; tokens tinta/coral; ADR 0008; capturas
