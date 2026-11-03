@@ -34,6 +34,11 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
+- [ ] Activar la centralizacion de contactos en produccion (codigo en `main`, ADR 0010) — BLOQUEADO: credenciales y plan que el entorno no concede (2026-11-03)
+  - que se necesita: (1) `RESEND_API_KEY` (y `LEADS_FROM_EMAIL` con dominio verificado) en el servicio de Railway; (2) URL y token del panel central (`LEADS_HUB_URL`, `LEADS_HUB_TOKEN`): el modulo LocalServiceLeads del hub no esta en el plan actual
+  - opcion A: activar LocalServiceLeads en el hub y registrar `homeservices.simvix.com` (da la API key); opcion B: usar otro endpoint central que el usuario indique
+  - las demas webs del grupo necesitan el mismo cambio en sus repositorios (cada una en su ledger)
+
 - [ ] Datos registrales del titular (la BD de produccion pasa a `## Activo` por peticion del usuario 2026-11-03) — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
   - que se necesita: (1) elegir la BD de produccion del servicio de Railway `simvix-homeservices`: opcion A SQLite en un volumen de Railway (barato, una sola replica, `provider` sin cambios), opcion B Postgres de Railway (escala y backups, pero exige cambiar `provider` a `postgresql`, lo que afecta tambien a /obras, ADR 0005); despues `OBRAS_FIELD_KEY` y `npm run prisma:push`; (2) los datos del Registro Mercantil de BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL (tomo, folio, hoja) para `TITULAR.registroMercantil`
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)

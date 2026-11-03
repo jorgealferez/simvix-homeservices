@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { leadSchema } from '@/lib/leads';
 import { guardarLead, resumenLead } from '@/lib/leads-store';
+import { notificarLead } from '@/lib/leads-notify';
 import { crearLimitador, ipDe } from '@/lib/rate-limit';
 
 /** 5 envíos por IP cada 10 minutos (ADR 0006). */
@@ -54,6 +55,10 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   }
+
+  // Centralización (ADR 0010): aviso al buzón central y al panel del grupo con el origen.
+  const aviso = await notificarLead(lead, resultado.guardado ? resultado.id : null);
+  console.log('Lead avisado:', aviso);
 
   return NextResponse.json({ message: 'Solicitud recibida correctamente' }, { status: 200 });
 }
