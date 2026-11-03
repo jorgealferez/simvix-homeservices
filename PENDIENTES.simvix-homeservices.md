@@ -34,10 +34,11 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-- [ ] Clave de cifrado y copias programadas de la BD de produccion — BLOQUEADO: requiere un secreto y una accion del panel que este entorno no concede (2026-11-03)
-  - que se necesita: (1) en Railway, servicio `simvix-homeservices` -> Variables -> `OBRAS_FIELD_KEY` = salida de `openssl rand -base64 32`, guardada tambien en un gestor de contraseñas (no debe pasar por el agente); (2) servicio `Postgres-Mn3R` -> volumen `homeservices-postgres-data` -> Backups -> activar Daily, Weekly y Monthly
-  - que se ha intentado: el agente de Railway (limite de uso alcanzado); generar la clave aqui (denegado con razon: el secreto quedaria en la conversacion). Las herramientas directas no exponen las copias programadas
-  - mientras tanto: los leads van al log con motivo `sin-clave` (no se pierden); el volumen persiste entre despliegues
+- [ ] Copias programadas de la BD de produccion — BLOQUEADO: requiere una accion del panel de Railway que este entorno no concede (2026-11-03)
+  - que se necesita: servicio `Postgres-Mn3R` -> volumen `homeservices-postgres-data` -> pestaña Backups -> activar Daily, Weekly y Monthly
+  - que se ha intentado: el agente de Railway (limite de uso alcanzado, dos veces); las herramientas directas no exponen las copias programadas
+  - [x] `OBRAS_FIELD_KEY` generada y añadida por peticion explicita del usuario (2026-11-03); verificado en produccion: lead de prueba `cmw18h3ae0000bhjt54gsvwnd` (origen `verificacion-despliegue`, se puede borrar) guardado en la tabla, log sin datos personales
+  - mientras tanto: el volumen persiste entre despliegues; sin copias, un borrado del volumen no tendria vuelta atras
 - [ ] Datos registrales del titular (la BD de produccion pasa a `## Activo` por peticion del usuario 2026-11-03) — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
   - que se necesita: (1) elegir la BD de produccion del servicio de Railway `simvix-homeservices`: opcion A SQLite en un volumen de Railway (barato, una sola replica, `provider` sin cambios), opcion B Postgres de Railway (escala y backups, pero exige cambiar `provider` a `postgresql`, lo que afecta tambien a /obras, ADR 0005); despues `OBRAS_FIELD_KEY` y `npm run prisma:push`; (2) los datos del Registro Mercantil de BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL (tomo, folio, hoja) para `TITULAR.registroMercantil`
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
