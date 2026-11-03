@@ -96,13 +96,13 @@ export default function ComoFuncionaPage() {
         <div className="mt-12 flex flex-col sm:flex-row gap-4">
           <Link
             href="/zonas"
-            className="inline-flex justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md"
+            className="inline-flex justify-center bg-accent-600 hover:bg-accent-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md"
           >
             Busca tu municipio
           </Link>
           <Link
             href="/empleo"
-            className="inline-flex justify-center border-2 border-primary-600 text-primary-700 font-semibold text-lg px-8 py-4 rounded-xl hover:bg-primary-50"
+            className="inline-flex justify-center border-2 border-accent-600 text-primary-700 font-semibold text-lg px-8 py-4 rounded-xl hover:bg-primary-50"
           >
             Quiero trabajar con vosotros
           </Link>

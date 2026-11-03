@@ -26,7 +26,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
+- [ ] Fase 5 — Identidad del grupo «simvix.» en todo el producto (peticion urgente del usuario 2026-11-03) — EN CURSO (session_017UCRTFRDxRFutSMif6G7gt, 2026-11-03)
+  - [x] marca, simbolo, iconos, manifest y Open Graph; tokens tinta/coral; ADR 0008; capturas
+  - [ ] PR, squash merge y aviso a la sesion de la web corporativa
 
 ## Esperando
 

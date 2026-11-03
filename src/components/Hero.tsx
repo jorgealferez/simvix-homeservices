@@ -2,18 +2,18 @@ import Link from 'next/link';
 
 export default function Hero() {
   return (
-    <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-accent-600 text-white">
+    <section className="bg-ink text-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
         <div className="max-w-3xl">
           {/* Badge */}
-          <span className="inline-block bg-white/20 text-white text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-            🏡 Servicios domésticos de confianza
+          <span className="inline-block bg-white/10 text-white text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+            Servicios domésticos de confianza
           </span>
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
             Tu hogar en{' '}
-            <span className="text-accent-300">las mejores manos</span>
+            las mejores manos<span className="text-coral">.</span>
           </h1>
 
           {/* Subheadline */}
@@ -33,7 +33,7 @@ export default function Hero() {
             ].map((benefit) => (
               <li
                 key={benefit}
-                className="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium"
+                className="bg-white/10 px-4 py-2 rounded-full text-sm font-medium"
               >
                 {benefit}
               </li>
@@ -44,7 +44,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/contacto"
-              className="inline-flex items-center justify-center gap-2 bg-white text-primary-700 hover:bg-primary-50 font-bold text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all"
+              className="inline-flex items-center justify-center gap-2 bg-accent-600 text-white hover:bg-accent-700 font-bold text-lg px-8 py-4 rounded-xl transition-all"
             >
               Solicitar servicio hoy
               <span aria-hidden="true">→</span>

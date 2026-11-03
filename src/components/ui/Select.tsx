@@ -28,7 +28,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
         id={inputId}
         aria-invalid={error ? true : undefined}
         className={cn(
-          'h-9 w-full rounded-md border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 dark:border-slate-700 border-slate-300 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400',
+          'h-9 w-full rounded-md border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 dark:border-slate-700 border-slate-300 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500',
           error && 'border-red-500 focus:ring-red-400 focus:border-red-400',
           className,
         )}

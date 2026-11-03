@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -11,54 +12,58 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🏡</span>
-            <span className="font-bold text-xl text-primary-700">
-              Simvix<span className="text-accent-600"> Home</span>
-            </span>
+          <Link href="/" className="flex items-center" aria-label="simvix. home, inicio">
+            <Image
+              src="/brand/simvix-home-logotipo.svg"
+              alt="simvix. home"
+              width={155}
+              height={25}
+              priority
+              unoptimized
+            />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             <Link
               href="/"
-              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+              className="text-primary-500 hover:text-ink font-medium transition-colors"
             >
               Inicio
             </Link>
             <Link
               href="/servicios"
-              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+              className="text-primary-500 hover:text-ink font-medium transition-colors"
             >
               Servicios
             </Link>
             <Link
               href="/zonas"
-              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+              className="text-primary-500 hover:text-ink font-medium transition-colors"
             >
               Zonas
             </Link>
             <Link
               href="/como-funciona"
-              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+              className="text-primary-500 hover:text-ink font-medium transition-colors"
             >
               Cómo funciona
             </Link>
             <Link
               href="/empleo"
-              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+              className="text-primary-500 hover:text-ink font-medium transition-colors"
             >
               Trabaja con nosotros
             </Link>
             <Link
               href="/obras"
-              className="text-gray-600 hover:text-primary-700 font-medium transition-colors"
+              className="text-primary-500 hover:text-ink font-medium transition-colors"
             >
               🏗️ Obras
             </Link>
             <Link
               href="/contacto"
-              className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 font-medium transition-colors"
+              className="bg-accent-600 text-white px-4 py-2 rounded-lg hover:bg-accent-700 font-medium transition-colors"
             >
               Solicitar Servicio
             </Link>
@@ -66,7 +71,7 @@ export default function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-md text-gray-600 hover:text-primary-700"
+            className="md:hidden p-2 rounded-md text-primary-500 hover:text-ink"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Abrir menú"
             aria-expanded={menuOpen}
@@ -102,14 +107,14 @@ export default function Header() {
           <nav className="md:hidden pb-4 flex flex-col gap-3">
             <Link
               href="/"
-              className="text-gray-600 hover:text-primary-700 font-medium py-2"
+              className="text-primary-500 hover:text-ink font-medium py-2"
               onClick={() => setMenuOpen(false)}
             >
               Inicio
             </Link>
             <Link
               href="/servicios"
-              className="text-gray-600 hover:text-primary-700 font-medium py-2"
+              className="text-primary-500 hover:text-ink font-medium py-2"
               onClick={() => setMenuOpen(false)}
             >
               Servicios
@@ -122,7 +127,7 @@ export default function Header() {
               <Link
                 key={href}
                 href={href}
-                className="text-gray-600 hover:text-primary-700 font-medium py-2"
+                className="text-primary-500 hover:text-ink font-medium py-2"
                 onClick={() => setMenuOpen(false)}
               >
                 {label}
@@ -130,14 +135,14 @@ export default function Header() {
             ))}
             <Link
               href="/obras"
-              className="text-gray-600 hover:text-primary-700 font-medium py-2"
+              className="text-primary-500 hover:text-ink font-medium py-2"
               onClick={() => setMenuOpen(false)}
             >
               🏗️ Obras
             </Link>
             <Link
               href="/contacto"
-              className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 font-medium text-center"
+              className="bg-accent-600 text-white px-4 py-2 rounded-lg hover:bg-accent-700 font-medium text-center"
               onClick={() => setMenuOpen(false)}
             >
               Solicitar Servicio

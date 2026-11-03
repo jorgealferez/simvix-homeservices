@@ -13,7 +13,7 @@ export default function ServiceCard({
 }: ServiceCardProps) {
   const colorClasses =
     serviceColorMap[service.color] ||
-    'bg-blue-100 text-blue-700 border-blue-200';
+    'bg-primary-50 text-ink border-primary-100';
 
   if (variant === 'featured') {
     return (
@@ -36,7 +36,7 @@ export default function ServiceCard({
             </span>
             <Link
               href={`/servicios/${service.slug}`}
-              className="text-sm text-primary-600 hover:text-primary-800 font-medium flex items-center gap-1"
+              className="text-sm text-accent-600 hover:text-accent-700 font-medium flex items-center gap-1"
             >
               Saber más
               <span aria-hidden="true">→</span>

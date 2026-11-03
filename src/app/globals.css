@@ -4,6 +4,13 @@
 
 :root {
   --font-inter: 'Inter', system-ui, sans-serif;
+  --font-fraunces: 'Fraunces', Georgia, serif;
+  /* Identidad «simvix.» (ADR 0008): tinta, blanco y un solo color propio, el coral. */
+  --ink: #0b1220;
+  --coral: #ff5a3c;
+  --coral-strong: #d23a1a; /* botones con texto blanco (4,8:1) */
+  --surface: #ffffff;
+  --surface-muted: #f5f6f8;
 }
 
 @layer base {
@@ -13,26 +20,33 @@
   }
 
   body {
-    @apply text-gray-900 bg-white antialiased;
+    @apply text-ink bg-white antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold leading-tight;
   }
 
+  /* Titulares en Fraunces 600, como la marca; el texto de interfaz sigue en Inter. */
+  h1, h2 {
+    font-family: var(--font-fraunces);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
   /* Focus styles for accessibility */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-500;
+    @apply outline-2 outline-offset-2 outline-accent-500;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 font-semibold px-6 py-3 rounded-lg transition-colors;
+    @apply bg-accent-600 text-white hover:bg-accent-700 font-semibold px-6 py-3 rounded-lg transition-colors;
   }
 
   .btn-secondary {
-    @apply border-2 border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold px-6 py-3 rounded-lg transition-colors;
+    @apply border-2 border-ink text-ink hover:bg-primary-50 font-semibold px-6 py-3 rounded-lg transition-colors;
   }
 
   .section-container {

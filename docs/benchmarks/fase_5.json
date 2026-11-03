@@ -1,0 +1,39 @@
+{
+  "$comentario": [
+    "Numeros MEDIDOS al cerrar la Fase 5. Fuente: `bin/gauntlet -p full`, `npm test`, grep en src/ y public/, contraste WCAG calculado y capturas Playwright con `next start`."
+  ],
+  "fase": 5,
+  "titulo": "Identidad del grupo simvix. aplicada",
+  "fecha": "2026-11-03",
+  "entorno": {
+    "maquina": "contenedor claude.ai (linux x86_64)",
+    "toolchains": {
+      "node": "22.22.0",
+      "npm": "10.9.4",
+      "python3": "3.x (runner del gauntlet)"
+    }
+  },
+  "medidas": {
+    "gauntlet_fail": 0,
+    "gauntlet_pass": 10,
+    "tests_aserciones": 132,
+    "tests_fallidos": 0,
+    "ia_llamadores_sin_automatizacion": 0,
+    "zonas_captacion": 9,
+    "paginas_locales_en_sitemap": 18
+  },
+  "criterios_de_salida": {
+    "identidad_simvix": "0 hex antiguos, 0 degradados, 0 logos emoji en src/ y public/; contraste minimo de texto 4,82:1 (AA); 8 paginas -> 200 en escritorio y movil con capturas en docs/brand/capturas/"
+  },
+  "no_verificable": [
+    "capturas de produccion: se verifican tras el despliegue de Railway",
+    "sh:shellcheck: shellcheck no esta instalado en este entorno (SKIP declarado)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Datos del Registro Mercantil del titular (TITULAR.registroMercantil)",
+    "Panel interno de leads detras de autenticacion; purga a 12 meses",
+    "Banner de cookies y despues pixel + API de conversiones de Meta",
+    "Precios de niñera y cuidado de mayores frente al coste de un contrato laboral"
+  ]
+}

@@ -27,7 +27,7 @@ export default function ContactoPage() {
               <h3 className="font-bold text-gray-900 mb-1">Llámanos</h3>
               <a
                 href={`tel:${CONTACT.telefono.replace(/\s+/g, '')}`}
-                className="text-primary-600 hover:text-primary-800 font-medium"
+                className="text-accent-600 hover:text-accent-700 font-medium"
               >
                 {CONTACT.telefono}
               </a>
@@ -41,7 +41,7 @@ export default function ContactoPage() {
               </h3>
               <a
                 href={`mailto:${CONTACT.email}`}
-                className="text-primary-600 hover:text-primary-800 font-medium"
+                className="text-accent-600 hover:text-accent-700 font-medium"
               >
                 {CONTACT.email}
               </a>

@@ -57,9 +57,9 @@ export default async function EmpleoZonaPage({ params }: PageProps) {
 
         <nav aria-label="Ruta de navegación" className="mb-8">
           <ol className="flex items-center gap-2 text-sm text-gray-500">
-            <li><Link href="/" className="hover:text-primary-600">Inicio</Link></li>
+            <li><Link href="/" className="hover:text-accent-600">Inicio</Link></li>
             <li aria-hidden="true">/</li>
-            <li><Link href="/empleo" className="hover:text-primary-600">Trabaja con nosotros</Link></li>
+            <li><Link href="/empleo" className="hover:text-accent-600">Trabaja con nosotros</Link></li>
             <li aria-hidden="true">/</li>
             <li className="text-gray-900 font-medium">{zona.nombre}</li>
           </ol>
@@ -79,7 +79,7 @@ export default async function EmpleoZonaPage({ params }: PageProps) {
 
         <Link
           href={apuntarse}
-          className="inline-flex justify-center bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md mb-12"
+          className="inline-flex justify-center bg-accent-600 hover:bg-accent-700 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-md mb-12"
         >
           Quiero trabajar en {zona.nombre}
         </Link>

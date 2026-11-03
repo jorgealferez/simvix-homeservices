@@ -191,10 +191,10 @@ export function getServiceBySlug(slug: string): Service | undefined {
 }
 
 export const serviceColorMap: Record<string, string> = {
-  blue: 'bg-blue-100 text-blue-700 border-blue-200',
-  green: 'bg-green-100 text-green-700 border-green-200',
-  pink: 'bg-pink-100 text-pink-700 border-pink-200',
-  orange: 'bg-orange-100 text-orange-700 border-orange-200',
-  purple: 'bg-purple-100 text-purple-700 border-purple-200',
-  yellow: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  blue: 'bg-primary-50 text-ink border-primary-100',
+  green: 'bg-primary-50 text-ink border-primary-100',
+  pink: 'bg-primary-50 text-ink border-primary-100',
+  orange: 'bg-primary-50 text-ink border-primary-100',
+  purple: 'bg-primary-50 text-ink border-primary-100',
+  yellow: 'bg-primary-50 text-ink border-primary-100',
 };

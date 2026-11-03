@@ -22,13 +22,13 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/"
-            className="bg-primary-600 text-white hover:bg-primary-700 font-semibold px-6 py-3 rounded-lg transition-colors"
+            className="bg-accent-600 text-white hover:bg-accent-700 font-semibold px-6 py-3 rounded-lg transition-colors"
           >
             Volver al inicio
           </Link>
           <Link
             href="/servicios"
-            className="border-2 border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold px-6 py-3 rounded-lg transition-colors"
+            className="border-2 border-accent-600 text-accent-600 hover:bg-primary-50 font-semibold px-6 py-3 rounded-lg transition-colors"
           >
             Ver servicios
           </Link>
