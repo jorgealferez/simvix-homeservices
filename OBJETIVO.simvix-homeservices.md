@@ -98,6 +98,10 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   `/zonas/*`, `/empleo/*` con `JobPosting`, `/como-funciona`, JSON-LD, `robots.ts`, `sitemap.ts`,
   `llms.txt`, `og:image`, formulario con rol/zona/origen/consentimiento, `test:zonas`, ADR 0003,
   `docs/marketing/{seo-geo,meta}.md`, `docs/negocio/modelo-legal.md`. Acerca los criterios 7 y 8.
+- [ ] Fase 4 — Leads con almacen propio y paginas legales: tabla `Lead` en la BD (ADR `Tipo: datos`),
+  sin datos personales en el log, limite de frecuencia en `/api/contact`; aviso legal, privacidad y
+  condiciones del servicio con los datos de empresa que existan (los que falten, bloqueados, nunca
+  inventados).
 
 ## Calidad y proyeccion
 
@@ -133,3 +137,6 @@ siguientes; nada de fases de relleno: cada fase acerca un criterio de salida y l
   repaso sin coste en 48 h, seguro de RC, sin permanencia con 24 h de aviso, nunca se cobra a las
   profesionales; (5) el salario bruto/hora de la oferta de empleo no se publica hasta que el usuario lo
   fije (`ofertaEmpleo.salarioHoraBrutoDesde`).
+- 2026-11-03 — Leads en una tabla de la base de datos (no email/Resend), con ADR `Tipo: datos`.
+  Razon social, CIF, domicilio y telefono se buscan en los repositorios y webs legales del usuario; si
+  no aparecen, no se inventan: quedan bloqueados con motivo y se publica el resto.

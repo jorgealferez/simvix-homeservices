@@ -26,7 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
+- [ ] Fase 4 — Leads con almacen propio y paginas legales (decision del usuario 2026-11-03: leads en tabla de la BD con ADR `Tipo: datos`; razon social, CIF y domicilio buscados en sus repos/webs, sin inventarlos) — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-03)
 
 ## Esperando
 
