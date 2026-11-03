@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { FichaTitular, LegalPage } from '@/components/LegalPage';
-import { CONTACT } from '@/lib/site';
+import { TITULAR } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Política de privacidad',
@@ -13,7 +13,7 @@ export default function PrivacidadPage() {
     <LegalPage titulo="Política de privacidad" actualizado="3 de noviembre de 2026">
       <h2>1. Responsable del tratamiento</h2>
       <FichaTitular />
-      <p>Para cualquier cuestión sobre tus datos: {CONTACT.email}.</p>
+      <p>Para cualquier cuestión sobre tus datos: {TITULAR.email}.</p>
 
       <h2>2. Qué datos tratamos y para qué</h2>
       <ul>
@@ -62,7 +62,7 @@ export default function PrivacidadPage() {
       <h2>7. Tus derechos</h2>
       <p>
         Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad, y
-        retirar tu consentimiento en cualquier momento, escribiendo a {CONTACT.email}. Si no te
+        retirar tu consentimiento en cualquier momento, escribiendo a {TITULAR.email}. Si no te
         atendemos como corresponde, puedes reclamar ante la Agencia Española de Protección de Datos
         (www.aepd.es).
       </p>

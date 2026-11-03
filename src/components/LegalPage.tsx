@@ -19,6 +19,7 @@ export function FichaTitular() {
       <li>Titular: {TITULAR.razonSocial} (marca comercial {TITULAR.marca})</li>
       <li>CIF: {TITULAR.cif}</li>
       <li>Domicilio social: {TITULAR.domicilio}</li>
+      <li>Email: {TITULAR.email}</li>
       {TITULAR.registroMercantil && <li>Datos registrales: {TITULAR.registroMercantil}</li>}
     </ul>
   );

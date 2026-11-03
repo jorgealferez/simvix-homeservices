@@ -68,7 +68,8 @@ responde**. El modelo C no se usa.
   prestado a petición expresa) y hojas de reclamaciones de la Comunidad de Madrid.
 - Páginas `/aviso-legal`, `/privacidad` y `/condiciones` publicadas (Fase 4) con el titular de los
   avisos legales del usuario: BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL, CIF B87816419,
-  Calle Congo 29, 45210 Yuncos (Toledo). **Pendiente**: los datos del Registro Mercantil (tomo,
+  Calle Bramante, 45200 Illescas (Toledo), correo support@simvix.com (domicilio único del titular
+  desde el 2026-11-03). **Pendiente**: los datos del Registro Mercantil (tomo,
   folio, hoja), que no aparecen en ninguna fuente; no se inventan y la página no los muestra hasta
   que el usuario los aporte (`TITULAR.registroMercantil`).
 

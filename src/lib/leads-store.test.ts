@@ -97,6 +97,7 @@ async function main() {
   }
   assert(adr.includes('**Tipo:** datos') && adr.includes('`prisma/schema.prisma`'), 'ADR 0006 es Tipo: datos y cubre prisma/schema.prisma');
   assert(TITULAR.cif === 'B87816419' && /BYTEMEGA/.test(TITULAR.razonSocial), 'titular con razón social y CIF del usuario');
+  assert(TITULAR.domicilio === 'Calle Bramante, 45200 Illescas (Toledo), España' && TITULAR.email === 'support@simvix.com', 'domicilio y correo del titular: Calle Bramante, Illescas');
   assert(TITULAR.registroMercantil === null, 'los datos registrales no se inventan');
   const urls = sitemap().map((e) => e.url);
   assert(['/aviso-legal', '/privacidad', '/condiciones'].every((p) => urls.some((u) => u.endsWith(p))), 'las páginas legales están en el sitemap');
