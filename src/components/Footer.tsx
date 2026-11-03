@@ -16,8 +16,8 @@ export default function Footer() {
               <Image
                 src="/brand/simvix-home-logotipo-oscuro.svg"
                 alt="simvix. home"
-                width={155}
-                height={25}
+                width={228}
+                height={23}
                 unoptimized
               />
             </div>

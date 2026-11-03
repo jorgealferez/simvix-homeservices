@@ -16,8 +16,8 @@ export default function Header() {
             <Image
               src="/brand/simvix-home-logotipo.svg"
               alt="simvix. home"
-              width={155}
-              height={25}
+              width={228}
+              height={23}
               priority
               unoptimized
             />

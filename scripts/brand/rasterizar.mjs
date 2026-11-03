@@ -16,14 +16,14 @@ async function shot(html, w, h, path, omitBackground = true) {
   await page.screenshot({ path, omitBackground, clip: { x: 0, y: 0, width: w, height: h } });
 }
 mkdirSync('public/icons', { recursive: true });
-const baldosa = b('_icono-baldosa.svg');
+const baldosa = b('favicon.svg');
 const sangre = b('_icono-sangre.svg');
 await shot(svgPage(baldosa, 192, 192), 192, 192, 'public/icons/icon-192.png');
 await shot(svgPage(baldosa, 512, 512), 512, 512, 'public/icons/icon-512.png');
 await shot(svgPage(sangre, 512, 512), 512, 512, 'public/icons/icon-maskable-512.png', false);
-await shot(svgPage(sangre, 180, 180), 180, 180, 'public/apple-touch-icon.png', false);
+await shot(svgPage(baldosa, 180, 180), 180, 180, 'public/apple-touch-icon.png', false);
 
-const logo = b('simvix-home-logotipo-oscuro.svg').replace('<svg ', '<svg style="width:640px;height:auto;display:block" ');
+const logo = b('simvix-home-logotipo-oscuro.svg').replace('<svg ', '<svg style="width:900px;height:auto;display:block" ');
 const og = `<html><head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap"></head>
 <body style="margin:0;background:#0B1220;font-family:Inter,system-ui,sans-serif">
 <div style="width:1200px;height:630px;box-sizing:border-box;padding:96px 96px;display:flex;flex-direction:column;justify-content:space-between;color:#fff">
@@ -37,5 +37,5 @@ await page.setViewportSize({ width: 1200, height: 630 });
 await page.setContent(og, { waitUntil: 'networkidle' });
 await page.screenshot({ path: 'src/app/opengraph-image.png' });
 await browser.close();
-for (const f of ['_icono-baldosa.svg', '_icono-sangre.svg']) unlinkSync(`public/brand/${f}`);
+for (const f of ['_icono-sangre.svg']) unlinkSync(`public/brand/${f}`);
 console.log('ok: iconos y Open Graph');
