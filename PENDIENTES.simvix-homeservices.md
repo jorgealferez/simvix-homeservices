@@ -1,3 +1,5 @@
+(vacio)
+
 # PENDIENTES — ledger de continuidad de simvix-homeservices
 
 continuidad: activa
@@ -41,6 +43,10 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
 
 ## Hecho
+
+- [x] Fase 5 — Identidad del grupo «simvix.» en todo el producto (peticion urgente del usuario 2026-11-03) — (#22, squash `d810539`, 2026-11-03)
+  - [x] marca «simvix. home» y simbolo «h.» en trazados, iconos, manifest, Open Graph; tokens tinta/coral; ADR 0008; capturas
+  - [x] gauntlet full en VERDE (10 PASS, 4 SKIP), PR #22, squash merge; aviso a la sesion de la web corporativa
 
 - [x] Copias programadas de la BD de produccion — CERRADO SIN HACER por decision del usuario (2026-11-03: «lo de las copias lo omitimos y dejamos en documentacion de pendientes»); queda como pendiente documentado en `DEPLOY.md` y en la carta
   - que se necesita: servicio `Postgres-Mn3R` -> volumen `homeservices-postgres-data` -> pestaña Backups -> activar Daily, Weekly y Monthly
