@@ -72,7 +72,7 @@ def simbolo(letter, bg=None, scale=1.0, radius=0):
 
 # ---- Logotipo «simvix. home services»: «simvix.» Fraunces 600 tinta + punto coral, producto en 400 gris ----
 GRAY = "#5B6476"
-GRAY_DARK = "#A3AAB8"  # el gris sobre tinta (8:1)
+GRAY_DARK = "#9AA3B5"  # gris de producto sobre tinta del kit del grupo (7,4:1)
 font400 = instantiateVariableFont(TTFont(src), {"wght": 400, "opsz": 144, "SOFT": 0, "WONK": 0})
 gs400 = font400.getGlyphSet()
 S = 1.0 / upm * 100  # 100 px por em
