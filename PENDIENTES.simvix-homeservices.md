@@ -26,7 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
+- [ ] `/obras` responde 404 en vez de 500 mientras no tenga base de datos (opcion B del bloqueo; pedida por la sesion coordinadora el 2026-11-03, sin mensaje del usuario localizable) — EN CURSO (session_017UCRTEgUDGJZnVo3xJpKX9, 2026-11-03)
 
 ## Esperando
 
