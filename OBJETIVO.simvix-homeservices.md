@@ -146,3 +146,7 @@ siguientes; nada de fases de relleno: cada fase acerca un criterio de salida y l
 - 2026-11-03 — Leads en una tabla de la base de datos (no email/Resend), con ADR `Tipo: datos`.
   Razon social, CIF, domicilio y telefono se buscan en los repositorios y webs legales del usuario; si
   no aparecen, no se inventan: quedan bloqueados con motivo y se publica el resto.
+- 2026-11-03 — «Crea la base de datos y todo lo necesario en Railway, estable y solido, sin perder
+  informacion»: Postgres dedicado para Home Services (no se comparte el de renovation-company-website),
+  migraciones versionadas aplicadas antes de cada despliegue y /obras solo con `OBRAS_HABILITADO=true`
+  (ADR 0007).
