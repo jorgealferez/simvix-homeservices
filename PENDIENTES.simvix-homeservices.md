@@ -26,6 +26,21 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
+(vacio)
+
+## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
+  agente **programa un despertador** antes de cerrar el turno. Si no puede programarlo, el item no se
+  mueve: se sigue trabajando.
+- `## Bloqueado`: solo con `BLOQUEADO: <motivo>` y solo si el motivo es una de las causas de la seccion
+  "Cuando SI hay que parar y preguntar". Es la unica forma legitima de dejar de avanzar.
+- `continuidad: pausada` la escribe **una persona**, nunca un agente.
+- **Antes de empezar un item se RESERVA**: se le anade `EN CURSO (<sesion>, <fecha>)` y se publica el
+  ledger (commit y push) *antes* de escribir codigo. Otra sesion que vea una reserva viva se salta ese
+  item y toma el siguiente sin reservar. Una reserva caduca si su rama remota no se mueve en 24 h.
+- Una seccion vacia se escribe `(vacio)`; nunca se borra la seccion.
+
+## Activo
+
 - [ ] Fase 4 — Leads con almacen propio y paginas legales (decision del usuario 2026-11-03: leads en tabla de la BD con ADR `Tipo: datos`; razon social, CIF y domicilio buscados en sus repos/webs, sin inventarlos) — EN CURSO (session_017UCRTEvU5d33FpLZF53u4Z, 2026-11-03)
   - [x] tabla `Lead` con datos personales cifrados y `emailHash` (ADR 0006 `Tipo: datos`); `src/lib/leads-store.ts`
   - [x] `/api/contact` guarda en BD, log sin datos personales, 429 a partir del sexto envio por IP en 10 min; sin BD conserva el lead en el log
@@ -41,9 +56,12 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-(vacio)
+- [ ] Leads de produccion a la tabla y datos registrales del titular — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
+  - que se necesita: (1) elegir la BD de produccion del servicio de Railway `simvix-homeservices`: opcion A SQLite en un volumen de Railway (barato, una sola replica, `provider` sin cambios), opcion B Postgres de Railway (escala y backups, pero exige cambiar `provider` a `postgresql`, lo que afecta tambien a /obras, ADR 0005); despues `OBRAS_FIELD_KEY` y `npm run prisma:push`; (2) los datos del Registro Mercantil de BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL (tomo, folio, hoja) para `TITULAR.registroMercantil`
+  - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
 
 ## Hecho
+
 
 - [x] `/obras` responde 404 en vez de 500 mientras no tenga base de datos (opcion B del bloqueo; pedida por la sesion coordinadora el 2026-11-03, sin mensaje del usuario localizable) — (#14, squash `8969d40`, 2026-11-03)
   - [x] `obrasDisponible()` + `notFound()` en el layout de /obras; test rojo sin el guard; ADR 0005

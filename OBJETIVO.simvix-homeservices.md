@@ -104,7 +104,7 @@ Meta): esa parte tambien forma parte de la meta (Fase 3).
   `/zonas/*`, `/empleo/*` con `JobPosting`, `/como-funciona`, JSON-LD, `robots.ts`, `sitemap.ts`,
   `llms.txt`, `og:image`, formulario con rol/zona/origen/consentimiento, `test:zonas`, ADR 0003,
   `docs/marketing/{seo-geo,meta}.md`, `docs/negocio/modelo-legal.md`. Acerca los criterios 7 y 8.
-- [ ] Fase 4 — Leads con almacen propio y paginas legales: tabla `Lead` en la BD (ADR `Tipo: datos`),
+- [x] Fase 4 — Leads con almacen propio y paginas legales (#16, squash `2bccf84`): tabla `Lead` en la BD (ADR `Tipo: datos`),
   sin datos personales en el log, limite de frecuencia en `/api/contact`; aviso legal, privacidad y
   condiciones del servicio con los datos de empresa que existan (los que falten, bloqueados, nunca
   inventados).
