@@ -34,16 +34,19 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-- [ ] Copias programadas de la BD de produccion — BLOQUEADO: requiere una accion del panel de Railway que este entorno no concede (2026-11-03)
-  - que se necesita: servicio `Postgres-Mn3R` -> volumen `homeservices-postgres-data` -> pestaña Backups -> activar Daily, Weekly y Monthly
-  - que se ha intentado: el agente de Railway (limite de uso alcanzado, dos veces); las herramientas directas no exponen las copias programadas
-  - [x] `OBRAS_FIELD_KEY` generada y añadida por peticion explicita del usuario (2026-11-03); verificado en produccion: lead de prueba `cmw18h3ae0000bhjt54gsvwnd` (origen `verificacion-despliegue`, se puede borrar) guardado en la tabla, log sin datos personales
-  - mientras tanto: el volumen persiste entre despliegues; sin copias, un borrado del volumen no tendria vuelta atras
 - [ ] Datos registrales del titular (la BD de produccion pasa a `## Activo` por peticion del usuario 2026-11-03) — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)
   - que se necesita: (1) elegir la BD de produccion del servicio de Railway `simvix-homeservices`: opcion A SQLite en un volumen de Railway (barato, una sola replica, `provider` sin cambios), opcion B Postgres de Railway (escala y backups, pero exige cambiar `provider` a `postgresql`, lo que afecta tambien a /obras, ADR 0005); despues `OBRAS_FIELD_KEY` y `npm run prisma:push`; (2) los datos del Registro Mercantil de BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL (tomo, folio, hoja) para `TITULAR.registroMercantil`
   - que se ha hecho: la tabla `Lead`, el cifrado y las paginas legales estan en `main` (#16); sin `DATABASE_URL` la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`)
 
 ## Hecho
+
+- [x] Copias programadas de la BD de produccion — CERRADO SIN HACER por decision del usuario (2026-11-03: «lo de las copias lo omitimos y dejamos en documentacion de pendientes»); queda como pendiente documentado en `DEPLOY.md` y en la carta
+  - que se necesita: servicio `Postgres-Mn3R` -> volumen `homeservices-postgres-data` -> pestaña Backups -> activar Daily, Weekly y Monthly
+  - que se ha intentado: el agente de Railway (limite de uso alcanzado, dos veces); las herramientas directas no exponen las copias programadas
+  - [x] `OBRAS_FIELD_KEY` generada y añadida por peticion explicita del usuario (2026-11-03); verificado en produccion: lead de prueba `cmw18h3ae0000bhjt54gsvwnd` (origen `verificacion-despliegue`, se puede borrar) guardado en la tabla, log sin datos personales
+  - mientras tanto: el volumen persiste entre despliegues; sin copias, un borrado del volumen no tendria vuelta atras
+  - [x] claves generadas y añadidas por peticion del usuario (2026-11-03): `AUTH_SECRET`, `OBRAS_METRICS_TOKEN` (cierra `/api/metrics`, que servia contadores en abierto desde que hay BD) y `AUTH_TRUST_HOST=true`
+  - no se pueden generar aqui: `BRAIN_TOKEN` (lo emite el conector en Brain), `ANTHROPIC_API_KEY` (cuenta del usuario; solo la usa /obras, apagado)
 
 - [x] BD de produccion en Railway: Postgres propio con copias programadas, migraciones versionadas y leads cifrados (peticion del usuario 2026-11-03: "crea la base de datos y todo lo necesario en railway, estable y solido sin perder informacion") — (#18, squash `b9fc72a`, 2026-11-03)
   - [x] Railway: servicio `Postgres-Mn3R` dedicado (PG 18, volumen `homeservices-postgres-data` 50 GB), separado del `Postgres` de renovation-company-website

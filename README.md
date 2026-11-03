@@ -158,9 +158,9 @@ cada 10 minutos; el log no lleva datos personales. En producción (ADR 0007):
 
 1. `DATABASE_URL` = `${{Postgres-Mn3R.DATABASE_URL}}` (Postgres dedicado, volumen
    `homeservices-postgres-data`). Ya configurado.
-2. `OBRAS_FIELD_KEY` (`openssl rand -base64 32`), puesta a mano en Railway y guardada también en un
-   gestor de contraseñas: **sin ella las copias de seguridad no se pueden descifrar, y no se debe
-   cambiar nunca**.
+2. `OBRAS_FIELD_KEY` (32 bytes en base64), ya configurada en Railway. Conviene guardarla también en
+   un gestor de contraseñas: **sin ella una copia de la base de datos no se puede descifrar, y no se
+   debe cambiar nunca**. `AUTH_SECRET` y `OBRAS_METRICS_TOKEN` también están puestas (`DEPLOY.md`).
 3. Las migraciones se aplican solas antes de cada despliegue (`npm run db:migrate`,
    `preDeployCommand`); si fallan, el despliegue se aborta y sigue la versión anterior.
 

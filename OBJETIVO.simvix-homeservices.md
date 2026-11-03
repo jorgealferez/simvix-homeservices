@@ -150,3 +150,6 @@ siguientes; nada de fases de relleno: cada fase acerca un criterio de salida y l
   informacion»: Postgres dedicado para Home Services (no se comparte el de renovation-company-website),
   migraciones versionadas aplicadas antes de cada despliegue y /obras solo con `OBRAS_HABILITADO=true`
   (ADR 0007).
+- 2026-11-03 — Claves de produccion generadas por el agente a peticion del usuario (`OBRAS_FIELD_KEY`,
+  `AUTH_SECRET`, `OBRAS_METRICS_TOKEN`). Las copias programadas del volumen de Postgres se omiten
+  por ahora y quedan como pendiente documentado en `DEPLOY.md`.
