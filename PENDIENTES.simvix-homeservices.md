@@ -26,7 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] `/obras` responde 404 en vez de 500 mientras no tenga base de datos (opcion B del bloqueo; pedida por la sesion coordinadora el 2026-11-03, sin mensaje del usuario localizable) — EN CURSO (session_017UCRTEgUDGJZnVo3xJpKX9, 2026-11-03)
+(vacio)
 
 ## Esperando
 
@@ -34,14 +34,19 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-- [ ] Poner en marcha el modulo /obras en produccion — BLOQUEADO: cambio de arquitectura y de alcance que la carta no contempla (la Meta deja fuera el producto /obras)
+(vacio)
+
+## Hecho
+
+- [x] `/obras` responde 404 en vez de 500 mientras no tenga base de datos (opcion B del bloqueo; pedida por la sesion coordinadora el 2026-11-03, sin mensaje del usuario localizable) — (#14, squash `8969d40`, 2026-11-03)
+  - [x] `obrasDisponible()` + `notFound()` en el layout de /obras; test rojo sin el guard; ADR 0005
+  - [x] gauntlet full en VERDE (10 PASS, 4 SKIP), PR y squash merge
+  - [x] produccion (20:56 UTC): `/obras`, `/obras/login`, `/obras/nuevo` y `/obras/cte` dan 404; `/` y `/contacto` dan 200
+- [x] Poner en marcha el modulo /obras en produccion — RESUELTO con la opcion B (#14, 2026-11-03); la opcion A queda como propuesta si el usuario incorpora /obras a la carta. Motivo original: cambio de arquitectura y de alcance que la carta no contempla (la Meta deja fuera el producto /obras)
   - que se necesita: (1) `schema.prisma` a `postgresql` y migracion inicial (ADR `Tipo: datos`); (2) `DATABASE_URL` del Postgres del proyecto Railway (sin comprobar si ya lo usa `renovation-company-website`: ¿compartir o BD propia?); (3) `AUTH_SECRET` propio y `AUTH_TRUST_HOST=true` (detras del proxy de Railway)
   - que se ha intentado: arreglo del middleware Edge (#12), desplegado; el log de produccion muestra las dos causas restantes
   - opcion A: activar /obras (Postgres propio en el proyecto, coste de un servicio mas; incorporar el producto /obras a la carta con sus criterios)
   - opcion B: dejarlo apagado y que `/obras` responda 404 o una pagina "proximamente" en vez de 500 (un PR pequeño, sin coste); el modulo sigue en el codigo
-
-## Hecho
-
 - [x] `/obras` responde 500 en produccion: el middleware (Edge) importa Prisma via `@/lib/auth/config` — (#12, squash `09a8843`, 2026-11-02)
   - detectado en Railway: 4 respuestas 5xx en 24 h, todas `GET /obras`; log `PrismaClient is not configured to run in Edge Runtime` en `.next/server/src/middleware.js`
   - [x] `src/lib/auth/edge.ts` (sin BD) para el middleware; `config.ts` la extiende; ADR 0004 con `## Seguridad`
