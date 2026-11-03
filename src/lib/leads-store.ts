@@ -30,10 +30,19 @@ export interface LeadDb {
 
 export type ResultadoGuardado =
   | { guardado: true; id: string }
-  | { guardado: false; motivo: 'sin-bd' | 'error-bd' };
+  | { guardado: false; motivo: 'sin-bd' | 'sin-clave' | 'error-bd' };
 
 export function hayBaseDeDatos(env: Record<string, string | undefined> = process.env): boolean {
   return (env.DATABASE_URL ?? '').trim() !== '';
+}
+
+/**
+ * En producción no se escribe en BD sin `OBRAS_FIELD_KEY`: el cifrado caería en
+ * una clave derivada provisional y, al configurar la buena, esos leads ya no se
+ * podrían descifrar (ADR 0007). Mientras falte, el lead se conserva en el log.
+ */
+export function hayClaveDeCifrado(env: Record<string, string | undefined> = process.env): boolean {
+  return env.NODE_ENV !== 'production' || (env.OBRAS_FIELD_KEY ?? '').trim() !== '';
 }
 
 export function filaLead(lead: Lead, ahora: Date = new Date()): LeadRow {
@@ -62,6 +71,7 @@ export async function guardarLead(
   opts: { db?: LeadDb; env?: Record<string, string | undefined>; ahora?: Date } = {},
 ): Promise<ResultadoGuardado> {
   if (!hayBaseDeDatos(opts.env)) return { guardado: false, motivo: 'sin-bd' };
+  if (!hayClaveDeCifrado(opts.env)) return { guardado: false, motivo: 'sin-clave' };
   try {
     const db: LeadDb = opts.db ?? (await import('./db')).prisma;
     const { id } = await db.lead.create({ data: filaLead(lead, opts.ahora), select: { id: true } });

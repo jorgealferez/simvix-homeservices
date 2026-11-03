@@ -67,6 +67,10 @@ async function main() {
   assert(!hayBaseDeDatos({}) && !hayBaseDeDatos({ DATABASE_URL: ' ' }) && hayBaseDeDatos({ DATABASE_URL: 'file:./dev.db' }), 'hayBaseDeDatos sigue DATABASE_URL');
   const sin = await guardarLead(lead, { env: {}, db: fakeDb().db });
   assert(!sin.guardado && sin.motivo === 'sin-bd', 'sin DATABASE_URL no se intenta escribir');
+  const sinClave = await guardarLead(lead, { env: { DATABASE_URL: 'postgresql://x', NODE_ENV: 'production' }, db: fakeDb().db });
+  assert(!sinClave.guardado && sinClave.motivo === 'sin-clave', 'en producción sin OBRAS_FIELD_KEY no se escribe (no se cifra con clave provisional)');
+  const conClave = await guardarLead(lead, { env: { DATABASE_URL: 'postgresql://x', NODE_ENV: 'production', OBRAS_FIELD_KEY: 'k' }, db: fakeDb().db });
+  assert(conClave.guardado, 'en producción con OBRAS_FIELD_KEY sí se escribe');
   const f = fakeDb();
   const ok = await guardarLead(lead, { env: { DATABASE_URL: 'file:x' }, db: f.db });
   assert(ok.guardado && ok.id === 'lead_1' && f.filas.length === 1, 'con BD se escribe una fila');

@@ -13,7 +13,7 @@ Repositorio con dos productos coexistiendo:
 ## Stack
 
 - **Framework**: Next.js 15 (App Router) + React 18
-- **Datos**: Prisma 5 (SQLite por defecto, Postgres por `DATABASE_URL`)
+- **Datos**: Prisma 5 + PostgreSQL, migraciones versionadas en `prisma/migrations` (ADR 0007)
 - **Lenguaje**: TypeScript
 - **Estilos**: Tailwind CSS
 - **Deploy**: Railway (servicio independiente)
@@ -97,7 +97,8 @@ npm run prisma:seed      # Sembrar plantillas de normativa
 | `NEXT_PUBLIC_WHATSAPP` | WhatsApp Business, internacional sin `+` (opcional) | `34600000000` |
 | `RESEND_API_KEY` | API key para envío de emails (opcional) | `re_xxxxx` |
 | `CONTACT_EMAIL` | Email de destino del formulario | `hola@simvix.com` |
-| `DATABASE_URL` | Base de datos (SQLite por defecto / Postgres en prod) | `file:./prisma/dev.db` |
+| `DATABASE_URL` | PostgreSQL (en Railway, referencia a `Postgres-Mn3R`) | `postgresql://postgres:dev@localhost:5432/simvix` |
+| `OBRAS_HABILITADO` | `true` para servir /obras (además de `DATABASE_URL`); por defecto apagado | `true` |
 | `ANTHROPIC_API_KEY` | API key de Anthropic Claude (módulo /obras) | `sk-ant-...` |
 | `OBRAS_AI_MODE` | `auto` (default) / `live` / `mock` | `mock` |
 | `BRAIN_URL` | URL de Brain (`simvix-brain`) para la telemetría de IA; opcional, sin ella no se informa nada | `https://simvix-brain-production.up.railway.app` |
@@ -153,14 +154,18 @@ prerrellena con `?servicio=&zona=&rol=&utm_source=&utm_campaign=`.
 
 Los leads se guardan en la tabla `Lead` (ADR 0006): nombre, email, teléfono y mensaje **cifrados**
 con `OBRAS_FIELD_KEY`, y en claro solo rol, zona, servicio, origen y estado. Límite de 5 envíos por IP
-cada 10 minutos; el log no lleva datos personales. Para activarlo en producción:
+cada 10 minutos; el log no lleva datos personales. En producción (ADR 0007):
 
-1. `DATABASE_URL` (SQLite en un volumen, o Postgres cambiando el `provider` del esquema)
-2. `OBRAS_FIELD_KEY` (`openssl rand -base64 32`)
-3. `npm run prisma:push`
+1. `DATABASE_URL` = `${{Postgres-Mn3R.DATABASE_URL}}` (Postgres dedicado, volumen
+   `homeservices-postgres-data`). Ya configurado.
+2. `OBRAS_FIELD_KEY` (`openssl rand -base64 32`), puesta a mano en Railway y guardada también en un
+   gestor de contraseñas: **sin ella las copias de seguridad no se pueden descifrar, y no se debe
+   cambiar nunca**.
+3. Las migraciones se aplican solas antes de cada despliegue (`npm run db:migrate`,
+   `preDeployCommand`); si fallan, el despliegue se aborta y sigue la versión anterior.
 
-Mientras no haya `DATABASE_URL`, la API conserva cada lead en el log (`Lead SIN GUARDAR en BD`) para
-no perderlo. Para verlos: `npm run prisma:studio`. Páginas legales: `/aviso-legal`, `/privacidad` y
+Sin `DATABASE_URL`, o en producción sin `OBRAS_FIELD_KEY`, la API conserva cada lead en el log
+(`Lead SIN GUARDAR en BD`, con motivo `sin-bd` o `sin-clave`) para no perderlo. Para verlos: `npm run prisma:studio`. Páginas legales: `/aviso-legal`, `/privacidad` y
 `/condiciones`, con el titular de `TITULAR` en `src/lib/site.ts`.
 
 ## CI/CD
@@ -250,7 +255,7 @@ Tras `npm run dev` y registrarte en `/obras/registro`:
 cp .env.example .env.local
 # Edita AUTH_SECRET: openssl rand -base64 32
 npm install
-DATABASE_URL="file:./dev.db" npm run seed:all   # push + seed + catalog + CTE + demo
+npm run db:migrate && npm run seed:all   # con DATABASE_URL a un Postgres local (ver .env.example)
 npm run dev
 ```
 

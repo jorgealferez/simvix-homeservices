@@ -81,3 +81,31 @@ Con Railway CLI:
 ```bash
 railway rollback
 ```
+
+## Base de datos de producción (ADR 0007)
+
+Estado en el proyecto de Railway «Servicios Domesticos SImvix», entorno `production`:
+
+| Pieza | Valor |
+|---|---|
+| Servicio Postgres dedicado | `Postgres-Mn3R` (PostgreSQL 18, región europe-west4), **separado** del `Postgres` de `renovation-company-website` |
+| Volumen | `homeservices-postgres-data` (50 GB) montado en `/var/lib/postgresql/data` |
+| `DATABASE_URL` del servicio web | `${{Postgres-Mn3R.DATABASE_URL}}` (red privada; la contraseña no sale de Railway) |
+| Migraciones | `prisma/migrations` (inicial `0_init`), aplicadas por `preDeployCommand = npm run db:migrate` (en `railway.toml` y en la configuración del servicio) |
+| /obras | apagado salvo `OBRAS_HABILITADO=true` |
+
+Pasos que hace la persona en el panel (no se pueden hacer desde fuera sin exponer secretos):
+
+1. **Clave de cifrado**: `simvix-homeservices` → Variables → `OBRAS_FIELD_KEY` = salida de
+   `openssl rand -base64 32`. Guárdala también en un gestor de contraseñas. **No la cambies nunca**:
+   cifra los leads y sin ella las copias no sirven. Hasta que exista, los leads van al log.
+2. **Copias programadas**: `Postgres-Mn3R` → volumen `homeservices-postgres-data` → pestaña
+   **Backups** → activar *Daily* (6 días), *Weekly* (1 mes) y *Monthly* (3 meses). Restaurar es
+   «Restore» sobre una copia: Railway monta un volumen nuevo y conserva el anterior.
+
+Reglas para no perder información:
+
+- Cambios de esquema solo con una migración nueva en `prisma/migrations` (`prisma migrate dev` en
+  local) y su ADR `Tipo: datos`. Nunca `prisma db push --accept-data-loss` contra producción.
+- No borrar ni desmontar el volumen `homeservices-postgres-data`.
+
