@@ -26,9 +26,9 @@ export const CONTACT = {
 } as const;
 
 /**
- * Titular de la web (LSSI art. 10). Datos tomados de los avisos legales del
- * propio usuario (simvix-corporate-website `apps/api/src/seed/data/legal.ts`,
- * ai-nodecode-core-api `resources/views/web/terms.blade.php`). Los datos
+ * Titular de la web (LSSI art. 10). Datos de los avisos legales de
+ * simvixgroup.com, con el domicilio en Calle Bramante, Illescas (petición del
+ * usuario del 2026-11-03: una sola dirección del titular para todo). Los datos
  * registrales no aparecen en ninguna fuente: quedan en null y la página lo
  * declara pendiente en vez de inventarlos.
  */
@@ -36,7 +36,9 @@ export const TITULAR = {
   razonSocial: 'BYTEMEGA INNOVACION E INVERSIONES TECNOLOGICAS SL',
   marca: 'Simvix',
   cif: 'B87816419',
-  domicilio: 'Calle Congo 29, 45210 Yuncos (Toledo), España',
+  domicilio: 'Calle Bramante, 45200 Illescas (Toledo), España',
+  /** Correo del titular para aviso legal y protección de datos. */
+  email: 'support@simvix.com',
   registroMercantil: null as string | null,
 } as const;
 

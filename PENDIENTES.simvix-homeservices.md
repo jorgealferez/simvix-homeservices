@@ -40,6 +40,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Hecho
 
+- [x] Titular de los textos legales: domicilio único en Calle Bramante, 45200 Illescas (Toledo) y correo support@simvix.com (sustituye a Calle Congo 29, Yuncos) — peticion del usuario 2026-11-03 (este PR)
 - [x] Fase 5 (cont.) — Dibujos definitivos de la marca del grupo (simbolo «h.» y logotipo «simvix. home services», recibidos de la sesion de identidad 2026-11-03) — (#24, squash `7f156c2`, 2026-11-03); ADR 0009
   - [x] ledger reparado: el cierre de #23 busco `## Esperando` sin anclar a linea completa, dejo `(vacio)` en la cabecera y la Fase 5 en `## Activo`
 
