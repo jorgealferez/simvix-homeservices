@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { ObrasSessionProvider } from '@/components/obras/SessionProvider';
 import { UserMenu } from '@/components/obras/UserMenu';
 import { ThemeProvider, ThemeToggle } from '@/components/ui/ThemeProvider';
 import { PWARegister } from '@/components/obras/PWARegister';
+import { obrasDisponible } from '@/lib/obras/disponible';
 
 export const metadata: Metadata = {
   title: 'Simvix Obras — Orquestación IA cliente → ayuntamiento',
@@ -14,6 +16,9 @@ export const metadata: Metadata = {
 };
 
 export default function ObrasLayout({ children }: { children: React.ReactNode }) {
+  // Sin base de datos el módulo no se sirve: 404 de la web en vez de un 500.
+  if (!obrasDisponible()) notFound();
+
   return (
     <ObrasSessionProvider>
       <ThemeProvider>
