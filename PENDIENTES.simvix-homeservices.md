@@ -26,7 +26,14 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-(vacio)
+- [x] Enviar cada lead a Brain (`POST /api/eventos`) por un outbox durable — referencia cruzada: simvix-brain Fase 29 (C27) — EN CURSO (session_01QHK9MEkUfYTXcECCqTsRSZ, 2026-11-12) — rama `brain-eventos` — squash merge del PR de la rama `brain-eventos` (2026-11-12)
+  - [x] tabla `BrainOutbox` + migracion `1_brain_outbox` (ADR 0011, `Tipo: datos`); el evento se escribe en la misma transaccion que el `Lead`
+  - [x] `src/lib/brain-eventos.ts`: `contacto` con clave `lead-<id>` (nombre, email, telefono, asunto, mensaje, url, origen, utm, canal), 202 = enviado, 400 = rechazado, lo demas se reintenta (30 s a 1 h); sin `BRAIN_URL`/`BRAIN_TOKEN` no envia nada; el token nunca se registra
+  - [x] vaciado al recibir cada lead (`/api/contact`) y cada minuto (`src/instrumentation.ts`); sin BD, un intento directo
+  - [x] `test:brain-eventos` en `npm test`; README, `.env.example` y `DEPLOY.md` con `BRAIN_URL`/`BRAIN_TOKEN`
+  - [ ] gauntlet full en VERDE, PR, squash merge (en el clon de esta sesion `enforcement` sale ROJO por `core.hooksPath` sin configurar; el resto de puertas en VERDE por separado)
+  - presupuestos: no se envian; los `BudgetItem` de /obras son internos de obra y el modulo esta apagado (ADR 0005, ADR 0011 «Necesidades futuras»)
+  - pendiente (usuario): `BRAIN_URL` y `BRAIN_TOKEN` del conector `simvix-homeservices` en el servicio de Railway; hasta entonces los leads esperan en el outbox (envio real NO VERIFICADO)
 
 ## Esperando
 
@@ -35,8 +42,8 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 ## Bloqueado
 
 - [ ] Activar la centralizacion de contactos en produccion (codigo en `main`, ADR 0010) — BLOQUEADO: credenciales y plan que el entorno no concede (2026-11-03)
-  - que se necesita: (1) `RESEND_API_KEY` (y `LEADS_FROM_EMAIL` con dominio verificado) en el servicio de Railway; (2) URL y token del panel central (`LEADS_HUB_URL`, `LEADS_HUB_TOKEN`): el modulo LocalServiceLeads del hub no esta en el plan actual
-  - opcion A: activar LocalServiceLeads en el hub y registrar `homeservices.simvix.com` (da la API key); opcion B: usar otro endpoint central que el usuario indique
+  - que se necesita: (1) `RESEND_API_KEY` (y `LEADS_FROM_EMAIL` con dominio verificado) en el servicio de Railway; (2) ~~URL y token del panel central (`LEADS_HUB_URL`, `LEADS_HUB_TOKEN`)~~ RESUELTO 2026-11-12 apuntando a Brain: el panel central es Brain (`POST /api/eventos`, ADR 0011, item de `## Activo`, ref. simvix-brain Fase 29 (C27)); de esta parte solo falta `BRAIN_URL`/`BRAIN_TOKEN` en Railway
+  - opcion A: activar LocalServiceLeads en el hub y registrar `homeservices.simvix.com` (da la API key); opcion B: usar otro endpoint central que el usuario indique — se toma la B con Brain como endpoint central (peticion de simvix-brain Fase 29); `LEADS_HUB_URL` queda opcional
   - las demas webs del grupo necesitan el mismo cambio en sus repositorios (cada una en su ledger)
 
 - [ ] Datos registrales del titular (la BD de produccion pasa a `## Activo` por peticion del usuario 2026-11-03) — BLOQUEADO: decision de arquitectura e infraestructura del usuario y dato que no existe en ninguna fuente (2026-11-03)

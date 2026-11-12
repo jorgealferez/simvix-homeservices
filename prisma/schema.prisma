@@ -1021,3 +1021,22 @@ model Lead {
   @@index([zona, rol, estado])
   @@index([emailHash])
 }
+
+// Outbox de eventos hacia Brain (simvix-brain, POST /api/eventos; ADR 0011).
+// Se escribe en la misma transacción que el lead y lo vacía el emisor con
+// reintentos hasta recibir 202 (enviado) o 400 (rechazado). Nada se borra.
+model BrainOutbox {
+  id               String    @id @default(cuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  tipo             String // contacto | presupuesto
+  clave            String    @unique // idempotencia en Brain: lead-<id>
+  evento           String // JSON del evento, cifrado (lleva datos personales); vacío una vez enviado
+  estado           String    @default("pendiente") // pendiente | enviado | rechazado
+  intentos         Int       @default(0)
+  siguienteIntento DateTime  @default(now())
+  ultimoError      String?
+  enviadoAt        DateTime?
+
+  @@index([estado, siguienteIntento])
+}

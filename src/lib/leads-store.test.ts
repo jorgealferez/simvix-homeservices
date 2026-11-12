@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { leadSchema } from './leads';
-import { filaLead, guardarLead, hayBaseDeDatos, resumenLead, type LeadDb, type LeadRow } from './leads-store';
+import { filaLead, guardarLead, hayBaseDeDatos, resumenLead, type LeadDb, type LeadRow, type LeadTx, type OutboxRow } from './leads-store';
 import { crearLimitador, ipDe } from './rate-limit';
 import { decrypt, deterministicHash, isEncrypted } from './security/crypto';
 import { TITULAR } from './site';
@@ -34,17 +34,37 @@ const lead = leadSchema.parse({
   origen: 'facebook:clientes-parla',
 });
 
-function fakeDb(falla = false): { db: LeadDb; filas: LeadRow[] } {
+function fakeDb(falla: false | 'lead' | 'outbox' = false): { db: LeadDb; filas: LeadRow[]; outbox: OutboxRow[] } {
   const filas: LeadRow[] = [];
+  const outbox: OutboxRow[] = [];
   return {
     filas,
+    outbox,
     db: {
-      lead: {
-        async create({ data }) {
-          if (falla) throw new Error('db caída');
-          filas.push(data);
-          return { id: `lead_${filas.length}` };
-        },
+      // Transacción de juguete: si algo falla dentro, no queda nada escrito.
+      async $transaction(fn) {
+        const f: LeadRow[] = [];
+        const o: OutboxRow[] = [];
+        const tx: LeadTx = {
+          lead: {
+            async create({ data }) {
+              if (falla === 'lead') throw new Error('db caída');
+              f.push(data);
+              return { id: `lead_${filas.length + f.length}`, createdAt: new Date('2026-11-03T20:00:00Z') };
+            },
+          },
+          brainOutbox: {
+            async create({ data }) {
+              if (falla === 'outbox') throw new Error('outbox caído');
+              o.push(data);
+              return { id: `ob_${outbox.length + o.length}` };
+            },
+          },
+        };
+        const r = await fn(tx);
+        filas.push(...f);
+        outbox.push(...o);
+        return r;
       },
     },
   };
@@ -74,8 +94,13 @@ async function main() {
   const f = fakeDb();
   const ok = await guardarLead(lead, { env: { DATABASE_URL: 'file:x' }, db: f.db });
   assert(ok.guardado && ok.id === 'lead_1' && f.filas.length === 1, 'con BD se escribe una fila');
-  const ko = await guardarLead(lead, { env: { DATABASE_URL: 'file:x' }, db: fakeDb(true).db });
+  assert(f.outbox.length === 1 && f.outbox[0].clave === 'lead-lead_1' && f.outbox[0].tipo === 'contacto', 'con el lead se deja su evento en el outbox de Brain (clave lead-<id>)');
+  assert(isEncrypted(f.outbox[0].evento) && !/Ana|example/.test(f.outbox[0].evento), 'el evento del outbox va cifrado');
+  const ko = await guardarLead(lead, { env: { DATABASE_URL: 'file:x' }, db: fakeDb('lead').db });
   assert(!ko.guardado && ko.motivo === 'error-bd', 'un fallo de BD no lanza: devuelve error-bd');
+  const sinOutbox = fakeDb('outbox');
+  const ko2 = await guardarLead(lead, { env: { DATABASE_URL: 'file:x' }, db: sinOutbox.db });
+  assert(!ko2.guardado && sinOutbox.filas.length === 0 && sinOutbox.outbox.length === 0, 'si el outbox falla, el lead tampoco se guarda (misma transacción) y la API lo conserva en el log');
   const resumen = JSON.stringify(resumenLead(lead));
   assert(!/Ana|example|600|80 m2/.test(resumen), 'el resumen para el log no lleva datos personales');
 

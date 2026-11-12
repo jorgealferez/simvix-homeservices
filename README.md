@@ -79,7 +79,7 @@ npm run dev              # Servidor de desarrollo
 npm run build            # Build de producción (genera Prisma client antes)
 npm run start            # Servidor de producción
 npm run lint             # ESLint
-npm test                 # Tests (CTE, Brain, zonas); también en CI
+npm test                 # Tests (CTE, Brain, zonas, leads, eventos a Brain); también en CI
 npm run type-check       # TypeScript sin emitir
 npm run prisma:push      # Aplica el schema a la BD (dev)
 npm run prisma:studio    # Prisma Studio en localhost
@@ -101,8 +101,8 @@ npm run prisma:seed      # Sembrar plantillas de normativa
 | `OBRAS_HABILITADO` | `true` para servir /obras (además de `DATABASE_URL`); por defecto apagado | `true` |
 | `ANTHROPIC_API_KEY` | API key de Anthropic Claude (módulo /obras) | `sk-ant-...` |
 | `OBRAS_AI_MODE` | `auto` (default) / `live` / `mock` | `mock` |
-| `BRAIN_URL` | URL de Brain (`simvix-brain`) para la telemetría de IA; opcional, sin ella no se informa nada | `https://simvix-brain-production.up.railway.app` |
-| `BRAIN_TOKEN` | Token del conector `simvix-homeservices` en Brain (se muestra una sola vez) | `sb_...` |
+| `BRAIN_URL` | URL de Brain (`simvix-brain`): telemetría de IA y envío de cada lead a `POST /api/eventos` (ADR 0011); opcional, sin ella no se envía nada y los leads esperan en el outbox | `https://simvix-brain-production.up.railway.app` |
+| `BRAIN_TOKEN` | Token del conector `simvix-homeservices` en Brain (se muestra una sola vez; nunca se registra en el log) | `sb_...` |
 | `OBRAS_DEFAULT_MODEL` | Modelo Claude por defecto | `claude-opus-4-7` |
 | `OBRAS_FIRMA_*` | Datos del estudio para firmar PDFs generados | (opcionales) |
 | `OBRAS_AYUNTAMIENTOS_HABILITADOS` | CSV de slugs activos | `madrid,barcelona,...` |

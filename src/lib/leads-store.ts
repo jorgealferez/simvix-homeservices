@@ -1,3 +1,4 @@
+import { eventoContacto, filaOutbox } from './brain-eventos';
 import { deterministicHash, encrypt } from './security/crypto';
 import type { Lead } from './leads';
 
@@ -9,6 +10,9 @@ import type { Lead } from './leads';
  * - Sin `DATABASE_URL` (producción hoy) no se intenta escribir: el llamador
  *   decide qué hacer (la API conserva el lead en el log como hasta ahora).
  * - Lo que se escribe en el log nunca lleva datos personales: `resumenLead`.
+ * - En la misma transacción deja su evento `contacto` en el outbox de Brain
+ *   (ADR 0011): o se guardan los dos o ninguno, así que ningún lead se queda
+ *   sin su envío pendiente.
  */
 
 export interface LeadRow {
@@ -24,8 +28,22 @@ export interface LeadRow {
   consentimientoAt: Date;
 }
 
+export interface OutboxRow {
+  tipo: string;
+  clave: string;
+  evento: string;
+  siguienteIntento: Date;
+}
+
+export interface LeadTx {
+  lead: {
+    create(args: { data: LeadRow; select: { id: true; createdAt: true } }): Promise<{ id: string; createdAt: Date }>;
+  };
+  brainOutbox: { create(args: { data: OutboxRow; select: { id: true } }): Promise<{ id: string }> };
+}
+
 export interface LeadDb {
-  lead: { create(args: { data: LeadRow; select: { id: true } }): Promise<{ id: string }> };
+  $transaction<T>(fn: (tx: LeadTx) => Promise<T>): Promise<T>;
 }
 
 export type ResultadoGuardado =
@@ -74,7 +92,14 @@ export async function guardarLead(
   if (!hayClaveDeCifrado(opts.env)) return { guardado: false, motivo: 'sin-clave' };
   try {
     const db: LeadDb = opts.db ?? (await import('./db')).prisma;
-    const { id } = await db.lead.create({ data: filaLead(lead, opts.ahora), select: { id: true } });
+    const id = await db.$transaction(async (tx) => {
+      const fila = await tx.lead.create({ data: filaLead(lead, opts.ahora), select: { id: true, createdAt: true } });
+      await tx.brainOutbox.create({
+        data: filaOutbox(eventoContacto(lead, fila.id, fila.createdAt), fila.createdAt),
+        select: { id: true },
+      });
+      return fila.id;
+    });
     return { guardado: true, id };
   } catch {
     return { guardado: false, motivo: 'error-bd' };
