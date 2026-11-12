@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { leadSchema } from '@/lib/leads';
 import { guardarLead, resumenLead } from '@/lib/leads-store';
 import { notificarLead } from '@/lib/leads-notify';
+import { enviarLeadSinBd, procesarOutbox } from '@/lib/brain-eventos';
 import { crearLimitador, ipDe } from '@/lib/rate-limit';
 
 /** 5 envíos por IP cada 10 minutos (ADR 0006). */
@@ -57,8 +58,16 @@ export async function POST(request: NextRequest) {
   }
 
   // Centralización (ADR 0010): aviso al buzón central y al panel del grupo con el origen.
-  const aviso = await notificarLead(lead, resultado.guardado ? resultado.id : null);
-  console.log('Lead avisado:', aviso);
+  // Brain (ADR 0011): el evento ya está en el outbox con el lead; se intenta vaciar
+  // ahora y, si Brain no responde, lo reintenta el vaciado periódico. Sin BD no hay
+  // outbox: un único intento directo (el lead sigue entero en el log).
+  const [aviso, brain] = await Promise.all([
+    notificarLead(lead, resultado.guardado ? resultado.id : null),
+    resultado.guardado
+      ? procesarOutbox().then((r) => r.omitido ?? `enviados ${r.enviados}, reintentos ${r.reintentos}, rechazados ${r.rechazados}`)
+      : enviarLeadSinBd(lead).then((r) => `${r.tipo} (${r.clave})`),
+  ]);
+  console.log('Lead avisado:', { ...aviso, brain });
 
   return NextResponse.json({ message: 'Solicitud recibida correctamente' }, { status: 200 });
 }

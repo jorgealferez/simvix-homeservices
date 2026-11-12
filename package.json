@@ -12,7 +12,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "typecheck": "npm run type-check",
-    "test": "npm run test:cte && npm run test:brain && npm run test:zonas && npm run test:middleware && npm run test:obras-disponible && npm run test:leads && npm run test:leads-notify",
+    "test": "npm run test:cte && npm run test:brain && npm run test:zonas && npm run test:middleware && npm run test:obras-disponible && npm run test:leads && npm run test:leads-notify && npm run test:brain-eventos",
     "prisma:generate": "prisma generate",
     "db:migrate": "[ -z \"$DATABASE_URL\" ] && echo \"db:migrate: sin DATABASE_URL, no hay nada que migrar\" || prisma migrate deploy",
     "prisma:push": "prisma db push",
@@ -33,7 +33,8 @@
     "test:middleware": "tsx --tsconfig tsconfig.json src/middleware.test.ts",
     "test:obras-disponible": "tsx --tsconfig tsconfig.json src/lib/obras/disponible.test.ts",
     "test:leads": "tsx --tsconfig tsconfig.json src/lib/leads-store.test.ts",
-    "test:leads-notify": "tsx --tsconfig tsconfig.json src/lib/leads-notify.test.ts"
+    "test:leads-notify": "tsx --tsconfig tsconfig.json src/lib/leads-notify.test.ts",
+    "test:brain-eventos": "tsx --tsconfig tsconfig.json src/lib/brain-eventos.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
