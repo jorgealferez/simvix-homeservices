@@ -30,6 +30,18 @@ export default function PrivacidadPage() {
           <strong>Origen</strong>: el anuncio o la publicación de la que vienes (por ejemplo
           «facebook»), para saber qué canales funcionan. No usamos cookies para ello.
         </li>
+        <li>
+          <strong>Analítica (solo si la aceptas)</strong>: si pulsas «Aceptar» en el aviso, Google
+          Analytics 4 (Google Ireland Ltd.) mide de forma agregada qué páginas se visitan, de dónde
+          llegas y con qué dispositivo, con la IP anonimizada y sin publicidad. Usa las cookies{' '}
+          <code>_ga</code> y <code>_ga_*</code> (hasta 2 años) y Google puede tratar datos en EE. UU.
+          al amparo del Marco de Privacidad de Datos UE-EE. UU. Sin tu aceptación no se carga nada de
+          Google. Puedes cambiar tu decisión cuando quieras:{' '}
+          <button type="button" data-analitica-ajustes className="underline">
+            preferencias de analítica
+          </button>
+          .
+        </li>
       </ul>
 
       <h2>3. Base legal</h2>
