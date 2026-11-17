@@ -26,6 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
+- [ ] Google Analytics 4 con consentimiento en toda la web (publica y portal) con el ID por variable de entorno (ADR 0012) — referencia cruzada: simvix-brain Fase 30 (C28) — EN CURSO (session_017UCRTD4x1bdm234Ms8nLrq, 2026-11-17) — rama `analitica-ga4`
 - [x] Enviar cada lead a Brain (`POST /api/eventos`) por un outbox durable — referencia cruzada: simvix-brain Fase 29 (C27) — EN CURSO (session_01QHK9MEkUfYTXcECCqTsRSZ, 2026-11-12) — rama `brain-eventos` — squash merge del PR de la rama `brain-eventos` (2026-11-12)
   - [x] tabla `BrainOutbox` + migracion `1_brain_outbox` (ADR 0011, `Tipo: datos`); el evento se escribe en la misma transaccion que el `Lead`
   - [x] `src/lib/brain-eventos.ts`: `contacto` con clave `lead-<id>` (nombre, email, telefono, asunto, mensaje, url, origen, utm, canal), 202 = enviado, 400 = rechazado, lo demas se reintenta (30 s a 1 h); sin `BRAIN_URL`/`BRAIN_TOKEN` no envia nada; el token nunca se registra

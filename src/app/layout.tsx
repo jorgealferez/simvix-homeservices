@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import JsonLd from '@/components/JsonLd';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { organizationJsonLd, websiteJsonLd } from '@/lib/seo';
+import { gaMeasurementId } from '@/lib/analitica';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -77,6 +78,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const gaId = gaMeasurementId();
   return (
     <html lang="es">
       <head>
@@ -101,6 +103,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        {gaId ? <script src="/simvix-analitica.js" data-ga-id={gaId} data-privacidad="/privacidad" defer /> : null}
       </body>
     </html>
   );
